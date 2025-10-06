@@ -70,6 +70,10 @@
         .mobile-nav-btn.active {
             color: #34d399; /* emerald-400 */
         }
+        .reading-plan-day input:checked + label {
+            text-decoration: line-through;
+            color: #6b7280; /* text-gray-500 */
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -227,11 +231,15 @@
                         <button data-tab="archive" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-archive mr-2"></i>Arquivo</button>
                         <button data-tab="study" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-book-open mr-2"></i>Estudo</button>
                         <button data-tab="fasting" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-pray mr-2"></i>Jejum</button>
+                        <button data-tab="reading" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-bible mr-2"></i>Plano</button>
                     </nav>
                 </div>
                 <div id="right-tab-content" class="flex-grow flex flex-col overflow-y-hidden">
                     <div id="archive-tab-content" class="right-tab-pane flex-grow overflow-y-auto">
-                        <div id="archive-list" class="space-y-2"></div>
+                        <h3 class="text-xl font-semibold text-white mb-2">Meus Esboços</h3>
+                        <div id="my-outlines-list" class="space-y-2 mb-6"></div>
+                        <h3 class="text-xl font-semibold text-white mb-2 border-t border-gray-700 pt-4">Biblioteca Pública</h3>
+                        <div id="public-library-list" class="space-y-2"></div>
                     </div>
                     <div id="study-tab-content" class="right-tab-pane hidden flex-grow flex flex-col overflow-hidden">
                          <h3 class="text-xl font-semibold text-white mb-2">Estudo Rápido</h3>
@@ -263,6 +271,10 @@
                         </div>
                         <div id="fasting-list" class="flex-grow overflow-y-auto space-y-2 pr-2"></div>
                     </div>
+                    <div id="reading-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
+                        <h3 class="text-xl font-semibold text-white mb-2">Plano de Leitura Anual</h3>
+                        <div id="reading-plan-container" class="flex-grow overflow-y-auto"></div>
+                    </div>
                 </div>
             </aside>
         </div>
@@ -283,10 +295,6 @@
             </button>
         </nav>
     </div>
-    
-    <button id="feedback-btn" class="fixed bottom-20 lg:bottom-5 left-5 bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-4 rounded-full shadow-lg z-30 transition-transform hover:scale-110 hidden" title="Enviar Feedback">
-        <i class="fas fa-comment-dots"></i>
-    </button>
 
     <!-- Modals -->
     <div id="engagement-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
@@ -338,19 +346,6 @@
         </div>
     </div>
 
-    <!-- Feedback Modal -->
-    <div id="feedback-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
-        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-md">
-            <h3 class="text-xl font-bold mb-4 text-white">Enviar Feedback ou Sugestão</h3>
-            <p class="text-sm text-gray-300 mb-4">A sua opinião é muito importante para nós! Deixe a sua sugestão para melhorarmos a ferramenta.</p>
-            <textarea id="feedback-text" placeholder="Escreva a sua mensagem aqui..." rows="5" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"></textarea>
-            <div class="mt-6 flex justify-end gap-3">
-                <button id="cancel-feedback" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Cancelar</button>
-                <button id="save-feedback" class="py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg">Enviar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-20 lg:bottom-5 right-5 bg-emerald-500 text-white py-2 px-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50"></div>
 
@@ -358,7 +353,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -383,10 +378,9 @@
         const loginForm = document.getElementById('login-form');
         const registerForm = document.getElementById('register-form');
         const authErrorEl = document.getElementById('auth-error');
-        const feedbackBtn = document.getElementById('feedback-btn');
         
         let userId = null;
-        let outlinesUnsubscribe, engagementsUnsubscribe, fastingUnsubscribe;
+        let outlinesUnsubscribe, engagementsUnsubscribe, fastingUnsubscribe, publicSermonsUnsubscribe, readingPlanUnsubscribe;
 
         // --- Auth State Logic ---
         onAuthStateChanged(auth, user => {
@@ -396,7 +390,6 @@
                 authContainer.classList.add('hidden');
                 appContainer.classList.remove('hidden');
                 appContainer.classList.add('flex');
-                feedbackBtn.classList.remove('hidden');
                 
                 initializeAppLogic();
             } else {
@@ -404,11 +397,12 @@
                 authContainer.classList.remove('hidden');
                 appContainer.classList.add('hidden');
                 appContainer.classList.remove('flex');
-                feedbackBtn.classList.add('hidden');
                 
                 if (outlinesUnsubscribe) outlinesUnsubscribe();
                 if (engagementsUnsubscribe) engagementsUnsubscribe();
                 if (fastingUnsubscribe) fastingUnsubscribe();
+                if (publicSermonsUnsubscribe) publicSermonsUnsubscribe();
+                if (readingPlanUnsubscribe) readingPlanUnsubscribe();
             }
         });
 
@@ -501,13 +495,14 @@
         function initializeAppLogic() {
             let outlinesCol, engagementsCol, fastingCol;
             let currentDate = new Date();
-            let outlines = [], engagements = [], fastingSchedules = [];
+            let outlines = [], publicSermons = [], engagements = [], fastingSchedules = [], readingPlan = null;
             let currentEditingOutlineId = null, currentSelectedDate = null, currentEditingEngagementId = null;
 
             const BIBLE_BOOKS = [
                 "Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio", "Josué", "Juízes", "Rute", "1 Samuel", "2 Samuel", "1 Reis", "2 Reis", "1 Crônicas", "2 Crônicas", "Esdras", "Neemias", "Ester", "Jó", "Salmos", "Provérbios", "Eclesiastes", "Cânticos", "Isaías", "Jeremias", "Lamentações", "Ezequiel", "Daniel", "Oséias", "Joel", "Amós", "Obadias", "Jonas", "Miquéias", "Naum", "Habacuque", "Sofonias", "Ageu", "Zacarias", "Malaquias",
                 "Mateus", "Marcos", "Lucas", "João", "Atos", "Romanos", "1 Coríntios", "2 Coríntios", "Gálatas", "Efésios", "Filipenses", "Colossenses", "1 Tessalonicenses", "2 Tessalonicenses", "1 Timóteo", "2 Timóteo", "Tito", "Filemom", "Hebreus", "Tiago", "1 Pedro", "2 Pedro", "1 João", "2 João", "3 João", "Judas", "Apocalipse"
             ];
+             const BIBLE_CHAPTER_COUNT = { "Gênesis": 50, "Êxodo": 40, "Levítico": 27, "Números": 36, "Deuteronômio": 34, "Josué": 24, "Juízes": 21, "Rute": 4, "1 Samuel": 31, "2 Samuel": 24, "1 Reis": 22, "2 Reis": 25, "1 Crônicas": 29, "2 Crônicas": 36, "Esdras": 10, "Neemias": 13, "Ester": 10, "Jó": 42, "Salmos": 150, "Provérbios": 31, "Eclesiastes": 12, "Cânticos": 8, "Isaías": 66, "Jeremias": 52, "Lamentações": 5, "Ezequiel": 48, "Daniel": 12, "Oséias": 14, "Joel": 3, "Amós": 9, "Obadias": 1, "Jonas": 4, "Miquéias": 7, "Naum": 3, "Habacuque": 3, "Sofonias": 3, "Ageu": 2, "Zacarias": 14, "Malaquias": 4, "Mateus": 28, "Marcos": 16, "Lucas": 24, "João": 21, "Atos": 28, "Romanos": 16, "1 Coríntios": 16, "2 Coríntios": 13, "Gálatas": 6, "Efésios": 6, "Filipenses": 4, "Colossenses": 4, "1 Tessalonicenses": 5, "2 Tessalonicenses": 3, "1 Timóteo": 6, "2 Timóteo": 4, "Tito": 3, "Filemom": 1, "Hebreus": 13, "Tiago": 5, "1 Pedro": 5, "2 Pedro": 3, "1 João": 5, "2 João": 1, "3 João": 1, "Judas": 1, "Apocalipse": 22 };
             
             const monthYearEl = document.getElementById('month-year');
             const calendarGridEl = document.getElementById('calendar-grid');
@@ -516,7 +511,8 @@
             const outlineContentEl = document.getElementById('outline-content');
             const outlineNotesEl = document.getElementById('outline-notes');
             const bibleBookSelectEl = document.getElementById('bible-book-select');
-            const archiveListEl = document.getElementById('archive-list');
+            const myOutlinesListEl = document.getElementById('my-outlines-list');
+            const publicLibraryListEl = document.getElementById('public-library-list');
             const modalOutlineSelectEl = document.getElementById('modal-outline-select');
             const engagementsListEl = document.getElementById('engagements-list');
             const editorTitleEl = document.getElementById('editor-title');
@@ -540,10 +536,7 @@
             const presentationModalEl = document.getElementById('presentation-modal');
             const presentationTitleEl = document.getElementById('presentation-title');
             const presentationContentEl = document.getElementById('presentation-content');
-            const feedbackModalEl = document.getElementById('feedback-modal');
-            const feedbackTextEl = document.getElementById('feedback-text');
-            const cancelFeedbackBtn = document.getElementById('cancel-feedback');
-            const saveFeedbackBtn = document.getElementById('save-feedback');
+            const readingPlanContainerEl = document.getElementById('reading-plan-container');
             const mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
             const mainPanels = document.querySelectorAll('.main-panel');
             
@@ -586,36 +579,45 @@
                 }
             };
 
-            const renderOutlines = () => {
-                archiveListEl.innerHTML = '';
+            const renderMyOutlines = () => {
+                myOutlinesListEl.innerHTML = '';
                 modalOutlineSelectEl.innerHTML = '<option value="">Nenhum (somente agendar)</option>';
                 const groupedOutlines = BIBLE_BOOKS.reduce((acc, book) => {
                     const bookOutlines = outlines.filter(o => o.book === book);
                     if (bookOutlines.length > 0) acc[book] = bookOutlines;
                     return acc;
                 }, {});
+
                 if (outlines.length === 0) {
-                    archiveListEl.innerHTML = '<p class="text-gray-400 text-sm">Nenhum esboço salvo ainda.</p>';
-                }
-                for (const book in groupedOutlines) {
-                    const bookSection = document.createElement('div');
-                    bookSection.innerHTML = `<h3 class="text-lg font-semibold text-emerald-400">${book}</h3>`;
-                    const list = document.createElement('ul');
-                    list.className = 'ml-4 space-y-1';
-                    groupedOutlines[book].forEach(outline => {
-                        const li = document.createElement('li');
-                        li.className = 'text-gray-300 hover:text-white cursor-pointer flex justify-between items-center group';
-                        li.innerHTML = `<span><i class="fas fa-file-alt mr-2 text-gray-500"></i>${outline.title}</span><button data-id="${outline.id}" class="delete-outline-btn text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-trash-alt"></i></button>`;
-                        li.addEventListener('click', (e) => {
-                            if (e.target.closest('.delete-outline-btn')) return;
-                            loadOutlineIntoEditor(outline.id)
+                    myOutlinesListEl.innerHTML = '<p class="text-gray-400 text-sm">Nenhum esboço salvo ainda.</p>';
+                } else {
+                    for (const book in groupedOutlines) {
+                        const bookSection = document.createElement('div');
+                        bookSection.innerHTML = `<h4 class="text-lg font-semibold text-emerald-400">${book}</h4>`;
+                        const list = document.createElement('ul');
+                        list.className = 'ml-4 space-y-1';
+                        groupedOutlines[book].forEach(outline => {
+                            const li = document.createElement('li');
+                            li.className = 'text-gray-300 hover:text-white cursor-pointer flex justify-between items-center group';
+                            li.innerHTML = `
+                                <span><i class="fas fa-file-alt mr-2 text-gray-500"></i>${outline.title}</span>
+                                <span class="flex items-center">
+                                    <button data-id="${outline.id}" class="publish-outline-btn text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity mr-3" title="Publicar na Biblioteca"><i class="fas fa-globe"></i></button>
+                                    <button data-id="${outline.id}" class="delete-outline-btn text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-trash-alt"></i></button>
+                                </span>`;
+                            li.addEventListener('click', (e) => {
+                                if (e.target.closest('button')) return;
+                                loadOutlineIntoEditor(outline.id);
+                            });
+                            list.appendChild(li);
                         });
-                        list.appendChild(li);
-                    });
-                    bookSection.appendChild(list);
-                    archiveListEl.appendChild(bookSection);
+                        bookSection.appendChild(list);
+                        myOutlinesListEl.appendChild(bookSection);
+                    }
                 }
+                
                 outlines.forEach(outline => modalOutlineSelectEl.add(new Option(outline.title, outline.id)));
+                
                 document.querySelectorAll('.delete-outline-btn').forEach(btn => {
                    btn.addEventListener('click', async (e) => {
                        const id = e.currentTarget.dataset.id;
@@ -624,8 +626,46 @@
                             showToast('Esboço excluído.');
                             clearEditor();
                        }
-                   }) 
+                   });
                 });
+                document.querySelectorAll('.publish-outline-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const id = e.currentTarget.dataset.id;
+                        publishOutline(id);
+                    });
+                });
+            };
+
+            const renderPublicLibrary = () => {
+                publicLibraryListEl.innerHTML = '';
+                if (publicSermons.length === 0) {
+                    publicLibraryListEl.innerHTML = '<p class="text-gray-400 text-sm">A biblioteca ainda está vazia.</p>';
+                } else {
+                    const groupedSermons = BIBLE_BOOKS.reduce((acc, book) => {
+                        const bookSermons = publicSermons.filter(s => s.book === book);
+                        if (bookSermons.length > 0) acc[book] = bookSermons;
+                        return acc;
+                    }, {});
+
+                    for (const book in groupedSermons) {
+                        const bookSection = document.createElement('div');
+                        bookSection.innerHTML = `<h4 class="text-lg font-semibold text-sky-400">${book}</h4>`;
+                        const list = document.createElement('ul');
+                        list.className = 'ml-4 space-y-2';
+                        groupedSermons[book].forEach(sermon => {
+                            const li = document.createElement('li');
+                            li.className = 'text-gray-300 hover:text-white cursor-pointer';
+                            li.innerHTML = `
+                                <p class="font-medium"><i class="fas fa-book-open-reader mr-2 text-gray-500"></i>${sermon.title}</p>
+                                <p class="text-xs text-gray-400 ml-6">por: ${sermon.authorEmail}</p>
+                            `;
+                            li.addEventListener('click', () => loadOutlineIntoEditor(sermon.id, true));
+                            list.appendChild(li);
+                        });
+                        bookSection.appendChild(list);
+                        publicLibraryListEl.appendChild(bookSection);
+                    }
+                }
             };
         
             const renderEngagementsList = () => {
@@ -681,6 +721,33 @@
                     verseDisplayEl.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Consulte um versículo...</p>';
                 }
             };
+            
+            const renderReadingPlan = () => {
+                readingPlanContainerEl.innerHTML = '';
+                if (!readingPlan || readingPlan.days.length === 0) {
+                    readingPlanContainerEl.innerHTML = '<button id="generate-plan-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">Gerar Plano de Leitura Anual</button>';
+                    document.getElementById('generate-plan-btn').onclick = generateReadingPlan;
+                } else {
+                    const list = document.createElement('div');
+                    list.className = 'space-y-2';
+                    readingPlan.days.forEach(day => {
+                        const dayEl = document.createElement('div');
+                        dayEl.className = 'reading-plan-day flex items-center p-2 rounded-lg hover:bg-gray-700';
+                        dayEl.innerHTML = `
+                            <input type="checkbox" id="day-${day.day}" data-day="${day.day}" class="w-4 h-4 text-emerald-600 bg-gray-700 border-gray-600 rounded focus:ring-emerald-500" ${day.completed ? 'checked' : ''}>
+                            <label for="day-${day.day}" class="ml-3 text-sm font-medium text-gray-300">Dia ${day.day}: ${day.reading}</label>
+                        `;
+                        list.appendChild(dayEl);
+                    });
+                    readingPlanContainerEl.appendChild(list);
+
+                    list.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.addEventListener('change', (e) => {
+                            updateReadingProgress(parseInt(e.target.dataset.day), e.target.checked);
+                        });
+                    });
+                }
+            };
 
             const checkFastingReminders = () => {
                 const today = new Date();
@@ -715,7 +782,7 @@
                     const body = schedules.length > 1 
                         ? `Lembre-se dos seus ${schedules.length} propósitos de jejum para hoje.`
                         : `Lembre-se do seu propósito: ${schedules[0].title}`;
-                    new Notification(title, { body, icon: './favicon.ico' });
+                    new Notification(title, { body });
                 };
 
                 if (Notification.permission === "granted") {
@@ -730,12 +797,16 @@
             };
             
             const setupFirebaseListeners = () => {
-                 outlinesCol = collection(db, `artifacts/${appId}/users/${userId}/outlines`);
-                 engagementsCol = collection(db, `artifacts/${appId}/users/${userId}/engagements`);
-                 fastingCol = collection(db, `artifacts/${appId}/users/${userId}/fastingSchedules`);
+                outlinesCol = collection(db, `artifacts/${appId}/users/${userId}/outlines`);
+                engagementsCol = collection(db, `artifacts/${appId}/users/${userId}/engagements`);
+                fastingCol = collection(db, `artifacts/${appId}/users/${userId}/fastingSchedules`);
+                const publicSermonsCol = collection(db, `artifacts/${appId}/public/sermons`);
+                const readingPlanDocRef = doc(db, `artifacts/${appId}/users/${userId}/readingPlan`, 'main');
+
+
                 outlinesUnsubscribe = onSnapshot(query(outlinesCol), (snapshot) => {
                     outlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.title.localeCompare(b.title));
-                    renderOutlines();
+                    renderMyOutlines();
                     renderEngagementsList();
                 });
                 engagementsUnsubscribe = onSnapshot(query(engagementsCol), (snapshot) => {
@@ -746,6 +817,18 @@
                 fastingUnsubscribe = onSnapshot(query(fastingCol), (snapshot) => {
                     fastingSchedules = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderFastingSchedules();
+                });
+                publicSermonsUnsubscribe = onSnapshot(query(publicSermonsCol), (snapshot) => {
+                    publicSermons = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.title.localeCompare(b.title));
+                    renderPublicLibrary();
+                });
+                readingPlanUnsubscribe = onSnapshot(readingPlanDocRef, (doc) => {
+                    if (doc.exists()) {
+                        readingPlan = doc.data();
+                    } else {
+                        readingPlan = null;
+                    }
+                    renderReadingPlan();
                 });
             };
             
@@ -774,15 +857,47 @@
                 clearEditor();
             };
 
-            const loadOutlineIntoEditor = (id) => {
-                const outline = outlines.find(o => o.id === id);
+            const publishOutline = async (outlineId) => {
+                if (!confirm("Tem a certeza que deseja publicar este esboço na Biblioteca Pública? Ficará visível para todos os utilizadores.")) return;
+                
+                const outline = outlines.find(o => o.id === outlineId);
                 if (outline) {
-                    currentEditingOutlineId = id;
+                    const publicData = {
+                        title: outline.title,
+                        content: outline.content,
+                        book: outline.book,
+                        authorEmail: auth.currentUser.email,
+                        originalAuthorId: auth.currentUser.uid,
+                        createdAt: serverTimestamp()
+                    };
+                    const publicSermonsCol = collection(db, `artifacts/${appId}/public/sermons`);
+                    try {
+                        await addDoc(publicSermonsCol, publicData);
+                        showToast("Esboço publicado com sucesso!");
+                    } catch (error) {
+                        console.error("Error publishing outline:", error);
+                        showToast("Erro ao publicar o esboço.");
+                    }
+                }
+            };
+
+            const loadOutlineIntoEditor = (id, isPublic = false) => {
+                const outlineSource = isPublic ? publicSermons : outlines;
+                const outline = outlineSource.find(o => o.id === id);
+                
+                if (outline) {
                     outlineTitleEl.value = outline.title;
                     outlineContentEl.innerHTML = outline.content;
                     outlineNotesEl.value = outline.notes || '';
                     bibleBookSelectEl.value = outline.book;
-                    editorTitleEl.textContent = 'Editando Esboço';
+                    
+                    if (isPublic) {
+                        currentEditingOutlineId = null; // Clear editing ID to force a new save
+                        editorTitleEl.textContent = 'Adaptando Esboço da Biblioteca';
+                    } else {
+                        currentEditingOutlineId = id;
+                        editorTitleEl.textContent = 'Editando Esboço';
+                    }
                 }
                  if(window.innerWidth < 1024) { // If on mobile, switch to editor view
                     switchMobileView('center-panel');
@@ -920,6 +1035,53 @@
                 }
             };
 
+            const generateReadingPlan = async () => {
+                const button = document.getElementById('generate-plan-btn');
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>A gerar...';
+
+                let planDays = [];
+                let dayCounter = 1;
+                for (const book of BIBLE_BOOKS) {
+                    const totalChapters = BIBLE_CHAPTER_COUNT[book];
+                    for (let i = 1; i <= totalChapters; i += 3) {
+                         if (dayCounter > 365) break;
+                        let endChapter = i + 2;
+                        if (endChapter > totalChapters) endChapter = totalChapters;
+                        
+                        let reading = `${book} ${i}`;
+                        if (i !== endChapter) {
+                            reading += `-${endChapter}`;
+                        }
+                        
+                        planDays.push({ day: dayCounter, reading, completed: false });
+                        dayCounter++;
+                    }
+                    if (dayCounter > 365) break;
+                }
+
+                const planData = { days: planDays };
+                const readingPlanDocRef = doc(db, `artifacts/${appId}/users/${userId}/readingPlan`, 'main');
+                try {
+                    await setDoc(readingPlanDocRef, planData);
+                    showToast("Plano de leitura gerado com sucesso!");
+                } catch(error) {
+                    console.error("Error generating reading plan:", error);
+                    showToast("Erro ao gerar o plano.");
+                    button.disabled = false;
+                    button.textContent = "Gerar Plano de Leitura Anual";
+                }
+            };
+            
+            const updateReadingProgress = async (day, isCompleted) => {
+                const dayIndex = readingPlan.days.findIndex(d => d.day === day);
+                if (dayIndex !== -1) {
+                    readingPlan.days[dayIndex].completed = isCompleted;
+                    const readingPlanDocRef = doc(db, `artifacts/${appId}/users/${userId}/readingPlan`, 'main');
+                    await setDoc(readingPlanDocRef, readingPlan); // Save the whole plan back
+                }
+            };
+
             const handleGenerateSuggestion = async () => {
                 const theme = suggestionThemeInputEl.value.trim();
                 if (!theme) {
@@ -1002,43 +1164,6 @@
                 presentationModalEl.classList.add('hidden');
                 presentationModalEl.classList.remove('flex');
             };
-
-            const openFeedbackModal = () => {
-                feedbackModalEl.classList.remove('hidden');
-                feedbackModalEl.classList.add('flex');
-                feedbackTextEl.focus();
-            };
-
-            const closeFeedbackModal = () => {
-                feedbackModalEl.classList.add('hidden');
-                feedbackModalEl.classList.remove('flex');
-                feedbackTextEl.value = '';
-            };
-
-            const saveFeedback = async () => {
-                const text = feedbackTextEl.value.trim();
-                if (!text) {
-                    showToast('Por favor, escreva a sua mensagem.');
-                    return;
-                }
-
-                const feedbackData = {
-                    text,
-                    userId: auth.currentUser.uid,
-                    userEmail: auth.currentUser.email,
-                    createdAt: new Date()
-                };
-                
-                const feedbackCol = collection(db, `artifacts/${appId}/public/feedback`);
-                try {
-                    await addDoc(feedbackCol, feedbackData);
-                    showToast('Feedback enviado com sucesso. Obrigado!');
-                    closeFeedbackModal();
-                } catch (error) {
-                    console.error("Error saving feedback:", error);
-                    showToast('Erro ao enviar feedback. Tente novamente.');
-                }
-            };
             
             const switchMobileView = (viewId) => {
                 mainPanels.forEach(panel => {
@@ -1099,10 +1224,6 @@
             
             document.getElementById('close-presentation-btn').onclick = closePresentationMode;
             
-            feedbackBtn.onclick = openFeedbackModal;
-            cancelFeedbackBtn.onclick = closeFeedbackModal;
-            saveFeedbackBtn.onclick = saveFeedback;
-
             mobileNavBtns.forEach(btn => {
                 btn.addEventListener('click', () => switchMobileView(btn.dataset.view));
             });
