@@ -67,13 +67,16 @@
         [contenteditable]:focus {
             outline: none;
         }
+        .mobile-nav-btn.active {
+            color: #34d399; /* emerald-400 */
+        }
     </style>
 </head>
 <body class="antialiased">
 
     <!-- Auth Container (Login/Register) -->
     <div id="auth-container" class="flex items-center justify-center h-screen">
-        <div class="w-full max-w-md">
+        <div class="w-full max-w-md p-4">
             <div class="bg-gray-800 rounded-lg shadow-xl p-8">
                 <h2 id="auth-title" class="text-2xl font-bold text-center text-white mb-6">Login</h2>
                 
@@ -132,7 +135,7 @@
 
 
     <!-- Main App Container -->
-    <div id="app-container" class="hidden h-screen w-full p-4 gap-4">
+    <div id="app-container" class="hidden h-screen w-full lg:p-4 pb-20 lg:pb-4">
 
         <!-- Top Header for User Info and Logout -->
         <header class="absolute top-0 right-0 p-4 flex items-center gap-4 text-sm z-10">
@@ -143,9 +146,9 @@
         </header>
 
         <!-- Main Content Layout -->
-        <div class="flex h-full w-full pt-12 gap-4">
+        <div class="flex flex-col lg:flex-row h-full w-full lg:pt-12 lg:gap-4 p-4 lg:p-0">
             <!-- Left Panel: Calendar and Engagements -->
-            <aside class="w-1/4 flex flex-col gap-4">
+            <aside id="left-panel" class="main-panel w-full lg:w-1/4 flex flex-col gap-4">
                 <!-- Calendar Card -->
                 <div id="calendar-card" class="bg-gray-800 p-4 rounded-lg shadow-lg flex-grow flex flex-col">
                     <div class="flex items-center justify-between mb-4">
@@ -161,7 +164,7 @@
                     </div>
                 </div>
                 <!-- Engagements List -->
-                <div class="bg-gray-800 p-4 rounded-lg shadow-lg h-1/3 overflow-y-auto">
+                <div class="bg-gray-800 p-4 rounded-lg shadow-lg lg:h-1/3 overflow-y-auto">
                     <h3 class="text-lg font-semibold text-white mb-2 border-b border-gray-700 pb-2">Próximas Ministrações</h3>
                     <div id="engagements-list">
                         <p class="text-gray-400 text-sm">Nenhuma ministração agendada.</p>
@@ -170,21 +173,21 @@
             </aside>
 
             <!-- Center Panel: Outline Editor -->
-            <main class="w-1/2 bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">
+            <main id="center-panel" class="main-panel w-full lg:w-1/2 bg-gray-800 rounded-lg shadow-lg p-6 flex-col hidden lg:flex">
                 <div class="flex items-center justify-between mb-4">
                     <h2 id="editor-title" class="text-2xl font-bold text-white">Novo Esboço</h2>
                     <div class="flex gap-2">
-                        <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> Gerar Ideia</button>
-                        <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> Salvar</button>
-                        <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> Limpar</button>
+                        <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> <span class="hidden md:inline">Gerar Ideia</span></button>
+                        <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> <span class="hidden md:inline">Salvar</span></button>
+                        <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> <span class="hidden md:inline">Limpar</span></button>
                     </div>
                 </div>
                 
                 <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 
-                <div class="flex-grow flex gap-4 overflow-hidden">
-                    <div class="w-2/3 flex flex-col">
-                        <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700">
+                <div class="flex-grow flex flex-col md:flex-row gap-4 overflow-hidden">
+                    <div class="w-full md:w-2/3 flex flex-col">
+                        <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap">
                             <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
                             <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
                             <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
@@ -205,7 +208,7 @@
                         </div>
                         <div id="outline-content" contenteditable="true" class="w-full h-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
                     </div>
-                    <div class="w-1/3 flex flex-col">
+                    <div class="w-full md:w-1/3 flex flex-col">
                         <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300">Notas e Ilustrações</label>
                         <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." class="w-full h-full flex-grow bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
                     </div>
@@ -218,7 +221,7 @@
             </main>
 
             <!-- Right Panel: Tools -->
-            <aside class="w-1/4 bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col">
+            <aside id="right-panel" class="main-panel w-full lg:w-1/4 bg-gray-800 rounded-lg shadow-lg p-6 flex-col hidden lg:flex">
                  <div class="border-b border-gray-700 mb-4">
                     <nav id="right-tabs" class="flex gap-4 -mb-px">
                         <button data-tab="archive" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-archive mr-2"></i>Arquivo</button>
@@ -263,9 +266,25 @@
                 </div>
             </aside>
         </div>
+        
+        <!-- Bottom Navigation (Mobile) -->
+        <nav id="bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around p-2 z-30">
+            <button data-view="left-panel" class="mobile-nav-btn flex flex-col items-center text-emerald-400 w-1/3">
+                <i class="fas fa-calendar-alt text-xl"></i>
+                <span class="text-xs mt-1">Agenda</span>
+            </button>
+            <button data-view="center-panel" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/3">
+                <i class="fas fa-pencil-alt text-xl"></i>
+                <span class="text-xs mt-1">Esboço</span>
+            </button>
+            <button data-view="right-panel" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/3">
+                <i class="fas fa-tools text-xl"></i>
+                <span class="text-xs mt-1">Ferramentas</span>
+            </button>
+        </nav>
     </div>
     
-    <button id="feedback-btn" class="fixed bottom-5 left-5 bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-4 rounded-full shadow-lg z-30 transition-transform hover:scale-110 hidden" title="Enviar Feedback">
+    <button id="feedback-btn" class="fixed bottom-20 lg:bottom-5 left-5 bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-4 rounded-full shadow-lg z-30 transition-transform hover:scale-110 hidden" title="Enviar Feedback">
         <i class="fas fa-comment-dots"></i>
     </button>
 
@@ -307,10 +326,10 @@
     </div>
 
     <!-- Presentation Mode Modal -->
-    <div id="presentation-modal" class="fixed inset-0 bg-gray-900 p-8 flex-col hidden z-50">
+    <div id="presentation-modal" class="fixed inset-0 bg-gray-900 p-4 md:p-8 flex-col hidden z-50">
         <div class="w-full max-w-4xl mx-auto flex-grow flex flex-col h-full">
-            <h2 id="presentation-title" class="text-4xl font-bold text-emerald-400 mb-6 text-center flex-shrink-0"></h2>
-            <div id="presentation-content" class="text-lg text-gray-200 leading-relaxed flex-grow overflow-y-auto p-6 bg-gray-800 rounded-lg">
+            <h2 id="presentation-title" class="text-2xl md:text-4xl font-bold text-emerald-400 mb-6 text-center flex-shrink-0"></h2>
+            <div id="presentation-content" class="text-base md:text-lg text-gray-200 leading-relaxed flex-grow overflow-y-auto p-4 md:p-6 bg-gray-800 rounded-lg">
                 <!-- Outline content goes here -->
             </div>
              <div class="text-center mt-6 flex-shrink-0">
@@ -333,7 +352,7 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-emerald-500 text-white py-2 px-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50"></div>
+    <div id="toast" class="fixed bottom-20 lg:bottom-5 right-5 bg-emerald-500 text-white py-2 px-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50"></div>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -525,6 +544,8 @@
             const feedbackTextEl = document.getElementById('feedback-text');
             const cancelFeedbackBtn = document.getElementById('cancel-feedback');
             const saveFeedbackBtn = document.getElementById('save-feedback');
+            const mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
+            const mainPanels = document.querySelectorAll('.main-panel');
             
             const showToast = (message) => {
                 const toast = document.getElementById('toast');
@@ -557,7 +578,7 @@
                     const isToday = new Date().toDateString() === new Date(year, month, day).toDateString();
                     const dayEngagements = engagements.filter(e => e.date === dateStr);
                     const dayEl = document.createElement('div');
-                    dayEl.className = `calendar-day cursor-pointer flex flex-col items-center justify-center h-16 rounded-lg border border-transparent ${isToday ? 'bg-emerald-500 text-white font-bold' : 'hover:border-emerald-400'}`;
+                    dayEl.className = `calendar-day cursor-pointer flex flex-col items-center justify-center h-12 md:h-16 rounded-lg border border-transparent ${isToday ? 'bg-emerald-500 text-white font-bold' : 'hover:border-emerald-400'}`;
                     dayEl.dataset.date = dateStr;
                     dayEl.innerHTML = `<span>${day}</span><div class="flex gap-1 mt-1">${dayEngagements.map(() => `<div class="event-dot"></div>`).join('')}</div>`;
                     dayEl.addEventListener('click', () => openEngagementModal(dateStr));
@@ -714,6 +735,9 @@
                     outlineNotesEl.value = outline.notes || '';
                     bibleBookSelectEl.value = outline.book;
                     editorTitleEl.textContent = 'Editando Esboço';
+                }
+                 if(window.innerWidth < 1024) { // If on mobile, switch to editor view
+                    switchMobileView('center-panel');
                 }
             };
 
@@ -953,6 +977,27 @@
                     showToast('Erro ao enviar feedback. Tente novamente.');
                 }
             };
+            
+            const switchMobileView = (viewId) => {
+                mainPanels.forEach(panel => {
+                    if (panel.id === viewId) {
+                        panel.classList.remove('hidden');
+                        panel.classList.add('flex');
+                    } else {
+                        panel.classList.add('hidden');
+                        panel.classList.remove('flex');
+                    }
+                });
+                mobileNavBtns.forEach(btn => {
+                    if (btn.dataset.view === viewId) {
+                        btn.classList.add('active', 'text-emerald-400');
+                        btn.classList.remove('text-gray-400');
+                    } else {
+                        btn.classList.remove('active', 'text-emerald-400');
+                        btn.classList.add('text-gray-400');
+                    }
+                });
+            };
 
             // Initial calls
             bibleBookSelectEl.innerHTML = '';
@@ -996,10 +1041,17 @@
             cancelFeedbackBtn.onclick = closeFeedbackModal;
             saveFeedbackBtn.onclick = saveFeedback;
 
+            mobileNavBtns.forEach(btn => {
+                btn.addEventListener('click', () => switchMobileView(btn.dataset.view));
+            });
+
             setupFirebaseListeners();
             switchTab('archive');
             renderCalendar();
             renderVerseDisplayPlaceholder();
+            if (window.innerWidth < 1024) {
+                switchMobileView('left-panel'); // Set initial view for mobile
+            }
         }
 
     </script>
