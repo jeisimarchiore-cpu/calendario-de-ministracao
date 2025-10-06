@@ -657,27 +657,75 @@
                 const sortedSchedules = [...fastingSchedules].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
                 if (sortedSchedules.length === 0) {
                     fastingListEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Nenhum propósito cadastrado.</p>';
-                    return;
-                }
-                fastingListEl.innerHTML = sortedSchedules.map(item => {
-                    const startDate = new Date(`${item.startDate}T00:00:00-03:00`).toLocaleDateString('pt-BR');
-                    const endDate = new Date(`${item.endDate}T00:00:00-03:00`).toLocaleDateString('pt-BR');
-                    return `<div class="bg-gray-800 p-3 rounded-lg group"><div class="flex justify-between items-start"><div><p class="font-semibold text-white">${item.title}</p><p class="text-xs text-emerald-400">${startDate} até ${endDate}</p></div><button data-id="${item.id}" class="delete-fasting-btn text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-sm"><i class="fas fa-trash"></i></button></div><p class="text-sm text-gray-300 mt-2">${item.notes || ''}</p></div>`;
-                }).join('');
-                document.querySelectorAll('.delete-fasting-btn').forEach(btn => {
-                    btn.addEventListener('click', async e => {
-                        const id = e.currentTarget.dataset.id;
-                        if (confirm('Deseja excluir este propósito?')) {
-                            await deleteDoc(doc(fastingCol, id));
-                            showToast('Propósito excluído.');
-                        }
+                } else {
+                    fastingListEl.innerHTML = sortedSchedules.map(item => {
+                        const startDate = new Date(`${item.startDate}T00:00:00-03:00`).toLocaleDateString('pt-BR');
+                        const endDate = new Date(`${item.endDate}T00:00:00-03:00`).toLocaleDateString('pt-BR');
+                        return `<div class="bg-gray-800 p-3 rounded-lg group"><div class="flex justify-between items-start"><div><p class="font-semibold text-white">${item.title}</p><p class="text-xs text-emerald-400">${startDate} até ${endDate}</p></div><button data-id="${item.id}" class="delete-fasting-btn text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-sm"><i class="fas fa-trash"></i></button></div><p class="text-sm text-gray-300 mt-2">${item.notes || ''}</p></div>`;
+                    }).join('');
+                    document.querySelectorAll('.delete-fasting-btn').forEach(btn => {
+                        btn.addEventListener('click', async e => {
+                            const id = e.currentTarget.dataset.id;
+                            if (confirm('Deseja excluir este propósito?')) {
+                                await deleteDoc(doc(fastingCol, id));
+                                showToast('Propósito excluído.');
+                            }
+                        });
                     });
-                });
+                }
+                checkFastingReminders();
             };
 
             const renderVerseDisplayPlaceholder = () => {
                 if (verseDisplayEl.children.length === 0) {
                     verseDisplayEl.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Consulte um versículo...</p>';
+                }
+            };
+
+            const checkFastingReminders = () => {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayStr = today.toISOString().split('T')[0];
+
+                const activeSchedules = fastingSchedules.filter(s => {
+                    const start = new Date(s.startDate);
+                    const end = new Date(s.endDate);
+                    start.setHours(0,0,0,0);
+                    end.setHours(0,0,0,0);
+                    return today >= start && today <= end;
+                });
+
+                if (activeSchedules.length > 0) {
+                    const reminderKey = `fasting_reminder_${todayStr}`;
+                    if (!localStorage.getItem(reminderKey)) {
+                        showNotification(activeSchedules);
+                        localStorage.setItem(reminderKey, 'true');
+                    }
+                }
+            };
+
+            const showNotification = (schedules) => {
+                if (!("Notification" in window)) {
+                    console.log("Browser does not support desktop notification");
+                    return;
+                }
+
+                const show = () => {
+                    const title = "Lembrete de Jejum e Oração";
+                    const body = schedules.length > 1 
+                        ? `Lembre-se dos seus ${schedules.length} propósitos de jejum para hoje.`
+                        : `Lembre-se do seu propósito: ${schedules[0].title}`;
+                    new Notification(title, { body, icon: './favicon.ico' });
+                };
+
+                if (Notification.permission === "granted") {
+                    show();
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            show();
+                        }
+                    });
                 }
             };
             
