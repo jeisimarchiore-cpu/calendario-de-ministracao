@@ -61,7 +61,7 @@
             border-bottom-color: #34d399; /* border-emerald-400 */
             color: #f3f4f6; /* text-gray-200 */
         }
-        .editor-toolbar button {
+        .editor-toolbar button, .editor-toolbar select {
             transition: background-color 0.2s;
         }
         [contenteditable]:focus {
@@ -182,15 +182,28 @@
                 
                 <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 
-                <div class="flex-grow flex gap-4 overflow-hidden">
+                <div class="flex-grow flex gap-4">
                     <div class="w-2/3 flex flex-col">
                         <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700">
                             <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
                             <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
                             <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
                             <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
+                            <div class="w-px h-5 bg-gray-700 mx-1"></div>
+                            <div class="relative flex items-center" title="Cor da Fonte">
+                                <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
+                                <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
+                            </div>
+                            <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
+                                <option value="3">Normal</option>
+                                <option value="1">Mínimo</option>
+                                <option value="2">Pequeno</option>
+                                <option value="4">Médio</option>
+                                <option value="5">Grande</option>
+                                <option value="7">Enorme</option>
+                            </select>
                         </div>
-                        <div id="outline-content" contenteditable="true" class="w-full h-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none"></div>
+                        <div id="outline-content" contenteditable="true" class="w-full h-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
                     </div>
                     <div class="w-1/3 flex flex-col">
                         <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300">Notas e Ilustrações</label>
@@ -484,8 +497,8 @@
                 }, 3000);
             };
 
-            const formatText = (command) => {
-                document.execCommand(command, false, null);
+            const formatText = (command, value = null) => {
+                document.execCommand(command, false, value);
                 outlineContentEl.focus();
             };
 
@@ -863,10 +876,14 @@
                 if(tabBtn) switchTab(tabBtn.dataset.tab);
             };
             document.getElementById('save-fasting-btn').onclick = saveFastingSchedule;
+
             document.getElementById('format-bold').onclick = () => formatText('bold');
             document.getElementById('format-italic').onclick = () => formatText('italic');
             document.getElementById('format-underline').onclick = () => formatText('underline');
             document.getElementById('format-list').onclick = () => formatText('insertOrderedList');
+            document.getElementById('font-color-picker').oninput = (e) => formatText('foreColor', e.target.value);
+            document.getElementById('font-size-select').onchange = (e) => formatText('fontSize', e.target.value);
+
             document.getElementById('suggestion-btn').onclick = openSuggestionModal;
             document.getElementById('cancel-suggestion').onclick = closeSuggestionModal;
             generateSuggestionBtn.onclick = handleGenerateSuggestion;
