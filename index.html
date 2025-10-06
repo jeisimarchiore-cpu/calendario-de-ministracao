@@ -266,7 +266,7 @@
     </div>
 
     <!-- Modals -->
-    <div id="engagement-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden">
+    <div id="engagement-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
         <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-md">
             <h3 class="text-xl font-bold mb-4 text-white">Agendar Ministração</h3>
             <p class="mb-4 text-gray-300">Data: <span id="modal-date" class="font-semibold"></span></p>
@@ -286,7 +286,7 @@
         </div>
     </div>
     
-    <div id="suggestion-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden">
+    <div id="suggestion-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
         <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
             <h3 class="text-xl font-bold mb-4 text-white">Assistente de Esboços (IA)</h3>
             <p class="text-sm text-gray-300 mb-4">Digite um tema, versículo ou palavra-chave para gerar uma sugestão de esboço.</p>
@@ -302,8 +302,21 @@
         </div>
     </div>
 
+    <!-- Presentation Mode Modal -->
+    <div id="presentation-modal" class="fixed inset-0 bg-gray-900 p-8 flex-col hidden z-50">
+        <div class="w-full max-w-4xl mx-auto flex-grow flex flex-col h-full">
+            <h2 id="presentation-title" class="text-4xl font-bold text-emerald-400 mb-6 text-center flex-shrink-0"></h2>
+            <div id="presentation-content" class="text-lg text-gray-200 leading-relaxed flex-grow overflow-y-auto p-6 bg-gray-800 rounded-lg">
+                <!-- Outline content goes here -->
+            </div>
+             <div class="text-center mt-6 flex-shrink-0">
+                <button id="close-presentation-btn" class="py-2 px-6 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-emerald-500 text-white py-2 px-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300"></div>
+    <div id="toast" class="fixed bottom-5 right-5 bg-emerald-500 text-white py-2 px-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50"></div>
 
     <!-- Firebase SDK -->
     <script type="module">
@@ -485,6 +498,9 @@
             const modalDateEl = document.getElementById('modal-date');
             const engagementTitleEl = document.getElementById('engagement-title');
             const deleteEngagementBtn = document.getElementById('delete-engagement');
+            const presentationModalEl = document.getElementById('presentation-modal');
+            const presentationTitleEl = document.getElementById('presentation-title');
+            const presentationContentEl = document.getElementById('presentation-content');
             
             const showToast = (message) => {
                 const toast = document.getElementById('toast');
@@ -577,10 +593,18 @@
                     const outline = outlines.find(o => o.id === e.outlineId);
                     const date = new Date(`${e.date}T00:00:00-03:00`);
                     const formattedDate = date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-                    return `<div class="p-2 rounded-lg hover:bg-gray-700 cursor-pointer" data-date="${e.date}"><p class="font-semibold text-white">${formattedDate} - ${e.title}</p><p class="text-sm text-gray-400">${outline ? outline.title : 'Sem esboço vinculado'}</p></div>`;
+                    return `<div class="p-2 rounded-lg hover:bg-gray-700 cursor-pointer" data-engagement-id="${e.id}"><p class="font-semibold text-white">${formattedDate} - ${e.title}</p><p class="text-sm text-gray-400">${outline ? outline.title : 'Sem esboço vinculado'}</p></div>`;
                 }).join('');
-                document.querySelectorAll('#engagements-list [data-date]').forEach(el => {
-                    el.addEventListener('click', (e) => openEngagementModal(e.currentTarget.dataset.date));
+                document.querySelectorAll('#engagements-list [data-engagement-id]').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        const engagementId = e.currentTarget.dataset.engagementId;
+                        const engagement = engagements.find(eng => eng.id === engagementId);
+                        if (engagement && engagement.outlineId) {
+                            openPresentationMode(engagement.outlineId);
+                        } else {
+                            showToast("Este agendamento não tem um esboço vinculado.");
+                        }
+                    });
                 });
             };
 
@@ -853,6 +877,21 @@
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
             };
+            
+            const openPresentationMode = (outlineId) => {
+                const outline = outlines.find(o => o.id === outlineId);
+                if (outline) {
+                    presentationTitleEl.textContent = outline.title;
+                    presentationContentEl.innerHTML = outline.content;
+                    presentationModalEl.classList.remove('hidden');
+                    presentationModalEl.classList.add('flex');
+                }
+            };
+            
+            const closePresentationMode = () => {
+                presentationModalEl.classList.add('hidden');
+                presentationModalEl.classList.remove('flex');
+            };
 
             // Initial calls
             bibleBookSelectEl.innerHTML = '';
@@ -889,6 +928,8 @@
             generateSuggestionBtn.onclick = handleGenerateSuggestion;
             useSuggestionBtn.onclick = useSuggestion;
             suggestionThemeInputEl.onkeypress = (e) => { if (e.key === 'Enter') handleGenerateSuggestion(); };
+            
+            document.getElementById('close-presentation-btn').onclick = closePresentationMode;
 
             setupFirebaseListeners();
             switchTab('archive');
