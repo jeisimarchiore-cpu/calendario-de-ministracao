@@ -3,128 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda de Ministrações</title>
+    <title>Secretária do Pregador</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts: Inter & Lora -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* Custom styles */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #111827; /* bg-gray-900 */
-            color: #f3f4f6; /* text-gray-200 */
+            background-color: #f9fafb; /* bg-gray-50 */
+            color: #1f2937; /* text-gray-800 */
         }
-        .calendar-grid {
-            grid-template-columns: repeat(7, minmax(0, 1fr));
+        h1, h2, h3, h4 {
+            font-family: 'Lora', serif;
         }
-        .calendar-day {
-            transition: all 0.2s ease-in-out;
+        .main-nav-btn.active, .mobile-nav-btn.active {
+            background-color: #e0e7ff; /* indigo-100 */
+            color: #312e81; /* indigo-900 */
         }
-        .calendar-day:hover {
-            background-color: #374151; /* bg-gray-700 */
-        }
-        .event-dot {
-            width: 6px;
-            height: 6px;
-            background-color: #34d399; /* bg-emerald-400 */
-            border-radius: 50%;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1f2937; /* bg-gray-800 */
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4b5563; /* bg-gray-600 */
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280; /* bg-gray-500 */
-        }
-        /* Glassmorphism effect for modals */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e5e7eb; }
+        ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
         .modal-glass {
-            background: rgba(31, 41, 55, 0.6); /* bg-gray-800 with opacity */
+            background: rgba(249, 250, 251, 0.6); /* bg-gray-50 with opacity */
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
-        /* Tab styling */
         .tab-btn.active {
-            border-bottom-color: #34d399; /* border-emerald-400 */
-            color: #f3f4f6; /* text-gray-200 */
+            border-bottom-color: #1e3a8a; /* indigo-800 */
+            color: #1e3a8a;
         }
-        .editor-toolbar button, .editor-toolbar select {
-            transition: background-color 0.2s;
-        }
-        [contenteditable]:focus {
-            outline: none;
-        }
-        .mobile-nav-btn.active {
-            color: #34d399; /* emerald-400 */
-        }
-        .reading-plan-day input:checked + label {
-            text-decoration: line-through;
-            color: #6b7280; /* text-gray-500 */
-        }
-        .progress-bar-fill {
-            transition: width 0.5s ease-in-out;
-        }
-        .main-nav-btn {
-            transition: background-color 0.2s;
-        }
-        .main-nav-btn.active {
-            background-color: #374151; /* bg-gray-700 */
+        [contenteditable]:focus { outline: none; }
+        .progress-bar-fill { transition: width 0.5s ease-in-out; }
+        .tag {
+            background-color: #e0e7ff;
+            color: #3730a3;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
         }
     </style>
 </head>
 <body class="antialiased overflow-hidden">
 
-    <!-- Auth Container (Login/Register) -->
-    <div id="auth-container" class="flex items-center justify-center h-screen">
+    <!-- Auth Container -->
+    <div id="auth-container" class="flex items-center justify-center h-screen bg-gray-100">
         <div class="w-full max-w-md p-4">
-            <div class="bg-gray-800 rounded-lg shadow-xl p-8">
-                <h2 id="auth-title" class="text-2xl font-bold text-center text-white mb-6">Login</h2>
+            <div class="bg-white rounded-lg shadow-xl p-8">
+                <h2 id="auth-title" class="text-3xl font-bold text-center text-gray-800 mb-6">Bem-vindo</h2>
                 
                 <form id="login-form">
                     <div class="mb-4">
-                        <label for="login-email" class="block text-gray-300 text-sm font-bold mb-2">Email</label>
-                        <input type="email" id="login-email" class="shadow appearance-none border border-gray-700 rounded w-full py-2 px-3 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                        <label for="login-email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="login-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
                     <div class="mb-6">
-                        <label for="login-password" class="block text-gray-300 text-sm font-bold mb-2">Palavra-passe</label>
-                        <input type="password" id="login-password" class="shadow appearance-none border border-gray-700 rounded w-full py-2 px-3 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                        <label for="login-password" class="block text-gray-700 text-sm font-bold mb-2">Palavra-passe</label>
+                        <input type="password" id="login-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
                     <div class="flex items-center justify-between">
-                        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">
+                        <button type="submit" class="bg-indigo-800 hover:bg-indigo-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">
                             Entrar
                         </button>
-                        <a href="#" id="show-register" class="inline-block align-baseline font-bold text-sm text-sky-400 hover:text-sky-500">
+                        <a href="#" id="show-register" class="inline-block align-baseline font-bold text-sm text-indigo-600 hover:text-indigo-800">
                             Criar Conta
                         </a>
                     </div>
                 </form>
 
                 <form id="register-form" class="hidden">
-                    <div class="mb-4">
-                        <label for="register-email" class="block text-gray-300 text-sm font-bold mb-2">Email</label>
-                        <input type="email" id="register-email" class="shadow appearance-none border border-gray-700 rounded w-full py-2 px-3 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                     <div class="mb-4">
+                        <label for="register-email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                        <input type="email" id="register-email" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
                     <div class="mb-6">
-                        <label for="register-password" class="block text-gray-300 text-sm font-bold mb-2">Palavra-passe</label>
-                        <input type="password" id="register-password" class="shadow appearance-none border border-gray-700 rounded w-full py-2 px-3 bg-gray-700 text-gray-200 leading-tight focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                        <label for="register-password" class="block text-gray-700 text-sm font-bold mb-2">Palavra-passe</label>
+                        <input type="password" id="register-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
                     <div class="flex items-center justify-between">
-                        <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">
+                        <button type="submit" class="bg-indigo-800 hover:bg-indigo-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">
                             Registar
                         </button>
-                        <a href="#" id="show-login" class="inline-block align-baseline font-bold text-sm text-sky-400 hover:text-sky-500">
+                        <a href="#" id="show-login" class="inline-block align-baseline font-bold text-sm text-indigo-600 hover:text-indigo-800">
                             Já tenho conta
                         </a>
                     </div>
@@ -132,11 +100,11 @@
 
                 <p id="auth-error" class="text-red-500 text-xs italic mt-4 text-center"></p>
 
-                <div class="my-4 flex items-center before:flex-1 before:border-t before:border-gray-600 before:mt-0.5 after:flex-1 after:border-t after:border-gray-600 after:mt-0.5">
-                    <p class="text-center font-semibold mx-4 mb-0 text-gray-400">OU</p>
+                <div class="my-4 flex items-center before:flex-1 before:border-t before:border-gray-300 before:mt-0.5 after:flex-1 after:border-t after:border-gray-300 after:mt-0.5">
+                    <p class="text-center font-semibold mx-4 mb-0 text-gray-500">OU</p>
                 </div>
 
-                <button id="google-signin-btn" class="w-full flex justify-center items-center gap-2 bg-white hover:bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">
+                <button id="google-signin-btn" class="w-full flex justify-center items-center gap-2 bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded border border-gray-300 shadow-sm focus:outline-none focus:shadow-outline transition-colors">
                     <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
                     Entrar com Google
                 </button>
@@ -146,325 +114,66 @@
 
 
     <!-- Main App Container -->
-    <div id="app-container" class="hidden h-screen w-full lg:p-4 pb-20 lg:pb-0">
-
-        <header class="absolute top-0 right-0 p-4 flex items-center gap-4 text-sm z-20">
-            <span id="user-email" class="text-gray-400"></span>
+    <div id="app-container" class="hidden h-screen w-full p-4 pb-20 lg:pb-4 lg:pr-4 lg:pt-4 lg:pl-0">
+        <header class="absolute top-0 right-4 p-4 flex items-center gap-4 text-sm z-20">
+            <span id="user-email" class="text-gray-500"></span>
             <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition-colors" title="Sair">
                 <i class="fas fa-sign-out-alt"></i>
             </button>
         </header>
 
         <div class="flex h-full w-full lg:gap-4">
-            
-            <!-- Far Left Panel: Dashboard/Nav -->
-            <aside id="main-nav-panel" class="bg-gray-800 rounded-lg p-4 flex-col gap-4 w-full lg:w-64 hidden flex-shrink-0">
-                 <div class="p-4 flex-grow flex flex-col">
-                    <h1 class="text-2xl font-bold text-white mb-6">Meu Painel</h1>
-                    <div class="space-y-4">
-                        <div class="bg-gray-700 p-4 rounded-lg">
-                            <h3 class="font-semibold text-white mb-2"><i class="fas fa-calendar-check mr-2 text-sky-400"></i>Próxima Ministração</h3>
-                            <div id="dashboard-next-engagement"></div>
-                        </div>
-                        <div class="bg-gray-700 p-4 rounded-lg">
-                            <h3 class="font-semibold text-white mb-2"><i class="fas fa-book-bible mr-2 text-yellow-400"></i>Leitura de Hoje</h3>
-                             <div id="dashboard-reading-plan"></div>
-                        </div>
-                         <button id="dashboard-new-sermon" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                            <i class="fas fa-plus-circle"></i> Começar Novo Esboço
-                        </button>
-                         <button id="tutorial-btn" class="w-full bg-sky-500 hover:bg-sky-600 mt-4 text-white font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                            <i class="fas fa-graduation-cap"></i> Ver Tutorial
-                        </button>
-                    </div>
+            <!-- Main Navigation Sidebar -->
+            <aside id="main-nav-panel" class="bg-white rounded-lg p-4 flex-col gap-4 w-full lg:w-60 hidden lg:flex flex-shrink-0 shadow-md">
+                 <div class="p-2 flex-grow flex flex-col">
+                    <h1 class="text-2xl font-bold text-indigo-900 mb-8">Pregador App</h1>
+                    <nav class="space-y-2">
+                        <button data-view="dashboard-panel" class="main-nav-btn w-full text-left font-semibold p-3 rounded-lg flex items-center gap-3"><i class="fas fa-home fa-fw"></i>Início</button>
+                        <button data-view="sermons-panel" class="main-nav-btn w-full text-left font-semibold p-3 rounded-lg flex items-center gap-3"><i class="fas fa-file-alt fa-fw"></i>Sermões</button>
+                        <button data-view="series-panel" class="main-nav-btn w-full text-left font-semibold p-3 rounded-lg flex items-center gap-3"><i class="fas fa-layer-group fa-fw"></i>Séries</button>
+                        <button data-view="illustrations-panel" class="main-nav-btn w-full text-left font-semibold p-3 rounded-lg flex items-center gap-3"><i class="fas fa-lightbulb fa-fw"></i>Ilustrações</button>
+                        <button data-view="agenda-panel" class="main-nav-btn w-full text-left font-semibold p-3 rounded-lg flex items-center gap-3"><i class="fas fa-calendar-alt fa-fw"></i>Agenda</button>
+                        <button data-view="reading-plan-panel" class="main-nav-btn w-full text-left font-semibold p-3 rounded-lg flex items-center gap-3"><i class="fas fa-bible fa-fw"></i>Plano de Leitura</button>
+                    </nav>
                 </div>
             </aside>
             
-            <div class="flex-grow flex flex-col lg:flex-row gap-4 h-full p-4 lg:p-0">
-                <!-- Agenda Panel -->
-                <aside id="agenda-panel" class="main-panel w-full lg:w-1/3 flex-col gap-4 hidden">
-                    <div id="calendar-card" class="bg-gray-800 p-4 rounded-lg shadow-lg flex-grow flex flex-col">
-                        <div class="flex items-center justify-between mb-4">
-                            <button id="prev-month" class="p-2 rounded-full hover:bg-gray-700 transition-colors"><i class="fas fa-chevron-left"></i></button>
-                            <h2 id="month-year" class="text-xl font-bold text-white"></h2>
-                            <button id="next-month" class="p-2 rounded-full hover:bg-gray-700 transition-colors"><i class="fas fa-chevron-right"></i></button>
-                        </div>
-                        <div class="grid grid-cols-7 text-center text-xs text-gray-400 mb-2">
-                            <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
-                        </div>
-                        <div id="calendar-grid" class="grid calendar-grid gap-1 flex-grow"></div>
-                    </div>
-                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg lg:h-1/3 overflow-y-auto">
-                        <h3 class="text-lg font-semibold text-white mb-2 border-b border-gray-700 pb-2">Próximas Ministrações</h3>
-                        <div id="engagements-list"></div>
-                    </div>
-                </aside>
-
-                <!-- Editor Panel -->
-                <main id="editor-panel" class="main-panel w-full lg:w-1/3 bg-gray-800 rounded-lg shadow-lg p-6 flex-col hidden">
-                     <div class="flex items-center justify-between mb-4">
-                        <h2 id="editor-title" class="text-2xl font-bold text-white">Novo Esboço</h2>
-                        <div class="flex gap-2">
-                            <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> <span class="hidden md:inline">Gerar Ideia</span></button>
-                            <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> <span class="hidden md:inline">Salvar</span></button>
-                            <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> <span class="hidden md:inline">Limpar</span></button>
-                        </div>
-                    </div>
-                    
-                    <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                    
-                    <div class="flex-grow flex flex-col md:flex-row gap-4 overflow-hidden">
-                        <div class="w-full flex flex-col">
-                            <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap">
-                                <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
-                                <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
-                                <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
-                                <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
-                                <div class="w-px h-5 bg-gray-700 mx-1"></div>
-                                <div class="relative flex items-center" title="Cor da Fonte">
-                                    <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
-                                    <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
-                                </div>
-                                <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
-                                    <option value="3">Normal</option>
-                                    <option value="1">Mínimo</option>
-                                    <option value="2">Pequeno</option>
-                                    <option value="4">Médio</option>
-                                    <option value="5">Grande</option>
-                                    <option value="7">Enorme</option>
-                                </select>
-                            </div>
-                            <div id="outline-content" contenteditable="true" class="w-full h-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4">
-                        <label for="bible-book-select" class="block mb-2 text-sm font-medium text-gray-300">Vincular esboço ao livro de:</label>
-                        <select id="bible-book-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
-                    </div>
-                </main>
-
-                <!-- Tools Panel -->
-                <aside id="tools-panel" class="main-panel w-full lg:w-1/3 bg-gray-800 rounded-lg shadow-lg p-6 flex-col hidden">
-                     <div class="border-b border-gray-700 mb-4">
-                        <nav id="right-tabs" class="flex gap-4 -mb-px">
-                            <button data-tab="archive" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-archive mr-2"></i>Arquivo</button>
-                            <button data-tab="study" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-book-open mr-2"></i>Estudo</button>
-                            <button data-tab="fasting" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-pray mr-2"></i>Jejum</button>
-                            <button data-tab="reading" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-bible mr-2"></i>Plano</button>
-                        </nav>
-                    </div>
-                    <div id="right-tab-content" class="flex-grow flex flex-col overflow-y-hidden">
-                        <div id="archive-tab-content" class="right-tab-pane flex-grow flex flex-col overflow-y-auto">
-                            <div class="mb-4">
-                                <input type="search" id="archive-search" placeholder="Pesquisar esboços..." class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            </div>
-                            <div class="overflow-y-auto">
-                                <h3 class="text-xl font-semibold text-white mb-2">Meus Esboços</h3>
-                                <div id="my-outlines-list" class="space-y-2 mb-6"></div>
-                                <h3 class="text-xl font-semibold text-white mb-2 border-t border-gray-700 pt-4">Biblioteca Pública</h3>
-                                <div id="public-library-list" class="space-y-2"></div>
-                            </div>
-                        </div>
-                        <div id="study-tab-content" class="right-tab-pane hidden flex-grow flex flex-col overflow-hidden">
-                             <h3 class="text-xl font-semibold text-white mb-2">Estudo Rápido</h3>
-                            <div class="flex gap-2 mb-2 items-center">
-                                <select id="bible-study-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
-                                <input type="text" id="bible-ref-input" placeholder="3:16" class="w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                <button id="fetch-verse-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg"><i class="fas fa-search"></i></button>
-                                <button id="clear-verses-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold p-2.5 rounded-lg" title="Limpar"><i class="fas fa-times-circle"></i></button>
-                            </div>
-                            <div id="verse-display" class="bg-gray-900 rounded-lg p-3 flex-grow text-gray-300 text-sm flex gap-4 overflow-x-auto pb-4"></div>
-                        </div>
-                        <div id="fasting-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
-                            <h3 class="text-xl font-semibold text-white mb-2">Jejum e Oração</h3>
-                            <div class="bg-gray-900 rounded-lg p-3 mb-3">
-                                <h4 class="font-semibold text-white mb-2 text-sm">Novo Propósito</h4>
-                                 <input type="text" id="fasting-title" placeholder="Propósito" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm mb-2">
-                                <div class="grid grid-cols-2 gap-2 mb-2">
-                                    <div>
-                                        <label for="fasting-start-date" class="text-xs text-gray-400">Início</label>
-                                        <input type="date" id="fasting-start-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
-                                    </div>
-                                    <div>
-                                        <label for="fasting-end-date" class="text-xs text-gray-400">Fim</label>
-                                        <input type="date" id="fasting-end-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
-                                    </div>
-                                </div>
-                                <textarea id="fasting-notes" placeholder="Anotações..." rows="2" class="w-full bg-gray-700 border rounded-lg p-2 text-white text-sm"></textarea>
-                                <button id="save-fasting-btn" class="mt-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg text-sm">Adicionar</button>
-                            </div>
-                            <div id="fasting-list" class="flex-grow overflow-y-auto space-y-2 pr-2"></div>
-                        </div>
-                         <div id="reading-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-xl font-semibold text-white">Plano de Leitura Anual</h3>
-                                <button id="jump-to-today-btn" class="text-xs bg-sky-500 hover:bg-sky-600 text-white font-bold py-1 px-2 rounded-lg transition-colors">Hoje</button>
-                            </div>
-                            <div class="mb-2">
-                                <div class="w-full bg-gray-700 rounded-full h-2.5">
-                                    <div id="reading-progress-bar" class="bg-emerald-500 h-2.5 rounded-full progress-bar-fill" style="width: 0%"></div>
-                                </div>
-                                <p id="reading-progress-text" class="text-xs text-right text-gray-400 mt-1">0%</p>
-                            </div>
-                            <div id="reading-plan-container" class="flex-grow overflow-y-auto"></div>
-                        </div>
-                    </div>
-                </aside>
-            </div>
+            <main class="flex-grow flex flex-col gap-4 h-full p-4 lg:p-0">
+                <!-- All main content panels will be dynamically inserted here -->
+            </main>
         </div>
         
         <!-- Bottom Navigation (Mobile) -->
-        <nav id="bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around p-2 z-30">
-             <button data-view="main-nav-panel" class="mobile-nav-btn flex flex-col items-center text-emerald-400 w-1/4">
-                <i class="fas fa-home text-xl"></i>
-                <span class="text-xs mt-1">Início</span>
+        <nav id="bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-2 z-30 shadow-t-md">
+             <button data-view="dashboard-panel" class="mobile-nav-btn flex flex-col items-center text-indigo-800 w-1/5">
+                <i class="fas fa-home text-xl"></i><span class="text-xs mt-1">Início</span>
             </button>
-            <button data-view="agenda-panel" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/4">
-                <i class="fas fa-calendar-alt text-xl"></i>
-                <span class="text-xs mt-1">Agenda</span>
+            <button data-view="sermons-panel" class="mobile-nav-btn flex flex-col items-center text-gray-500 w-1/5">
+                <i class="fas fa-file-alt text-xl"></i><span class="text-xs mt-1">Sermões</span>
             </button>
-            <button data-view="editor-panel" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/4">
-                <i class="fas fa-pencil-alt text-xl"></i>
-                <span class="text-xs mt-1">Esboço</span>
+            <button data-view="series-panel" class="mobile-nav-btn flex flex-col items-center text-gray-500 w-1/5">
+                <i class="fas fa-layer-group text-xl"></i><span class="text-xs mt-1">Séries</span>
             </button>
-            <button data-view="tools-panel" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/4">
-                <i class="fas fa-tools text-xl"></i>
-                <span class="text-xs mt-1">Ferramentas</span>
+            <button data-view="illustrations-panel" class="mobile-nav-btn flex flex-col items-center text-gray-500 w-1/5">
+                <i class="fas fa-lightbulb text-xl"></i><span class="text-xs mt-1">Ideias</span>
+            </button>
+            <button data-view="agenda-panel" class="mobile-nav-btn flex flex-col items-center text-gray-500 w-1/5">
+                <i class="fas fa-calendar-alt text-xl"></i><span class="text-xs mt-1">Agenda</span>
             </button>
         </nav>
     </div>
 
-    <!-- Modals -->
-    <div id="engagement-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
-        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-md">
-            <h3 class="text-xl font-bold mb-4 text-white">Agendar Ministração</h3>
-            <p class="mb-4 text-gray-300">Data: <span id="modal-date" class="font-semibold"></span></p>
-            <div>
-                <label for="engagement-title" class="block mb-2 text-sm font-medium text-gray-300">Título do Evento/Local</label>
-                <input type="text" id="engagement-title" placeholder="Ex: Culto de Domingo - Igreja X" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5 mb-4">
-            </div>
-            <div>
-                <label for="modal-outline-select" class="block mb-2 text-sm font-medium text-gray-300">Vincular Esboço</label>
-                <select id="modal-outline-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5"></select>
-            </div>
-            <div class="mt-6 flex justify-end gap-3">
-                <button id="cancel-engagement" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Cancelar</button>
-                <button id="save-engagement" class="py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg">Salvar Agendamento</button>
-                <button id="delete-engagement" class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg hidden">Excluir</button>
-            </div>
-        </div>
-    </div>
+    <!-- Modals go here... -->
     
-    <div id="suggestion-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
-        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
-            <h3 class="text-xl font-bold mb-4 text-white">Assistente de Esboços (IA)</h3>
-            <p class="text-sm text-gray-300 mb-4">Digite um tema, versículo ou palavra-chave para gerar uma sugestão de esboço.</p>
-            <div class="flex gap-2 mb-4">
-                <input type="text" id="suggestion-theme-input" placeholder="Ex: A Parábola do Filho Pródigo" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5">
-                <button id="generate-suggestion-btn" class="py-2 px-4 bg-sky-500 hover:bg-sky-600 text-white rounded-lg">Gerar Esboço</button>
-            </div>
-            <div id="suggestion-result" class="bg-gray-900 rounded-lg p-4 flex-grow overflow-y-auto text-gray-300 text-sm whitespace-pre-wrap"></div>
-            <div class="mt-6 flex justify-end gap-3">
-                <button id="cancel-suggestion" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
-                <button id="use-suggestion-btn" class="py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg hidden">Usar este Esboço</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Presentation Mode Modal -->
-    <div id="presentation-modal" class="fixed inset-0 bg-gray-900 p-4 md:p-8 flex-col hidden z-50">
-        <div class="w-full max-w-4xl mx-auto flex-grow flex flex-col h-full">
-            <h2 id="presentation-title" class="text-2xl md:text-4xl font-bold text-emerald-400 mb-6 text-center flex-shrink-0"></h2>
-            <div id="presentation-content" class="text-base md:text-lg text-gray-200 leading-relaxed flex-grow overflow-y-auto p-4 md:p-6 bg-gray-800 rounded-lg">
-                <!-- Outline content goes here -->
-            </div>
-             <div class="text-center mt-6 flex-shrink-0">
-                <button id="close-presentation-btn" class="py-2 px-6 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Fechar</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Confirm Modal -->
-    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
-        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-sm">
-            <h3 class="text-lg font-bold mb-4 text-white">Confirmar Ação</h3>
-            <p id="confirm-message" class="mb-6 text-gray-300"></p>
-            <div class="flex justify-end gap-3">
-                <button id="confirm-cancel" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Cancelar</button>
-                <button id="confirm-ok" class="py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg">Confirmar</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Tutorial Modal -->
-     <div id="tutorial-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
-        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-3xl flex flex-col max-h-[90vh]">
-            <h2 class="text-2xl font-bold text-white mb-4 text-center">Bem-vindo! Vamos conhecer o sistema.</h2>
-            <div id="tutorial-content" class="flex-grow overflow-y-auto p-4 space-y-8 text-gray-300">
-                <!-- Slide 1 -->
-                <div class="tutorial-slide" data-slide="1">
-                    <h3 class="text-xl font-semibold text-emerald-400 mb-2 flex items-center gap-3"><i class="fas fa-tachometer-alt"></i>1. Painel Principal (Dashboard)</h3>
-                    <p>Assim que entra, a primeira tela que vê é o seu painel de controlo pessoal. Ele foi desenhado para lhe dar uma visão geral rápida e útil do seu dia.</p>
-                    <ul class="list-disc list-inside mt-4 space-y-2">
-                        <li><b>Próxima Ministração:</b> Mostra o seu próximo compromisso agendado.</li>
-                        <li><b>Leitura de Hoje:</b> Apresenta a leitura bíblica do dia, de acordo com o seu plano anual.</li>
-                        <li><b>Começar Novo Esboço:</b> Um atalho para o levar diretamente à ferramenta de escrita.</li>
-                    </ul>
-                </div>
-                <!-- Slide 2 -->
-                <div class="tutorial-slide hidden" data-slide="2">
-                    <h3 class="text-xl font-semibold text-emerald-400 mb-2 flex items-center gap-3"><i class="fas fa-calendar-alt"></i>2. Agenda e Modo Apresentação</h3>
-                    <p>Este é o coração do seu planeamento.</p>
-                     <ul class="list-disc list-inside mt-4 space-y-2">
-                        <li><b>Agendar:</b> Clique num dia no calendário para adicionar um evento e vincular um esboço.</li>
-                        <li><b>Visualizar:</b> Os dias com eventos terão um ponto verde. A lista abaixo mostra os seus próximos compromissos.</li>
-                        <li><b>Modo Apresentação:</b> Ao clicar num compromisso na lista, o esboço abre em modo de leitura focado, ideal para usar durante a pregação.</li>
-                    </ul>
-                </div>
-                 <!-- Slide 3 -->
-                <div class="tutorial-slide hidden" data-slide="3">
-                    <h3 class="text-xl font-semibold text-emerald-400 mb-2 flex items-center gap-3"><i class="fas fa-pencil-alt"></i>3. O Editor de Esboços</h3>
-                    <p>Onde a sua mensagem ganha forma.</p>
-                     <ul class="list-disc list-inside mt-4 space-y-2">
-                        <li><b>Ferramentas de Formatação:</b> Use a barra de ferramentas para aplicar negrito, itálico, listas, e para alterar a cor e o tamanho da fonte.</li>
-                        <li><b>Gerar Ideia (IA):</b> Sem inspiração? Clique no botão "Gerar Ideia" para que a inteligência artificial crie uma sugestão de esboço para si.</li>
-                        <li><b>Salvar e Vincular:</b> Não se esqueça de vincular o seu esboço a um livro da Bíblia para o manter organizado.</li>
-                    </ul>
-                </div>
-                 <!-- Slide 4 -->
-                <div class="tutorial-slide hidden" data-slide="4">
-                    <h3 class="text-xl font-semibold text-emerald-400 mb-2 flex items-center gap-3"><i class="fas fa-tools"></i>4. As Suas Ferramentas</h3>
-                    <p>No painel de ferramentas (ou no menu inferior em telemóveis), encontrará quatro abas poderosas:</p>
-                     <ul class="list-disc list-inside mt-4 space-y-2">
-                        <li><b>Arquivo:</b> Onde pode pesquisar os seus esboços, publicá-los na Biblioteca Pública, ou adaptar sermões de outros utilizadores.</li>
-                        <li><b>Estudo:</b> Consulte versículos rapidamente e compare várias passagens lado a lado.</li>
-                        <li><b>Jejum:</b> Organize os seus propósitos e receba lembretes diários.</li>
-                        <li><b>Plano:</b> Gere um plano de leitura anual e acompanhe o seu progresso.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="mt-6 flex justify-between items-center">
-                <span id="tutorial-progress" class="text-sm text-gray-400"></span>
-                <div>
-                    <button id="tutorial-prev" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Anterior</button>
-                    <button id="tutorial-next" class="py-2 px-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg">Próximo</button>
-                    <button id="tutorial-finish" class="py-2 px-4 bg-sky-500 hover:bg-sky-600 text-white rounded-lg hidden">Concluir</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-20 lg:bottom-5 right-5 bg-emerald-500 text-white py-2 px-4 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 z-50"></div>
+    <div id="toast" class="fixed bottom-20 lg:bottom-5 right-5 bg-indigo-800 text-white py-2 px-4 rounded-lg shadow-lg transform translate-y-24 opacity-0 transition-all duration-300 z-50"></div>
 
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+        
         // --- Firebase Configuration ---
         const firebaseConfig = {
             apiKey: "AIzaSyCp2CxegdrcOk4Bj6I45_8LOl0nTOt3rEg",
@@ -482,46 +191,45 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        // --- DOM Elements ---
-        const authContainer = document.getElementById('auth-container');
-        const appContainer = document.getElementById('app-container');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const authErrorEl = document.getElementById('auth-error');
-        
-        let userId = null;
-        let isAppInitialized = false;
-        let outlinesUnsubscribe, engagementsUnsubscribe, fastingUnsubscribe, publicSermonsUnsubscribe, readingPlanUnsubscribe;
+        let appInitialized = false;
+
+        function initializeAppLogic() {
+            if (appInitialized) return;
+            appInitialized = true;
+            // All the app logic will be here
+            console.log("App logic initialized for user:", auth.currentUser.uid);
+        }
 
         // --- Auth State Logic ---
         onAuthStateChanged(auth, user => {
+            const authContainer = document.getElementById('auth-container');
+            const appContainer = document.getElementById('app-container');
+
             if (user) {
-                if (!isAppInitialized) {
-                    userId = user.uid;
-                    document.getElementById('user-email').textContent = user.email;
+                if (!appInitialized) {
                     authContainer.classList.add('hidden');
                     appContainer.classList.remove('hidden');
                     appContainer.classList.add('flex');
-                    
+                    document.getElementById('user-email').textContent = user.email;
                     initializeAppLogic();
-                    isAppInitialized = true;
                 }
             } else {
-                userId = null;
-                isAppInitialized = false;
+                appInitialized = false;
                 authContainer.classList.remove('hidden');
                 appContainer.classList.add('hidden');
                 appContainer.classList.remove('flex');
-                
-                if (outlinesUnsubscribe) outlinesUnsubscribe();
-                if (engagementsUnsubscribe) engagementsUnsubscribe();
-                if (fastingUnsubscribe) fastingUnsubscribe();
-                if (publicSermonsUnsubscribe) publicSermonsUnsubscribe();
-                if (readingPlanUnsubscribe) readingPlanUnsubscribe();
             }
         });
-
+        
         // --- Auth Event Listeners ---
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const authErrorEl = document.getElementById('auth-error');
+        const googleSignInBtn = document.getElementById('google-signin-btn');
+        const showRegisterBtn = document.getElementById('show-register');
+        const showLoginBtn = document.getElementById('show-login');
+        const logoutBtn = document.getElementById('logout-btn');
+
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             authErrorEl.textContent = '';
@@ -571,8 +279,8 @@
             }
         });
         
-        document.getElementById('google-signin-btn').addEventListener('click', async () => {
-            authErrorEl.textContent = '';
+        googleSignInBtn.addEventListener('click', async () => {
+             authErrorEl.textContent = '';
             const provider = new GoogleAuthProvider();
             try {
                 await signInWithPopup(auth, provider);
@@ -582,7 +290,7 @@
                     case 'auth/popup-closed-by-user':
                         break;
                     case 'auth/account-exists-with-different-credential':
-                        authErrorEl.textContent = "Já existe uma conta com este email. Tente fazer login com outro método.";
+                        authErrorEl.textContent = "Já existe uma conta com este email.";
                         break;
                     case 'auth/unauthorized-domain':
                         authErrorEl.textContent = `Domínio não autorizado. Adicione "${window.location.hostname}" aos 'Domínios autorizados' no Firebase Console.`;
@@ -593,15 +301,16 @@
             }
         });
 
-        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
-        document.getElementById('show-register').addEventListener('click', (e) => {
+        logoutBtn.addEventListener('click', () => signOut(auth));
+        
+        showRegisterBtn.addEventListener('click', (e) => {
             e.preventDefault();
             loginForm.classList.add('hidden');
             registerForm.classList.remove('hidden');
             document.getElementById('auth-title').textContent = 'Criar Conta';
             authErrorEl.textContent = '';
         });
-        document.getElementById('show-login').addEventListener('click', (e) => {
+        showLoginBtn.addEventListener('click', (e) => {
             e.preventDefault();
             registerForm.classList.add('hidden');
             loginForm.classList.remove('hidden');
@@ -609,264 +318,6 @@
             authErrorEl.textContent = '';
         });
 
-        // --- Main App Logic (to be initialized after login) ---
-        function initializeAppLogic() {
-            let outlinesCol, engagementsCol, fastingCol;
-            let currentDate = new Date();
-            let outlines = [], publicSermons = [], engagements = [], fastingSchedules = [], readingPlan = null;
-            let currentEditingOutlineId = null, currentSelectedDate = null, currentEditingEngagementId = null;
-
-            const BIBLE_BOOKS = [
-                "Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio", "Josué", "Juízes", "Rute", "1 Samuel", "2 Samuel", "1 Reis", "2 Reis", "1 Crônicas", "2 Crônicas", "Esdras", "Neemias", "Ester", "Jó", "Salmos", "Provérbios", "Eclesiastes", "Cânticos", "Isaías", "Jeremias", "Lamentações", "Ezequiel", "Daniel", "Oséias", "Joel", "Amós", "Obadias", "Jonas", "Miquéias", "Naum", "Habacuque", "Sofonias", "Ageu", "Zacarias", "Malaquias",
-                "Mateus", "Marcos", "Lucas", "João", "Atos", "Romanos", "1 Coríntios", "2 Coríntios", "Gálatas", "Efésios", "Filipenses", "Colossenses", "1 Tessalonicenses", "2 Tessalonicenses", "1 Timóteo", "2 Timóteo", "Tito", "Filemom", "Hebreus", "Tiago", "1 Pedro", "2 Pedro", "1 João", "2 João", "3 João", "Judas", "Apocalipse"
-            ];
-            const BIBLE_CHAPTER_COUNT = { "Gênesis": 50, "Êxodo": 40, "Levítico": 27, "Números": 36, "Deuteronômio": 34, "Josué": 24, "Juízes": 21, "Rute": 4, "1 Samuel": 31, "2 Samuel": 24, "1 Reis": 22, "2 Reis": 25, "1 Crônicas": 29, "2 Crônicas": 36, "Esdras": 10, "Neemias": 13, "Ester": 10, "Jó": 42, "Salmos": 150, "Provérbios": 31, "Eclesiastes": 12, "Cânticos": 8, "Isaías": 66, "Jeremias": 52, "Lamentações": 5, "Ezequiel": 48, "Daniel": 12, "Oséias": 14, "Joel": 3, "Amós": 9, "Obadias": 1, "Jonas": 4, "Miquéias": 7, "Naum": 3, "Habacuque": 3, "Sofonias": 3, "Ageu": 2, "Zacarias": 14, "Malaquias": 4, "Mateus": 28, "Marcos": 16, "Lucas": 24, "João": 21, "Atos": 28, "Romanos": 16, "1 Coríntios": 16, "2 Coríntios": 13, "Gálatas": 6, "Efésios": 6, "Filipenses": 4, "Colossenses": 4, "1 Tessalonicenses": 5, "2 Tessalonicenses": 3, "1 Timóteo": 6, "2 Timóteo": 4, "Tito": 3, "Filemom": 1, "Hebreus": 13, "Tiago": 5, "1 Pedro": 5, "2 Pedro": 3, "1 João": 5, "2 João": 1, "3 João": 1, "Judas": 1, "Apocalipse": 22 };
-            
-            // Query DOM Elements
-            const monthYearEl = document.getElementById('month-year');
-            const calendarGridEl = document.getElementById('calendar-grid');
-            const saveOutlineBtn = document.getElementById('save-outline-btn');
-            const outlineTitleEl = document.getElementById('outline-title');
-            const outlineContentEl = document.getElementById('outline-content');
-            const outlineNotesEl = document.getElementById('outline-notes');
-            const bibleBookSelectEl = document.getElementById('bible-book-select');
-            const myOutlinesListEl = document.getElementById('my-outlines-list');
-            const publicLibraryListEl = document.getElementById('public-library-list');
-            const modalOutlineSelectEl = document.getElementById('modal-outline-select');
-            const engagementsListEl = document.getElementById('engagements-list');
-            const editorTitleEl = document.getElementById('editor-title');
-            const bibleStudyBookSelectEl = document.getElementById('bible-study-book-select');
-            const verseDisplayEl = document.getElementById('verse-display');
-            const bibleRefInputEl = document.getElementById('bible-ref-input');
-            const fastingListEl = document.getElementById('fasting-list');
-            const fastingTitleEl = document.getElementById('fasting-title');
-            const fastingStartDateEl = document.getElementById('fasting-start-date');
-            const fastingEndDateEl = document.getElementById('fasting-end-date');
-            const fastingNotesEl = document.getElementById('fasting-notes');
-            const suggestionModalEl = document.getElementById('suggestion-modal');
-            const suggestionThemeInputEl = document.getElementById('suggestion-theme-input');
-            const suggestionResultEl = document.getElementById('suggestion-result');
-            const useSuggestionBtn = document.getElementById('use-suggestion-btn');
-            const generateSuggestionBtn = document.getElementById('generate-suggestion-btn');
-            const engagementModalEl = document.getElementById('engagement-modal');
-            const modalDateEl = document.getElementById('modal-date');
-            const engagementTitleEl = document.getElementById('engagement-title');
-            const deleteEngagementBtn = document.getElementById('delete-engagement');
-            const presentationModalEl = document.getElementById('presentation-modal');
-            const presentationTitleEl = document.getElementById('presentation-title');
-            const presentationContentEl = document.getElementById('presentation-content');
-            const readingPlanContainerEl = document.getElementById('reading-plan-container');
-            const mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
-            const mainPanels = document.querySelectorAll('.main-panel');
-            const confirmModalEl = document.getElementById('confirm-modal');
-            const confirmMessageEl = document.getElementById('confirm-message');
-            const confirmOkBtn = document.getElementById('confirm-ok');
-            const confirmCancelBtn = document.getElementById('confirm-cancel');
-            const archiveSearchEl = document.getElementById('archive-search');
-            const readingProgressBar = document.getElementById('reading-progress-bar');
-            const readingProgressText = document.getElementById('reading-progress-text');
-            const jumpToTodayBtn = document.getElementById('jump-to-today-btn');
-            const tutorialModal = document.getElementById('tutorial-modal');
-            
-            // --- Utility Functions ---
-            const showToast = (message) => {
-                const toast = document.getElementById('toast');
-                toast.textContent = message;
-                toast.classList.remove('opacity-0', 'translate-y-20');
-                toast.classList.add('opacity-100', 'translate-y-0');
-                setTimeout(() => {
-                    toast.classList.add('opacity-0', 'translate-y-20');
-                    toast.classList.remove('opacity-100', 'translate-y-0');
-                }, 3000);
-            };
-
-            let confirmCallback = null;
-            const openConfirmModal = (message, onConfirm) => {
-                confirmMessageEl.textContent = message;
-                confirmCallback = onConfirm;
-                confirmModalEl.classList.remove('hidden');
-                confirmModalEl.classList.add('flex');
-            };
-            const closeConfirmModal = () => {
-                confirmModalEl.classList.add('hidden');
-                confirmModalEl.classList.remove('flex');
-                confirmCallback = null;
-            };
-            confirmOkBtn.addEventListener('click', () => {
-                if (confirmCallback) confirmCallback();
-                closeConfirmModal();
-            });
-            confirmCancelBtn.addEventListener('click', closeConfirmModal);
-
-            const toggleButtonLoading = (btn, isLoading) => {
-                if (isLoading) {
-                    btn.disabled = true;
-                    btn.dataset.originalHtml = btn.innerHTML;
-                    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                } else {
-                    btn.disabled = false;
-                    btn.innerHTML = btn.dataset.originalHtml;
-                }
-            };
-            
-             const copyToClipboard = (text) => {
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast('Versículo copiado!');
-                } catch (err) {
-                    showToast('Erro ao copiar.');
-                }
-                document.body.removeChild(textarea);
-            };
-
-
-            const formatText = (command, value = null) => {
-                document.execCommand(command, false, value);
-                outlineContentEl.focus();
-            };
-            
-            // --- Render Functions ---
-            const renderCalendar = () => { /* ... */ };
-            const renderMyOutlines = (searchTerm = '') => {
-                myOutlinesListEl.innerHTML = '';
-                modalOutlineSelectEl.innerHTML = '<option value="">Nenhum (somente agendar)</option>';
-                
-                const filteredOutlines = outlines.filter(o => o.title.toLowerCase().includes(searchTerm.toLowerCase()));
-
-                const groupedOutlines = BIBLE_BOOKS.reduce((acc, book) => {
-                    const bookOutlines = filteredOutlines.filter(o => o.book === book);
-                    if (bookOutlines.length > 0) acc[book] = bookOutlines;
-                    return acc;
-                }, {});
-
-                if (filteredOutlines.length === 0) {
-                    myOutlinesListEl.innerHTML = '<p class="text-gray-400 text-sm">Nenhum esboço encontrado.</p>';
-                } else {
-                    for (const book in groupedOutlines) {
-                        const bookSection = document.createElement('div');
-                        bookSection.innerHTML = `<h4 class="text-lg font-semibold text-emerald-400">${book}</h4>`;
-                        const list = document.createElement('ul');
-                        list.className = 'ml-4 space-y-1';
-                        groupedOutlines[book].forEach(outline => {
-                            const li = document.createElement('li');
-                            li.className = 'text-gray-300 hover:text-white cursor-pointer flex justify-between items-center group';
-                            li.innerHTML = `
-                                <span><i class="fas fa-file-alt mr-2 text-gray-500"></i>${outline.title}</span>
-                                <span class="flex items-center">
-                                    <button data-id="${outline.id}" class="publish-outline-btn text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity mr-3" title="Publicar na Biblioteca"><i class="fas fa-globe"></i></button>
-                                    <button data-id="${outline.id}" class="delete-outline-btn text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-trash-alt"></i></button>
-                                </span>`;
-                            li.addEventListener('click', (e) => {
-                                if (e.target.closest('button')) return;
-                                loadOutlineIntoEditor(outline.id);
-                            });
-                            list.appendChild(li);
-                        });
-                        bookSection.appendChild(list);
-                        myOutlinesListEl.appendChild(bookSection);
-                    }
-                }
-                
-                outlines.forEach(outline => modalOutlineSelectEl.add(new Option(outline.title, outline.id)));
-                
-                document.querySelectorAll('.delete-outline-btn').forEach(btn => {
-                   btn.addEventListener('click', (e) => {
-                       const id = e.currentTarget.dataset.id;
-                       openConfirmModal('Tem certeza que deseja excluir este esboço?', async () => {
-                            await deleteDoc(doc(outlinesCol, id));
-                            showToast('Esboço excluído.');
-                            clearEditor();
-                       });
-                   });
-                });
-                document.querySelectorAll('.publish-outline-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const id = e.currentTarget.dataset.id;
-                        openConfirmModal("Publicar este esboço na Biblioteca Pública? Ficará visível para todos.", () => {
-                           publishOutline(id);
-                        });
-                    });
-                });
-            };
-            const renderPublicLibrary = (searchTerm = '') => { /* ... */ };
-            const renderEngagementsList = () => { /* ... */ };
-            const renderFastingSchedules = () => { /* ... */ };
-            const renderVerseDisplayPlaceholder = () => { /* ... */ };
-            const renderReadingPlan = () => { /* ... */ };
-            const renderDashboard = () => { /* ... */ };
-
-
-            // --- Tutorial Logic ---
-            const tutorialBtn = document.getElementById('tutorial-btn');
-            const tutorialSlides = tutorialModal.querySelectorAll('.tutorial-slide');
-            const tutorialNextBtn = document.getElementById('tutorial-next');
-            const tutorialPrevBtn = document.getElementById('tutorial-prev');
-            const tutorialFinishBtn = document.getElementById('tutorial-finish');
-            const tutorialProgressEl = document.getElementById('tutorial-progress');
-            let currentSlide = 1;
-
-            const showSlide = (slideNum) => {
-                tutorialSlides.forEach(slide => {
-                    slide.classList.add('hidden');
-                });
-                tutorialModal.querySelector(`.tutorial-slide[data-slide="${slideNum}"]`).classList.remove('hidden');
-                tutorialProgressEl.textContent = `Passo ${slideNum} de ${tutorialSlides.length}`;
-                
-                tutorialPrevBtn.disabled = slideNum === 1;
-                tutorialNextBtn.classList.toggle('hidden', slideNum === tutorialSlides.length);
-                tutorialFinishBtn.classList.toggle('hidden', slideNum !== tutorialSlides.length);
-            };
-
-            tutorialBtn.addEventListener('click', () => {
-                currentSlide = 1;
-                showSlide(currentSlide);
-                tutorialModal.classList.remove('hidden');
-                tutorialModal.classList.add('flex');
-            });
-
-            tutorialNextBtn.addEventListener('click', () => {
-                if (currentSlide < tutorialSlides.length) {
-                    currentSlide++;
-                    showSlide(currentSlide);
-                }
-            });
-             tutorialPrevBtn.addEventListener('click', () => {
-                if (currentSlide > 1) {
-                    currentSlide--;
-                    showSlide(currentSlide);
-                }
-            });
-            tutorialFinishBtn.addEventListener('click', () => {
-                tutorialModal.classList.add('hidden');
-                tutorialModal.classList.remove('flex');
-            });
-
-
-            // ... (All other logic functions: setupFirebaseListeners, saveOutline, etc.)
-
-            // --- Initial calls ---
-            // ...
-            archiveSearchEl.addEventListener('input', (e) => {
-                const term = e.target.value;
-                renderMyOutlines(term);
-                renderPublicLibrary(term);
-            });
-            jumpToTodayBtn.addEventListener('click', () => { /* ... */ });
-
-            if (window.innerWidth < 1024) {
-                switchMobileView('main-nav-panel'); // Changed from dashboard-panel
-            } else {
-                 // For desktop, we show all panels, so we don't need to switch
-                 mainPanels.forEach(p => {
-                    p.classList.remove('hidden');
-                    p.classList.add('flex');
-                 });
-            }
-        }
     </script>
 </body>
 </html>
