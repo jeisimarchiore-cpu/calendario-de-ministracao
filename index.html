@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secretária do Pregador</title>
+    <title>Oficina de Sermões</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & Lora -->
@@ -13,32 +13,27 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Custom styles */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f9fafb; /* bg-gray-50 */
+            background-color: #f3f4f6; /* bg-gray-100 */
             color: #1f2937; /* text-gray-800 */
         }
-        h1, h2, h3, h4 {
-            font-family: 'Lora', serif;
-        }
+        h1, h2, h3, h4 { font-family: 'Lora', serif; }
         .main-nav-btn.active, .mobile-nav-btn.active {
-            background-color: #e0e7ff; /* indigo-100 */
-            color: #312e81; /* indigo-900 */
+            background-color: #e0e7ff;
+            color: #312e81;
         }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #e5e7eb; }
         ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
-
         .modal-glass {
-            background: rgba(249, 250, 251, 0.6); /* bg-gray-50 with opacity */
+            background: rgba(249, 250, 251, 0.8);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.1);
         }
         .tab-btn.active {
-            border-bottom-color: #1e3a8a; /* indigo-800 */
-            color: #1e3a8a;
+            border-bottom-color: #4338ca;
+            color: #4338ca;
         }
         [contenteditable]:focus { outline: none; }
         .progress-bar-fill { transition: width 0.5s ease-in-out; }
@@ -59,7 +54,6 @@
         <div class="w-full max-w-md p-4">
             <div class="bg-white rounded-lg shadow-xl p-8">
                 <h2 id="auth-title" class="text-3xl font-bold text-center text-gray-800 mb-6">Bem-vindo</h2>
-                
                 <form id="login-form">
                     <div class="mb-4">
                         <label for="login-email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
@@ -70,15 +64,10 @@
                         <input type="password" id="login-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
                     <div class="flex items-center justify-between">
-                        <button type="submit" class="bg-indigo-800 hover:bg-indigo-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">
-                            Entrar
-                        </button>
-                        <a href="#" id="show-register" class="inline-block align-baseline font-bold text-sm text-indigo-600 hover:text-indigo-800">
-                            Criar Conta
-                        </a>
+                        <button type="submit" class="bg-indigo-800 hover:bg-indigo-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">Entrar</button>
+                        <a href="#" id="show-register" class="inline-block align-baseline font-bold text-sm text-indigo-600 hover:text-indigo-800">Criar Conta</a>
                     </div>
                 </form>
-
                 <form id="register-form" class="hidden">
                      <div class="mb-4">
                         <label for="register-email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
@@ -89,21 +78,14 @@
                         <input type="password" id="register-password" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
                     </div>
                     <div class="flex items-center justify-between">
-                        <button type="submit" class="bg-indigo-800 hover:bg-indigo-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">
-                            Registar
-                        </button>
-                        <a href="#" id="show-login" class="inline-block align-baseline font-bold text-sm text-indigo-600 hover:text-indigo-800">
-                            Já tenho conta
-                        </a>
+                        <button type="submit" class="bg-indigo-800 hover:bg-indigo-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors">Registar</button>
+                        <a href="#" id="show-login" class="inline-block align-baseline font-bold text-sm text-indigo-600 hover:text-indigo-800">Já tenho conta</a>
                     </div>
                 </form>
-
                 <p id="auth-error" class="text-red-500 text-xs italic mt-4 text-center"></p>
-
                 <div class="my-4 flex items-center before:flex-1 before:border-t before:border-gray-300 before:mt-0.5 after:flex-1 after:border-t after:border-gray-300 after:mt-0.5">
                     <p class="text-center font-semibold mx-4 mb-0 text-gray-500">OU</p>
                 </div>
-
                 <button id="google-signin-btn" class="w-full flex justify-center items-center gap-2 bg-white hover:bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded border border-gray-300 shadow-sm focus:outline-none focus:shadow-outline transition-colors">
                     <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path><path fill="none" d="M0 0h48v48H0z"></path></svg>
                     Entrar com Google
@@ -127,7 +109,7 @@
             <!-- Main Navigation Sidebar -->
             <aside id="main-nav-panel" class="bg-white rounded-r-lg lg:rounded-lg p-4 flex-col gap-4 w-full lg:w-60 hidden lg:flex flex-shrink-0 shadow-md">
                  <div class="p-2 flex-grow flex flex-col">
-                    <h1 class="text-2xl font-bold text-indigo-900 mb-8">Pregador App</h1>
+                    <h1 class="text-2xl font-bold text-indigo-900 mb-8">Oficina</h1>
                     <nav class="space-y-2">
                         <button data-view="dashboard-panel" class="main-nav-btn w-full text-left font-semibold p-3 rounded-lg flex items-center gap-3"><i class="fas fa-home fa-fw"></i>Início</button>
                         <button data-view="sermons-panel" class="main-nav-btn w-full text-left font-semibold p-3 rounded-lg flex items-center gap-3"><i class="fas fa-file-alt fa-fw"></i>Sermões</button>
@@ -139,7 +121,7 @@
                 </div>
             </aside>
             
-            <main id="main-content" class="flex-grow flex flex-col gap-4 h-full p-4 lg:p-0">
+            <main id="main-content" class="flex-grow flex flex-col gap-4 h-full p-4 lg:p-0 overflow-y-auto">
                 <!-- All main content panels will be dynamically inserted here -->
             </main>
         </div>
@@ -173,7 +155,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, serverTimestamp, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         let appInitialized = false;
         
@@ -187,6 +169,7 @@
             appId: "1:1091866768883:web:9290fd424ff5cbf0980e86",
             measurementId: "G-TBPTMVYF4M"
         };
+        const appId = 'sermon-workshop-app';
 
         // --- App Initialization ---
         const app = initializeApp(firebaseConfig);
@@ -196,8 +179,8 @@
         function initializeAppLogic() {
             if (appInitialized) return;
             appInitialized = true;
-            // All the app logic will be here
             console.log("App logic initialized for user:", auth.currentUser.uid);
+            // All app logic will be attached here
         }
 
         // --- Auth State Logic ---
@@ -218,6 +201,7 @@
                 authContainer.classList.remove('hidden');
                 appContainer.classList.add('hidden');
                 appContainer.classList.remove('flex');
+                // Cleanup listeners if necessary
             }
         });
         
