@@ -394,8 +394,11 @@
         import { getAuth, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // --- CHAVE DA API DE IA ---
+        // IMPORTANTE: Crie e cole aqui a sua chave da API do Google AI Studio
+        const GEMINI_API_KEY = "AIzaSyAFImZxjnCZJGiZDMdAtnQA2FBsD_ljdvA";
+
         // --- Firebase Configuration ---
-        // IMPORTANTE: Cole aqui as suas chaves do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCp2CxegdrcOk4Bj6I45_8LOl0nTOt3rEg",
             authDomain: "calendario-de-ministracao.firebaseapp.com",
@@ -1037,8 +1040,8 @@
                 suggestionResultEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>Gerando esboço...</div>';
                 useSuggestionBtn.classList.add('hidden');
                 generateSuggestionBtn.disabled = true;
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
                 const systemPrompt = `Você é um assistente pastoral e teólogo. Sua tarefa é criar esboços para sermões bíblicos. Seja claro, objetivo e estruture a resposta sempre da mesma forma.`;
                 const userQuery = `Crie um esboço de sermão sobre o tema "${theme}". A resposta DEVE ter o seguinte formato:\nTítulo: [Título do Sermão]\n\n[Restante do conteúdo do esboço, incluindo uma introdução, 3 pontos principais com versículos de apoio, e uma conclusão].`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
@@ -1160,8 +1163,8 @@
 
             const getVerseExplanation = async (reference, targetElement) => {
                 targetElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>A gerar explicação...</div>';
-                const apiKey = ""; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
                 const systemPrompt = `Você é um teólogo e estudioso da Bíblia. Forneça uma explicação clara e concisa para a passagem bíblica solicitada. Foque no contexto histórico, significado teológico e aplicação prática.`;
                 const userQuery = `Explique a passagem: ${reference}.`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
@@ -1189,8 +1192,8 @@
                 }
                 topicalResultsDisplay.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A procurar versículos sobre o tema...</div>';
                 
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
                 const systemPrompt = `Você é um assistente de estudo bíblico. Sua tarefa é encontrar referências bíblicas sobre um determinado tema.`;
                 const userQuery = `Liste 5 a 7 referências de versículos bíblicos chave sobre o tema "${theme}". Responda APENAS com as referências, separadas por vírgula (ex: João 3:16, Romanos 8:28, Salmos 23:1).`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
@@ -1465,4 +1468,5 @@
     </script>
 </body>
 </html>
+
 
