@@ -72,22 +72,23 @@
         .mobile-nav-btn.active {
             color: #34d399; /* emerald-400 */
         }
-        /* Custom details/summary marker */
-        details > summary {
-            list-style: none;
+        /* Reading Plan Checkbox */
+        .reading-plan-item.completed label {
+            color: #6b7280; /* text-gray-500 */
         }
-        details > summary::-webkit-details-marker {
-            display: none;
+        .reading-plan-item.completed .reading-scripture {
+             text-decoration: line-through;
         }
-        details > summary .marker {
-            transition: transform 0.2s;
-        }
-        details[open] > summary .marker {
-            transform: rotate(90deg);
+         .reading-plan-item input[type="checkbox"]:checked + label .reading-scripture {
+            text-decoration: line-through;
         }
     </style>
 </head>
 <body class="antialiased">
+
+    <div id="loading-overlay" class="fixed inset-0 bg-gray-900 flex items-center justify-center z-50">
+        <p class="text-white text-lg"><i class="fas fa-spinner fa-spin mr-2"></i>A carregar...</p>
+    </div>
 
     <!-- Main App Container -->
     <div id="app-container" class="hidden h-screen w-full lg:p-4 pb-20 lg:pb-4">
@@ -147,77 +148,77 @@
                 
                 <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-shrink-0">
                 
-                <div class="flex-grow flex flex-col gap-4 overflow-y-auto pr-2">
-                    <!-- Rich Text Editor -->
-                    <div class="flex flex-col h-1/2">
-                         <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap flex-shrink-0">
-                            <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
-                            <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
-                            <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
-                            <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
-                            <div class="w-px h-5 bg-gray-700 mx-1"></div>
-                            <div class="relative flex items-center" title="Cor da Fonte">
-                                <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
-                                <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
+                <div class="flex-grow flex flex-col lg:flex-row gap-4 overflow-hidden">
+                    <!-- Writing Column -->
+                    <div id="writing-column" class="w-full lg:w-2/3 flex flex-col gap-4 transition-all duration-300">
+                        <!-- Rich Text Editor -->
+                        <div class="flex flex-col flex-grow min-h-[200px]">
+                            <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap flex-shrink-0">
+                                <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
+                                <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
+                                <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
+                                <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
+                                <div class="w-px h-5 bg-gray-700 mx-1"></div>
+                                <div class="relative flex items-center" title="Cor da Fonte">
+                                    <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
+                                    <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
+                                </div>
+                                <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
+                                    <option value="3">Normal</option>
+                                    <option value="1">Mínimo</option>
+                                    <option value="2">Pequeno</option>
+                                    <option value="4">Médio</option>
+                                    <option value="5">Grande</option>
+                                    <option value="7">Enorme</option>
+                                </select>
                             </div>
-                            <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
-                                <option value="3">Normal</option>
-                                <option value="1">Mínimo</option>
-                                <option value="2">Pequeno</option>
-                                <option value="4">Médio</option>
-                                <option value="5">Grande</option>
-                                <option value="7">Enorme</option>
-                            </select>
+                            <div id="outline-content" contenteditable="true" class="w-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
                         </div>
-                        <div id="outline-content" contenteditable="true" class="w-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
+
+                        <!-- Notes Area -->
+                        <div class="flex flex-col flex-grow min-h-[150px]">
+                            <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300 flex-shrink-0">Notas e Ilustrações</label>
+                            <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." class="w-full flex-grow bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                        </div>
                     </div>
 
-                    <!-- Notes Area -->
-                     <div class="flex flex-col h-1/3">
-                         <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300 flex-shrink-0">Notas e Ilustrações</label>
-                        <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." class="w-full flex-grow bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
-                    </div>
+                    <!-- Study Column -->
+                    <aside id="integrated-study-panel" class="w-full lg:w-1/3 flex flex-col bg-gray-900 rounded-lg p-4 border border-gray-700 overflow-hidden transition-all duration-300">
+                        <div class="flex justify-between items-center mb-3 flex-shrink-0">
+                            <h3 class="text-lg font-bold text-white">Ferramentas de Estudo</h3>
+                            <button id="clear-study-results-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded-lg text-xs" title="Limpar Resultados"><i class="fas fa-times-circle"></i> Limpar</button>
+                        </div>
+                        <div class="flex-grow flex flex-col overflow-hidden">
+                            <!-- Sub-tabs for Study -->
+                            <div class="border-b border-gray-700 mb-2 flex-shrink-0">
+                                <nav id="study-sub-tabs" class="flex gap-4 -mb-px">
+                                    <button data-subtab="verse-lookup" class="study-subtab-btn py-2 px-1 border-b-2 border-emerald-400 text-white text-sm font-medium">Busca</button>
+                                    <button data-subtab="topical-study" class="study-subtab-btn py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Tema</button>
+                                </nav>
+                            </div>
 
-                    <!-- Study Tools Accordion -->
-                    <details id="study-tools-accordion" class="bg-gray-900 rounded-lg border border-gray-700 flex-shrink-0">
-                        <summary class="p-3 cursor-pointer flex justify-between items-center text-lg font-semibold text-white">
-                            <span><i class="fas fa-book-open mr-3"></i>Ferramentas de Estudo</span>
-                            <i class="fas fa-chevron-right marker"></i>
-                        </summary>
-                        <div class="p-4 border-t border-gray-700">
-                             <div id="study-tab-content" class="flex-grow flex flex-col overflow-hidden">
-                                <!-- Sub-tabs for Study -->
-                                <div class="border-b border-gray-700 mb-2">
-                                    <nav id="study-sub-tabs" class="flex gap-4 -mb-px">
-                                        <button data-subtab="verse-lookup" class="study-subtab-btn py-2 px-1 border-b-2 border-emerald-400 text-white text-sm font-medium">Busca por Versículo</button>
-                                        <button data-subtab="topical-study" class="study-subtab-btn py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Estudo por Tema</button>
-                                    </nav>
+                            <!-- Verse Lookup Pane -->
+                            <div id="verse-lookup-pane" class="study-subtab-pane flex-grow flex flex-col overflow-hidden">
+                                <div class="flex gap-2 mb-2 items-center flex-shrink-0">
+                                    <select id="bible-study-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
+                                    <input type="text" id="bible-ref-input" placeholder="3:16" class="w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                    <button id="fetch-verse-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Versículo"><i class="fas fa-search"></i></button>
                                 </div>
+                                <div id="verse-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm flex gap-3 overflow-x-auto"></div>
+                            </div>
 
-                                <!-- Verse Lookup Pane -->
-                                <div id="verse-lookup-pane" class="study-subtab-pane flex-grow flex flex-col overflow-hidden">
-                                    <div class="flex gap-2 mb-2 items-center">
-                                        <select id="bible-study-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
-                                        <input type="text" id="bible-ref-input" placeholder="3:16" class="w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                        <button id="fetch-verse-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Versículo"><i class="fas fa-search"></i></button>
-                                        <button id="clear-verses-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold p-2.5 rounded-lg" title="Limpar"><i class="fas fa-times-circle"></i></button>
-                                    </div>
-                                    <div id="verse-display" class="bg-gray-800 rounded-lg p-3 h-48 text-gray-300 text-sm flex gap-4 overflow-x-auto pb-4"></div>
+                            <!-- Topical Study Pane -->
+                            <div id="topical-study-pane" class="study-subtab-pane hidden flex-grow flex flex-col overflow-hidden">
+                                <div class="flex gap-2 mb-2 items-center flex-shrink-0">
+                                    <input type="text" id="topical-theme-input" placeholder="Ex: Fé, Amor, Esperança" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                    <button id="fetch-topic-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Tema"><i class="fas fa-search"></i></button>
                                 </div>
-
-                                <!-- Topical Study Pane -->
-                                <div id="topical-study-pane" class="study-subtab-pane hidden flex-grow flex flex-col overflow-hidden">
-                                    <div class="flex gap-2 mb-2 items-center">
-                                        <input type="text" id="topical-theme-input" placeholder="Digite um tema (ex: Fé, Amor, Esperança)" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                        <button id="fetch-topic-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Tema"><i class="fas fa-search"></i></button>
-                                    </div>
-                                    <div id="topical-results-display" class="bg-gray-800 rounded-lg p-3 h-48 text-gray-300 text-sm overflow-y-auto space-y-3">
-                                         <p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos relacionados.</p>
-                                    </div>
+                                <div id="topical-results-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3">
+                                     <p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos.</p>
                                 </div>
                             </div>
                         </div>
-                    </details>
+                    </aside>
                 </div>
 
                 <div class="mt-4 flex-shrink-0">
@@ -231,12 +232,31 @@
                  <div class="border-b border-gray-700 mb-4">
                     <nav id="right-tabs" class="flex gap-4 -mb-px">
                         <button data-tab="archive" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-book-bible mr-2"></i>Biblioteca</button>
+                        <button data-tab="reading-plan" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-tasks mr-2"></i>Plano de Leitura</button>
                         <button data-tab="fasting" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-pray mr-2"></i>Jejum</button>
                     </nav>
                 </div>
                 <div id="right-tab-content" class="flex-grow flex flex-col overflow-y-hidden">
                     <div id="archive-tab-content" class="right-tab-pane flex-grow overflow-y-auto">
                         <div id="archive-list" class="space-y-2"></div>
+                    </div>
+                    <div id="reading-plan-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
+                        <h3 class="text-xl font-semibold text-white mb-2">Plano de Leitura Bíblica</h3>
+                        <div class="mb-4">
+                            <label for="reading-plan-select" class="block mb-2 text-sm font-medium text-gray-300">Escolha um plano:</label>
+                            <select id="reading-plan-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
+                        </div>
+                        <div id="reading-plan-summary" class="bg-gray-900 rounded-lg p-3 mb-3 text-center">
+                            <p class="text-gray-400">Selecione um plano para começar.</p>
+                        </div>
+                        <div id="reading-plan-list" class="flex-grow overflow-y-auto space-y-2 pr-2">
+                        </div>
+                         <div id="achievements-section" class="mt-4 pt-4 border-t border-gray-700">
+                             <h4 class="text-lg font-semibold text-white mb-2">Conquistas</h4>
+                             <div id="achievements-list" class="space-y-3">
+                                <p class="text-gray-500 text-sm">Ainda não há conquistas.</p>
+                             </div>
+                         </div>
                     </div>
                     <div id="fasting-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
                         <h3 class="text-xl font-semibold text-white mb-2">Jejum e Oração</h3>
@@ -316,6 +336,21 @@
         </div>
     </div>
 
+    <!-- Reading Modal -->
+    <div id="reading-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
+        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
+            <h3 id="reading-modal-title" class="text-xl font-bold mb-4 text-white flex-shrink-0">Leitura do Dia</h3>
+            <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden">
+                <div id="reading-modal-text" class="bg-gray-900 rounded-lg p-4 overflow-y-auto text-gray-300 text-sm"></div>
+                <div id="reading-modal-explanation" class="bg-gray-900 rounded-lg p-4 overflow-y-auto text-gray-300 text-sm"></div>
+            </div>
+            <div class="mt-6 flex justify-end gap-3 flex-shrink-0">
+                <button id="close-reading-modal-btn" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Explanation Modal -->
      <div id="explanation-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
         <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
@@ -362,7 +397,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, signInWithCustomToken, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
         const firebaseConfig = typeof __firebase_config !== 'undefined' 
@@ -379,9 +414,12 @@
         const appContainer = document.getElementById('app-container');
         const userIdEl = document.getElementById('user-id');
         const userEmailEl = document.getElementById('user-email');
+        const loadingOverlay = document.getElementById('loading-overlay');
         
         let userId = null;
-        let outlinesUnsubscribe, engagementsUnsubscribe, fastingUnsubscribe;
+        let outlinesUnsubscribe, engagementsUnsubscribe, fastingUnsubscribe, readingPlanUnsubscribe;
+        let initialAuthResolved = false;
+        let appInitialized = false;
 
         // --- Auth State & App Startup ---
         const main = async () => {
@@ -393,19 +431,28 @@
 
                     appContainer.classList.remove('hidden');
                     appContainer.classList.add('flex');
+                    loadingOverlay.classList.add('hidden');
                     
-                    initializeAppLogic();
+                    if (!appInitialized) {
+                        initializeAppLogic();
+                        appInitialized = true;
+                    }
                 } else {
-                    userId = null;
-                    appContainer.classList.add('hidden');
-                    appContainer.classList.remove('flex');
-                    
-                    document.body.insertAdjacentHTML('beforeend', '<div class="flex items-center justify-center h-screen text-white">Sessão terminada. Por favor, recarregue a página.</div>');
+                    if (initialAuthResolved) {
+                        userId = null;
+                        appContainer.classList.add('hidden');
+                        appContainer.classList.remove('flex');
+                        loadingOverlay.innerHTML = `<p class="text-white text-lg">Sessão terminada. Por favor, recarregue a página.</p>`;
+                        loadingOverlay.classList.remove('hidden');
 
-                    if (outlinesUnsubscribe) outlinesUnsubscribe();
-                    if (engagementsUnsubscribe) engagementsUnsubscribe();
-                    if (fastingUnsubscribe) fastingUnsubscribe();
+                        if (outlinesUnsubscribe) outlinesUnsubscribe();
+                        if (engagementsUnsubscribe) engagementsUnsubscribe();
+                        if (fastingUnsubscribe) fastingUnsubscribe();
+                        if (readingPlanUnsubscribe) readingPlanUnsubscribe();
+                        appInitialized = false;
+                    }
                 }
+                initialAuthResolved = true;
             });
 
             try {
@@ -416,8 +463,7 @@
                 }
             } catch (error) {
                 console.error("Authentication Error:", error);
-                appContainer.innerHTML = `<div class="w-full h-full flex items-center justify-center text-red-500 text-center p-4"><p>Ocorreu um erro crítico na autenticação. Por favor, verifique a consola e recarregue a página.</p></div>`;
-                appContainer.classList.remove('hidden');
+                loadingOverlay.innerHTML = `<div class="w-full h-full flex items-center justify-center text-red-500 text-center p-4"><p>Ocorreu um erro crítico na autenticação. Por favor, verifique a consola e recarregue a página.</p></div>`;
             }
         };
 
@@ -429,7 +475,7 @@
         function initializeAppLogic() {
             let outlinesCol, engagementsCol, fastingCol;
             let currentDate = new Date();
-            let outlines = [], engagements = [], fastingSchedules = [];
+            let outlines = [], engagements = [], fastingSchedules = [], userReadingProgress = null;
             let currentEditingOutlineId = null, currentSelectedDate = null, currentEditingEngagementId = null;
             let isFocusMode = false;
 
@@ -438,6 +484,14 @@
                 "Mateus", "Marcos", "Lucas", "João", "Atos", "Romanos", "1 Coríntios", "2 Coríntios", "Gálatas", "Efésios", "Filipenses", "Colossenses", "1 Tessalonicenses", "2 Tessalonicenses", "1 Timóteo", "2 Timóteo", "Tito", "Filemom", "Hebreus", "Tiago", "1 Pedro", "2 Pedro", "1 João", "2 João", "3 João", "Judas", "Apocalipse"
             ];
             
+            // Abridged 365-day plan for demonstration
+            const READING_PLANS = {
+                completeBible365: {
+                    name: "Bíblia Completa em 365 dias",
+                    readings: ["Gênesis 1-3", "Gênesis 4-6", "Gênesis 7-9", "Gênesis 10-12", "Gênesis 13-16", "Gênesis 17-19", "Gênesis 20-22", "Gênesis 23-25", "Gênesis 26-28", "Gênesis 29-31", "Gênesis 32-34", "Gênesis 35-37", "Gênesis 38-40", "Gênesis 41-43", "Gênesis 44-46", "Gênesis 47-50", "Êxodo 1-4", "Êxodo 5-7", "Êxodo 8-10", "Êxodo 11-13", "Êxodo 14-16", "Êxodo 17-19", "Êxodo 20-22", "Êxodo 23-25", "Êxodo 26-28", "Êxodo 29-31", "Êxodo 32-34", "Êxodo 35-37", "Êxodo 38-40", "Levítico 1-4", "Levítico 5-7", "Levítico 8-10", "Levítico 11-13", "Levítico 14-16", "Levítico 17-19", "Levítico 20-22", "Levítico 23-25", "Levítico 26-27", "Números 1-3", "Números 4-6", "Números 7-9", "Números 10-12", "Números 13-15", "Números 16-18", "Números 19-21", "Números 22-24", "Números 25-27", "Números 28-30", "Números 31-33", "Números 34-36", "Deuteronômio 1-3", "Deuteronômio 4-6", "Deuteronômio 7-9", "Deuteronômio 10-12", "Deuteronômio 13-15", "Deuteronômio 16-18", "Deuteronômio 19-21", "Deuteronômio 22-24", "Deuteronômio 25-27", "Deuteronômio 28-30", "Deuteronômio 31-34", "Josué 1-4", "Josué 5-8", "Josué 9-12", "Josué 13-16", "Josué 17-20", "Josué 21-24", "Juízes 1-4", "Juízes 5-8", "Juízes 9-12", "Juízes 13-16", "Juízes 17-21", "Rute 1-4", "1 Samuel 1-4", "1 Samuel 5-8", "1 Samuel 9-12", "1 Samuel 13-16", "1 Samuel 17-20", "1 Samuel 21-24", "1 Samuel 25-28", "1 Samuel 29-31", "2 Samuel 1-4", "2 Samuel 5-8", "2 Samuel 9-12", "2 Samuel 13-16", "2 Samuel 17-20", "2 Samuel 21-24", "1 Reis 1-4", "1 Reis 5-8", "1 Reis 9-12", "1 Reis 13-16", "1 Reis 17-20", "1 Reis 21-22", "2 Reis 1-4", "2 Reis 5-8", "2 Reis 9-12", "2 Reis 13-16", "2 Reis 17-20", "2 Reis 21-25", "1 Crônicas 1-4", "1 Crônicas 5-8", "1 Crônicas 9-12", "1 Crônicas 13-16", "1 Crônicas 17-20", "1 Crônicas 21-24", "1 Crônicas 25-29", "2 Crônicas 1-5", "2 Crônicas 6-9", "2 Crônicas 10-14", "2 Crônicas 15-19", "2 Crônicas 20-24", "2 Crônicas 25-29", "2 Crônicas 30-33", "2 Crônicas 34-36", "Esdras 1-5", "Esdras 6-10", "Neemias 1-4", "Neemias 5-8", "Neemias 9-13", "Ester 1-5", "Ester 6-10", "Jó 1-5", "Jó 6-10", "Jó 11-15", "Jó 16-20", "Jó 21-25", "Jó 26-30", "Jó 31-35", "Jó 36-42", "Salmos 1-10", "Salmos 11-20", "Salmos 21-30", "Salmos 31-40", "Salmos 41-50", "Salmos 51-60", "Salmos 61-70", "Salmos 71-80", "Salmos 81-90", "Salmos 91-100", "Salmos 101-110", "Salmos 111-119", "Salmos 120-135", "Salmos 136-150", "Provérbios 1-5", "Provérbios 6-10", "Provérbios 11-15", "Provérbios 16-20", "Provérbios 21-25", "Provérbios 26-31", "Eclesiastes 1-6", "Eclesiastes 7-12", "Cânticos 1-8", "Isaías 1-5", "Isaías 6-10", "Isaías 11-15", "Isaías 16-20", "Isaías 21-25", "Isaías 26-30", "Isaías 31-35", "Isaías 36-40", "Isaías 41-45", "Isaías 46-50", "Isaías 51-55", "Isaías 56-60", "Isaías 61-66", "Jeremias 1-5", "Jeremias 6-10", "Jeremias 11-15", "Jeremias 16-20", "Jeremias 21-25", "Jeremias 26-30", "Jeremias 31-35", "Jeremias 36-40", "Jeremias 41-45", "Jeremias 46-52", "Lamentações 1-5", "Ezequiel 1-5", "Ezequiel 6-10", "Ezequiel 11-15", "Ezequiel 16-20", "Ezequiel 21-25", "Ezequiel 26-30", "Ezequiel 31-35", "Ezequiel 36-40", "Ezequiel 41-48", "Daniel 1-6", "Daniel 7-12", "Oséias 1-7", "Oséias 8-14", "Joel 1-3", "Amós 1-9", "Obadias 1", "Jonas 1-4", "Miquéias 1-7", "Naum 1-3", "Habacuque 1-3", "Sofonias 1-3", "Ageu 1-2", "Zacarias 1-7", "Zacarias 8-14", "Malaquias 1-4", "Mateus 1-4", "Mateus 5-7", "Mateus 8-10", "Mateus 11-13", "Mateus 14-16", "Mateus 17-19", "Mateus 20-22", "Mateus 23-25", "Mateus 26-28", "Marcos 1-4", "Marcos 5-8", "Marcos 9-12", "Marcos 13-16", "Lucas 1-3", "Lucas 4-6", "Lucas 7-9", "Lucas 10-12", "Lucas 13-15", "Lucas 16-18", "Lucas 19-21", "Lucas 22-24", "João 1-4", "João 5-8", "João 9-12", "João 13-16", "João 17-21", "Atos 1-4", "Atos 5-8", "Atos 9-12", "Atos 13-16", "Atos 17-20", "Atos 21-24", "Atos 25-28", "Romanos 1-4", "Romanos 5-8", "Romanos 9-12", "Romanos 13-16", "1 Coríntios 1-4", "1 Coríntios 5-8", "1 Coríntios 9-12", "1 Coríntios 13-16", "2 Coríntios 1-6", "2 Coríntios 7-13", "Gálatas 1-6", "Efésios 1-6", "Filipenses 1-4", "Colossenses 1-4", "1 Tessalonicenses 1-5", "2 Tessalonicenses 1-3", "1 Timóteo 1-6", "2 Timóteo 1-4", "Tito 1-3", "Filemom 1", "Hebreus 1-6", "Hebreus 7-10", "Hebreus 11-13", "Tiago 1-5", "1 Pedro 1-5", "2 Pedro 1-3", "1 João 1-5", "2 João 1", "3 João 1", "Judas 1", "Apocalipse 1-5", "Apocalipse 6-11", "Apocalipse 12-17", "Apocalipse 18-22"]
+                }
+            };
+
             const monthYearEl = document.getElementById('month-year');
             const calendarGridEl = document.getElementById('calendar-grid');
             const saveOutlineBtn = document.getElementById('save-outline-btn');
@@ -488,6 +542,17 @@
             const leftPanel = document.getElementById('left-panel');
             const rightPanel = document.getElementById('right-panel');
             const centerPanel = document.getElementById('center-panel');
+            const writingColumn = document.getElementById('writing-column');
+            const integratedStudyPanel = document.getElementById('integrated-study-panel');
+            const readingPlanSelect = document.getElementById('reading-plan-select');
+            const readingPlanSummary = document.getElementById('reading-plan-summary');
+            const readingPlanList = document.getElementById('reading-plan-list');
+            const achievementsList = document.getElementById('achievements-list');
+            const readingModal = document.getElementById('reading-modal');
+            const readingModalTitle = document.getElementById('reading-modal-title');
+            const readingModalText = document.getElementById('reading-modal-text');
+            const readingModalExplanation = document.getElementById('reading-modal-explanation');
+            const closeReadingModalBtn = document.getElementById('close-reading-modal-btn');
             
             let confirmationCallback = null;
 
@@ -626,7 +691,6 @@
                 printWindow.document.close();
                 printWindow.focus();
                 
-                // Wait for content to render before printing
                 setTimeout(() => {
                     printWindow.print();
                     printWindow.close();
@@ -662,17 +726,8 @@
                         `;
                         
                         li.querySelector('span').addEventListener('click', () => loadOutlineIntoEditor(outline.id));
-                        
-                        li.querySelector('.print-outline-btn').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            printOutline(outline.id);
-                        });
-
-                        li.querySelector('.download-outline-btn').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            downloadOutline(outline.id);
-                        });
-
+                        li.querySelector('.print-outline-btn').addEventListener('click', (e) => { e.stopPropagation(); printOutline(outline.id); });
+                        li.querySelector('.download-outline-btn').addEventListener('click', (e) => { e.stopPropagation(); downloadOutline(outline.id); });
                         li.querySelector('.delete-outline-btn').addEventListener('click', (e) => {
                             e.stopPropagation();
                             showConfirmationModal('Tem certeza que deseja excluir este esboço?', async () => {
@@ -681,7 +736,6 @@
                                if(currentEditingOutlineId === outline.id) clearEditor();
                             });
                         });
-
                         list.appendChild(li);
                     });
                     bookSection.appendChild(list);
@@ -738,8 +792,11 @@
             };
 
             const renderVerseDisplayPlaceholder = () => {
-                if (verseDisplayEl.children.length === 0) {
+                if(verseDisplayEl.children.length === 0) {
                     verseDisplayEl.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full w-full text-center">Consulte um versículo...</p>';
+                }
+                if (topicalResultsDisplay.children.length === 0) {
+                   topicalResultsDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos.</p>';
                 }
             };
             
@@ -760,6 +817,15 @@
                 fastingUnsubscribe = onSnapshot(query(fastingCol), (snapshot) => {
                     fastingSchedules = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     renderFastingSchedules();
+                });
+                const readingPlanDoc = doc(db, `artifacts/${appId}/users/${userId}/readingPlan/progress`);
+                readingPlanUnsubscribe = onSnapshot(readingPlanDoc, (snapshot) => {
+                    if (snapshot.exists()) {
+                        userReadingProgress = snapshot.data();
+                    } else {
+                        userReadingProgress = { activePlan: null, completedDays: [], achievements: [] };
+                    }
+                    renderReadingPlan();
                 });
             };
             
@@ -848,10 +914,8 @@
                 }
                 const engagementData = { date: currentSelectedDate, title: title, outlineId: outlineId };
                 if (currentEditingEngagementId) {
-                    // Update existing engagement
                     await setDoc(doc(engagementsCol, currentEditingEngagementId), engagementData, { merge: true });
                 } else {
-                    // Add new engagement
                     await addDoc(engagementsCol, engagementData);
                 }
                 showToast('Agendamento salvo!');
@@ -886,54 +950,47 @@
                 fastingNotesEl.value = '';
             };
 
-            const clearVerses = () => {
-                verseDisplayEl.innerHTML = '';
-                renderVerseDisplayPlaceholder();
-                showToast('Resultados limpos.');
-            };
-
-            const fetchVerse = async (referenceOverride = null, targetElement = verseDisplayEl, isTopicalSearch = false) => {
-                const book = bibleStudyBookSelectEl.value;
-                const userInput = bibleRefInputEl.value.trim();
-                
+            const fetchVerse = async (referenceOverride = null, targetElement = verseDisplayEl, isTopicalSearch = false, isModal = false) => {
                 let reference;
                 if (referenceOverride) {
                     reference = referenceOverride;
                 } else {
+                    const book = bibleStudyBookSelectEl.value;
+                    const userInput = bibleRefInputEl.value.trim();
                     if (!userInput) return;
                     reference = /[a-zA-ZáéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ]/.test(userInput) ? userInput : `${book} ${userInput}`;
                 }
+                
+                targetElement.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Buscando ${reference}...</div>`;
 
-                if (targetElement.querySelector('.italic')) targetElement.innerHTML = '';
-                
-                const loadingEl = document.createElement('div');
-                if(isTopicalSearch) {
-                    loadingEl.className = "w-full p-3 border border-gray-700 rounded-lg bg-gray-800 animate-pulse";
-                } else {
-                    loadingEl.className = "w-72 flex-shrink-0 p-3 border border-gray-700 rounded-lg bg-gray-800 animate-pulse";
-                }
-                loadingEl.innerHTML = `Buscando ${reference}...`;
-                targetElement.appendChild(loadingEl);
-                
                 try {
                     const response = await fetch(`https://bible-api.com/${reference}?translation=almeida`);
                     if (!response.ok) throw new Error('Referência não encontrada.');
                     const data = await response.json();
-                    loadingEl.remove();
                     
-                    let verseContent = '';
-                    if (data.verses) {
-                        verseContent = data.verses.map(v => `<p class="mb-2"><strong>${v.verse}</strong>&nbsp;${v.text}</p>`).join('');
-                    } else {
-                        verseContent = `<p>${data.text}</p>`;
-                    }
+                    let verseContent = ``;
+                    if(isModal) verseContent += `<h4 class="text-lg font-bold text-emerald-400 mb-2">${data.reference}</h4>`;
 
-                    const verseEl = document.createElement('div');
-                    if(isTopicalSearch){
-                         verseEl.className = "w-full p-3 border border-gray-700 rounded-lg bg-gray-800 flex flex-col";
+                    if (data.verses) {
+                        verseContent += data.verses.map(v => `<p class="mb-2"><strong>${v.verse}</strong>&nbsp;${v.text}</p>`).join('');
                     } else {
-                         verseEl.className = "w-72 flex-shrink-0 p-3 border border-gray-700 rounded-lg bg-gray-800 h-full flex flex-col";
+                        verseContent += `<p>${data.text}</p>`;
                     }
+                    
+                    if(isModal) {
+                        targetElement.innerHTML = verseContent;
+                        return;
+                    }
+                    
+                    if (targetElement.querySelector('.italic')) targetElement.innerHTML = '';
+                    
+                    const verseEl = document.createElement('div');
+                    let verseElClasses = isTopicalSearch 
+                        ? "w-full p-3 border border-gray-700 rounded-lg bg-gray-800 flex flex-col"
+                        : "w-72 flex-shrink-0 p-3 border border-gray-700 rounded-lg bg-gray-800 h-full flex flex-col";
+                    
+                    verseEl.className = verseElClasses;
+
                     verseEl.innerHTML = `
                         <div class="flex justify-between items-center mb-1">
                             <p class="font-bold text-emerald-400">${data.reference}</p>
@@ -942,42 +999,27 @@
                                  <button class="remove-verse-btn text-gray-500 hover:text-red-400 text-xs"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
-                        <div class="${isTopicalSearch ? '' : 'overflow-y-auto flex-grow min-h-0'}">${verseContent}</div>
+                        <div class="overflow-y-auto flex-grow min-h-0">${verseContent}</div>
                     `;
                     verseEl.querySelector('.remove-verse-btn').addEventListener('click', () => {
                         verseEl.remove();
-                        if (targetElement.children.length === 0) {
-                             if(isTopicalSearch){
-                                topicalResultsDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos relacionados.</p>';
-                             } else {
-                                renderVerseDisplayPlaceholder();
-                             }
-                        }
+                        renderVerseDisplayPlaceholder();
                     });
                     verseEl.querySelector('.explain-verse-btn').addEventListener('click', () => openExplanationModal(data.reference));
                     
                     targetElement.appendChild(verseEl);
+
                     if(!isTopicalSearch) {
                        bibleRefInputEl.value = ''; 
                        bibleRefInputEl.focus();
+                       targetElement.scrollLeft = targetElement.scrollWidth;
                     }
 
                 } catch (error) {
-                    loadingEl.innerHTML = `<p class="text-red-400">Erro ao buscar ${reference}: ${error.message}</p>`;
+                    targetElement.innerHTML = `<p class="text-red-400 p-3">Erro ao buscar ${reference}: ${error.message}</p>`;
                     setTimeout(() => { 
-                        loadingEl.remove();
-                         if (targetElement.children.length === 0) {
-                             if(isTopicalSearch){
-                                topicalResultsDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos relacionados.</p>';
-                             } else {
-                                renderVerseDisplayPlaceholder();
-                             }
-                        }
+                        renderVerseDisplayPlaceholder();
                     }, 3000);
-                } finally {
-                    if(!isTopicalSearch) {
-                         targetElement.scrollLeft = targetElement.scrollWidth;
-                    }
                 }
             };
             
@@ -1103,7 +1145,7 @@
                 explanationResult.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A carregar explicação...</div>';
                 explanationModal.classList.remove('hidden');
                 explanationModal.classList.add('flex');
-                getVerseExplanation(reference);
+                getVerseExplanation(reference, explanationResult);
             };
 
             const closeExplanationModal = () => {
@@ -1111,11 +1153,12 @@
                 explanationModal.classList.remove('flex');
             };
 
-            const getVerseExplanation = async (reference) => {
+            const getVerseExplanation = async (reference, targetElement) => {
+                targetElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>A gerar explicação...</div>';
                 const apiKey = ""; 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                const systemPrompt = `Você é um teólogo e estudioso da Bíblia. Forneça uma explicação clara e concisa para o versículo bíblico solicitado. Foque no contexto histórico, significado teológico e aplicação prática.`;
-                const userQuery = `Explique o versículo: ${reference}.`;
+                const systemPrompt = `Você é um teólogo e estudioso da Bíblia. Forneça uma explicação clara e concisa para a passagem bíblica solicitada. Foque no contexto histórico, significado teológico e aplicação prática.`;
+                const userQuery = `Explique a passagem: ${reference}.`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
                 try {
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -1123,13 +1166,13 @@
                     const result = await response.json();
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (text) {
-                        explanationResult.textContent = text;
+                        targetElement.innerHTML = text.replace(/\n/g, '<br>');
                     } else {
                         throw new Error("Resposta da IA inválida ou vazia.");
                     }
                 } catch (error) {
                     console.error("Error getting explanation:", error);
-                    explanationResult.textContent = `Ocorreu um erro ao buscar a explicação. Detalhes: ${error.message}`;
+                    targetElement.textContent = `Ocorreu um erro ao buscar a explicação. Detalhes: ${error.message}`;
                 }
             };
 
@@ -1158,7 +1201,7 @@
                         const references = text.split(',').map(ref => ref.trim());
                         for (const ref of references) {
                             if (ref) {
-                               await fetchVerse(ref, topicalResultsDisplay, true);
+                               await fetchVerse(ref, topicalResultsDisplay, true, false);
                             }
                         }
                     } else {
@@ -1175,9 +1218,9 @@
                 isFocusMode = !isFocusMode;
                 const icon = toggleFocusModeBtn.querySelector('i');
                 
-                leftPanel.classList.toggle('hidden', isFocusMode);
-                rightPanel.classList.toggle('hidden', isFocusMode);
-
+                leftPanel.classList.toggle('lg:hidden', isFocusMode);
+                rightPanel.classList.toggle('lg:hidden', isFocusMode);
+                
                 centerPanel.classList.toggle('lg:w-1/2', !isFocusMode);
                 centerPanel.classList.toggle('lg:w-full', isFocusMode);
 
@@ -1190,6 +1233,162 @@
                     icon.classList.add('fa-expand-arrows-alt');
                     toggleFocusModeBtn.title = "Modo Foco";
                 }
+            };
+
+            const renderReadingPlan = () => {
+                if (!userReadingProgress) return;
+                
+                readingPlanSelect.innerHTML = '<option value="">Nenhum plano ativo</option>';
+                for(const planId in READING_PLANS) {
+                    const option = new Option(READING_PLANS[planId].name, planId);
+                    readingPlanSelect.add(option);
+                }
+                readingPlanSelect.value = userReadingProgress.activePlan || "";
+
+                readingPlanList.innerHTML = '';
+                const activePlanId = userReadingProgress.activePlan;
+
+                // Render achievements
+                achievementsList.innerHTML = '';
+                const achievements = userReadingProgress.achievements || [];
+                if(achievements.length > 0) {
+                     achievements.forEach(ach => {
+                        const achEl = document.createElement('div');
+                        achEl.className = "flex items-center gap-4 bg-gray-900 p-3 rounded-lg";
+                        achEl.innerHTML = `
+                            <div class="text-yellow-400 text-3xl"><i class="fas fa-award"></i></div>
+                            <div>
+                                <p class="font-bold text-white">${READING_PLANS[ach.planId]?.name || 'Plano Completado'}</p>
+                                <p class="text-xs text-gray-400">Completado em ${ach.completionDate.toDate().toLocaleDateString('pt-BR')} em ${ach.durationDays} dias.</p>
+                            </div>
+                        `;
+                        achievementsList.appendChild(achEl);
+                    });
+                } else {
+                     achievementsList.innerHTML = `<p class="text-gray-500 text-sm">Ainda não há conquistas.</p>`;
+                }
+
+
+                if (!activePlanId || !READING_PLANS[activePlanId]) {
+                    readingPlanSummary.innerHTML = `<p class="text-gray-400">Selecione um plano para começar.</p>`;
+                    return;
+                }
+
+                const plan = READING_PLANS[activePlanId];
+                const completed = userReadingProgress.completedDays || [];
+                const totalDays = plan.readings.length;
+                const completedCount = completed.length;
+                const progress = totalDays > 0 ? Math.round((completedCount / totalDays) * 100) : 0;
+
+                readingPlanSummary.innerHTML = `
+                    <p class="font-semibold text-white">${plan.name}</p>
+                    <p class="text-sm text-emerald-400">Progresso: ${completedCount} de ${totalDays} dias (${progress}%)</p>
+                `;
+
+                plan.readings.forEach((reading, index) => {
+                    const day = index + 1;
+                    const isCompleted = completed.includes(day);
+                    const item = document.createElement('div');
+                    item.className = `reading-plan-item flex items-center gap-3 p-2 rounded-lg group`;
+                    item.innerHTML = `
+                        <input type="checkbox" data-day="${day}" id="day-${day}" class="form-checkbox h-5 w-5 bg-gray-800 border-gray-600 text-emerald-500 focus:ring-emerald-500" ${isCompleted ? 'checked' : ''}>
+                        <label for="day-${day}" class="flex-grow cursor-pointer flex justify-between items-center ${isCompleted ? 'completed' : ''}">
+                            <span class="reading-scripture">
+                                <span class="font-bold text-sm">Dia ${day}:</span>
+                                <span class="text-gray-300 ml-2">${reading}</span>
+                            </span>
+                             <button data-reading="${reading}" class="read-and-explain-btn text-sky-400 hover:text-sky-300 text-xs opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-book-open"></i></button>
+                        </label>
+                    `;
+                    item.querySelector('input').addEventListener('change', handleReadingCheck);
+                    item.querySelector('.read-and-explain-btn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openReadingModal(reading);
+                    });
+                    readingPlanList.appendChild(item);
+                });
+            };
+
+            const handleReadingCheck = async (e) => {
+                const day = parseInt(e.target.dataset.day);
+                const isChecked = e.target.checked;
+                let completedDays = userReadingProgress.completedDays || [];
+                let achievements = userReadingProgress.achievements || [];
+
+                if (isChecked) {
+                    if (!completedDays.includes(day)) {
+                        completedDays.push(day);
+                    }
+                } else {
+                    completedDays = completedDays.filter(d => d !== day);
+                }
+                
+                const activePlanId = userReadingProgress.activePlan;
+                const plan = READING_PLANS[activePlanId];
+                
+                // Check for completion
+                if (isChecked && completedDays.length === plan.readings.length) {
+                    const startDate = userReadingProgress.planStartDate.toDate();
+                    const completionDate = new Date();
+                    const durationMs = completionDate - startDate;
+                    const durationDays = Math.ceil(durationMs / (1000 * 60 * 60 * 24));
+
+                    const newAchievement = {
+                        planId: activePlanId,
+                        completionDate: Timestamp.fromDate(completionDate),
+                        durationDays: durationDays
+                    };
+                    achievements.push(newAchievement);
+                    showToast(`Parabéns! Completou o plano '${plan.name}'!`);
+                }
+
+
+                const newProgress = { ...userReadingProgress, completedDays: completedDays.sort((a,b) => a-b), achievements };
+                const readingPlanDoc = doc(db, `artifacts/${appId}/users/${userId}/readingPlan/progress`);
+                await setDoc(readingPlanDoc, newProgress);
+            };
+
+            const handlePlanChange = async (e) => {
+                const newPlanId = e.target.value;
+                if (newPlanId === userReadingProgress.activePlan) return;
+
+                const startNewPlan = async () => {
+                    const newProgress = { 
+                        ...userReadingProgress,
+                        activePlan: newPlanId || null, 
+                        completedDays: [],
+                        planStartDate: Timestamp.fromDate(new Date()) 
+                    };
+                    const readingPlanDoc = doc(db, `artifacts/${appId}/users/${userId}/readingPlan/progress`);
+                    await setDoc(readingPlanDoc, newProgress);
+                    if(newPlanId) {
+                        showToast(`Plano '${READING_PLANS[newPlanId].name}' iniciado!`);
+                    } else {
+                         showToast(`Nenhum plano de leitura ativo.`);
+                    }
+                }
+
+                if (userReadingProgress.activePlan && userReadingProgress.completedDays.length > 0) {
+                     showConfirmationModal('Mudar de plano irá apagar o seu progresso atual. Deseja continuar?', () => {
+                        startNewPlan();
+                    });
+                    readingPlanSelect.value = userReadingProgress.activePlan;
+                } else {
+                    startNewPlan();
+                }
+            };
+
+            const openReadingModal = (reference) => {
+                readingModalTitle.textContent = `Leitura e Estudo: ${reference}`;
+                readingModal.classList.remove('hidden');
+                readingModal.classList.add('flex');
+                fetchVerse(reference, readingModalText, false, true);
+                getVerseExplanation(reference, readingModalExplanation);
+            };
+
+            const closeReadingModal = () => {
+                readingModal.classList.add('hidden');
+                readingModal.classList.remove('flex');
             };
 
 
@@ -1207,9 +1406,15 @@
             document.getElementById('cancel-engagement').onclick = closeEngagementModal;
             document.getElementById('save-engagement').onclick = handleSaveEngagement;
             document.getElementById('delete-engagement').onclick = handleDeleteEngagement;
-            document.getElementById('fetch-verse-btn').onclick = () => fetchVerse(null, verseDisplayEl);
-            document.getElementById('clear-verses-btn').onclick = clearVerses;
-            bibleRefInputEl.onkeypress = (e) => { if (e.key === 'Enter') fetchVerse(null, verseDisplayEl); };
+            document.getElementById('fetch-verse-btn').onclick = () => fetchVerse(null, verseDisplayEl, false, false);
+            document.getElementById('clear-study-results-btn').onclick = () => {
+                verseDisplayEl.innerHTML = '';
+                topicalResultsDisplay.innerHTML = '';
+                renderVerseDisplayPlaceholder();
+                showToast('Resultados limpos.');
+            };
+
+            bibleRefInputEl.onkeypress = (e) => { if (e.key === 'Enter') fetchVerse(null, verseDisplayEl, false, false); };
             document.getElementById('right-tabs').onclick = (e) => {
                 const tabBtn = e.target.closest('.tab-btn');
                 if(tabBtn) switchTab(tabBtn.dataset.tab);
@@ -1243,6 +1448,8 @@
             topicalThemeInput.onkeypress = (e) => { if (e.key === 'Enter') handleTopicalSearch(); };
             closeExplanationBtn.onclick = closeExplanationModal;
             toggleFocusModeBtn.onclick = toggleFocusMode;
+            readingPlanSelect.onchange = handlePlanChange;
+            closeReadingModalBtn.onclick = closeReadingModal;
 
             setupFirebaseListeners();
             switchTab('archive');
