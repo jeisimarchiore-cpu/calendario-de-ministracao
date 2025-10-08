@@ -172,85 +172,45 @@
                             <i class="fas fa-expand-arrows-alt"></i>
                         </button>
                         <div class="w-px h-6 bg-gray-700"></div>
+                        <button id="open-study-tools-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Ferramentas de Estudo"><i class="fas fa-book-open"></i> <span class="hidden md:inline">Estudo</span></button>
                         <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> <span class="hidden md:inline">Gerar Ideia</span></button>
                         <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> <span class="hidden md:inline">Salvar</span></button>
                         <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> <span class="hidden md:inline">Limpar</span></button>
                     </div>
                 </div>
                 
-                <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-shrink-0">
+                <div class="flex-grow flex flex-col gap-4 overflow-y-auto pr-2">
+                    <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-shrink-0">
                 
-                <div class="flex-grow flex flex-col lg:flex-row gap-4 overflow-hidden">
-                    <!-- Writing Column -->
-                    <div id="writing-column" class="w-full lg:w-2/3 flex flex-col gap-4 transition-all duration-300">
-                        <!-- Rich Text Editor -->
-                        <div class="flex flex-col flex-grow min-h-[200px]">
-                            <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap flex-shrink-0">
-                                <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
-                                <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
-                                <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
-                                <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
-                                <div class="w-px h-5 bg-gray-700 mx-1"></div>
-                                <div class="relative flex items-center" title="Cor da Fonte">
-                                    <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
-                                    <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
-                                </div>
-                                <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
-                                    <option value="3">Normal</option>
-                                    <option value="1">Mínimo</option>
-                                    <option value="2">Pequeno</option>
-                                    <option value="4">Médio</option>
-                                    <option value="5">Grande</option>
-                                    <option value="7">Enorme</option>
-                                </select>
+                    <!-- Rich Text Editor -->
+                    <div class="flex flex-col flex-grow min-h-[250px]">
+                        <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap flex-shrink-0">
+                            <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
+                            <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
+                            <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
+                            <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
+                            <div class="w-px h-5 bg-gray-700 mx-1"></div>
+                            <div class="relative flex items-center" title="Cor da Fonte">
+                                <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
+                                <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
                             </div>
-                            <div id="outline-content" contenteditable="true" class="w-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
+                            <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
+                                <option value="3">Normal</option>
+                                <option value="1">Mínimo</option>
+                                <option value="2">Pequeno</option>
+                                <option value="4">Médio</option>
+                                <option value="5">Grande</option>
+                                <option value="7">Enorme</option>
+                            </select>
                         </div>
-
-                        <!-- Notes Area -->
-                        <div class="flex flex-col flex-grow min-h-[150px]">
-                            <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300 flex-shrink-0">Notas e Ilustrações</label>
-                            <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." class="w-full flex-grow bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
-                        </div>
+                        <div id="outline-content" contenteditable="true" class="w-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
                     </div>
 
-                    <!-- Study Column -->
-                    <aside id="integrated-study-panel" class="w-full lg:w-1/3 flex flex-col bg-gray-900 rounded-lg p-4 border border-gray-700 overflow-hidden transition-all duration-300">
-                        <div class="flex justify-between items-center mb-3 flex-shrink-0">
-                            <h3 class="text-lg font-bold text-white">Ferramentas de Estudo</h3>
-                            <button id="clear-study-results-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded-lg text-xs" title="Limpar Resultados"><i class="fas fa-times-circle"></i> Limpar</button>
-                        </div>
-                        <div class="flex-grow flex flex-col overflow-hidden">
-                            <!-- Sub-tabs for Study -->
-                            <div class="border-b border-gray-700 mb-2 flex-shrink-0">
-                                <nav id="study-sub-tabs" class="flex gap-4 -mb-px">
-                                    <button data-subtab="verse-lookup" class="study-subtab-btn py-2 px-1 border-b-2 border-emerald-400 text-white text-sm font-medium">Busca</button>
-                                    <button data-subtab="topical-study" class="study-subtab-btn py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Tema</button>
-                                </nav>
-                            </div>
-
-                            <!-- Verse Lookup Pane -->
-                            <div id="verse-lookup-pane" class="study-subtab-pane flex-grow flex flex-col overflow-hidden">
-                                <div class="flex gap-2 mb-2 items-center flex-shrink-0">
-                                    <select id="bible-study-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
-                                    <input type="text" id="bible-ref-input" placeholder="3:16" class="w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                    <button id="fetch-verse-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Versículo"><i class="fas fa-search"></i></button>
-                                </div>
-                                <div id="verse-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm flex gap-3 overflow-x-auto"></div>
-                            </div>
-
-                            <!-- Topical Study Pane -->
-                            <div id="topical-study-pane" class="study-subtab-pane hidden flex-grow flex flex-col overflow-hidden">
-                                <div class="flex gap-2 mb-2 items-center flex-shrink-0">
-                                    <input type="text" id="topical-theme-input" placeholder="Ex: Fé, Amor, Esperança" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                    <button id="fetch-topic-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Tema"><i class="fas fa-search"></i></button>
-                                </div>
-                                <div id="topical-results-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3">
-                                     <p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
+                    <!-- Notes Area -->
+                    <div class="flex flex-col flex-grow min-h-[150px]">
+                        <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300 flex-shrink-0">Notas e Ilustrações</label>
+                        <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." class="w-full flex-grow bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                    </div>
                 </div>
 
                 <div class="mt-4 flex-shrink-0">
@@ -264,7 +224,8 @@
                  <div class="border-b border-gray-700 mb-4">
                     <nav id="right-tabs" class="flex gap-4 -mb-px">
                         <button data-tab="archive" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-book-bible mr-2"></i>Biblioteca</button>
-                        <button data-tab="reading-plan" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-tasks mr-2"></i>Plano de Leitura</button>
+                        <button data-tab="reading-plan" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-tasks mr-2"></i>Plano</button>
+                        <button data-tab="achievements" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-award mr-2"></i>Conquistas</button>
                         <button data-tab="fasting" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-pray mr-2"></i>Jejum</button>
                     </nav>
                 </div>
@@ -273,24 +234,22 @@
                         <div id="archive-list" class="space-y-2"></div>
                     </div>
                     <div id="reading-plan-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
-                        <div class="flex-grow flex flex-col overflow-hidden">
-                            <h3 class="text-xl font-semibold text-white mb-2 flex-shrink-0">Plano de Leitura Bíblica</h3>
-                            <div class="mb-4 flex-shrink-0">
-                                <label for="reading-plan-select" class="block mb-2 text-sm font-medium text-gray-300">Escolha um plano:</label>
-                                <select id="reading-plan-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
-                            </div>
-                            <div id="reading-plan-summary" class="bg-gray-900 rounded-lg p-3 mb-3 text-center flex-shrink-0">
-                                <p class="text-gray-400">Selecione um plano para começar.</p>
-                            </div>
-                            <div id="reading-plan-list" class="flex-grow overflow-y-auto space-y-2 pr-2">
-                            </div>
+                        <h3 class="text-xl font-semibold text-white mb-2 flex-shrink-0">Plano de Leitura Bíblica</h3>
+                        <div class="mb-4 flex-shrink-0">
+                            <label for="reading-plan-select" class="block mb-2 text-sm font-medium text-gray-300">Escolha um plano:</label>
+                            <select id="reading-plan-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
                         </div>
-                         <div id="achievements-section" class="mt-4 pt-4 border-t border-gray-700 flex-shrink-0">
-                             <h4 class="text-lg font-semibold text-white mb-2">Galeria de Selos</h4>
-                             <div id="achievements-list" class="space-y-3">
-                                <!-- Seals will be rendered here -->
-                             </div>
-                         </div>
+                        <div id="reading-plan-summary" class="bg-gray-900 rounded-lg p-3 mb-3 text-center flex-shrink-0">
+                            <p class="text-gray-400">Selecione um plano para começar.</p>
+                        </div>
+                        <div id="reading-plan-list" class="flex-grow overflow-y-auto space-y-2 pr-2">
+                        </div>
+                    </div>
+                    <div id="achievements-tab-content" class="right-tab-pane hidden flex-grow flex flex-col overflow-y-auto">
+                        <h3 class="text-xl font-semibold text-white mb-4">Galeria de Selos</h3>
+                        <div id="achievements-list" class="space-y-4">
+                           <!-- Seals will be rendered here -->
+                        </div>
                     </div>
                     <div id="fasting-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
                         <h3 class="text-xl font-semibold text-white mb-2">Jejum e Oração</h3>
@@ -369,6 +328,50 @@
             </div>
         </div>
     </div>
+
+     <!-- Study Tools Modal -->
+    <div id="study-tools-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
+        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-3xl flex flex-col max-h-[90vh]">
+             <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                <h3 class="text-xl font-bold text-white">Ferramentas de Estudo</h3>
+                <button id="clear-study-results-btn-modal" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded-lg text-xs" title="Limpar Resultados"><i class="fas fa-times-circle"></i> Limpar</button>
+            </div>
+             <div class="flex-grow flex flex-col overflow-hidden">
+                <!-- Sub-tabs for Study -->
+                <div class="border-b border-gray-700 mb-2 flex-shrink-0">
+                    <nav id="study-sub-tabs-modal" class="flex gap-4 -mb-px">
+                        <button data-subtab="verse-lookup-modal" class="study-subtab-btn-modal py-2 px-1 border-b-2 border-emerald-400 text-white text-sm font-medium">Busca</button>
+                        <button data-subtab="topical-study-modal" class="study-subtab-btn-modal py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Tema</button>
+                    </nav>
+                </div>
+
+                <!-- Verse Lookup Pane -->
+                <div id="verse-lookup-pane-modal" class="study-subtab-pane-modal flex-grow flex flex-col overflow-hidden">
+                    <div class="flex gap-2 mb-2 items-center flex-shrink-0">
+                        <select id="bible-study-book-select-modal" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
+                        <input type="text" id="bible-ref-input-modal" placeholder="3:16" class="w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                        <button id="fetch-verse-btn-modal" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Versículo"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div id="verse-display-modal" class="bg-gray-900 rounded-lg p-3 flex-grow text-gray-300 text-sm flex gap-4 overflow-x-auto pb-4"></div>
+                </div>
+
+                <!-- Topical Study Pane -->
+                <div id="topical-study-pane-modal" class="study-subtab-pane-modal hidden flex-grow flex flex-col overflow-hidden">
+                    <div class="flex gap-2 mb-2 items-center flex-shrink-0">
+                        <input type="text" id="topical-theme-input-modal" placeholder="Digite um tema (ex: Fé, Amor, Esperança)" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                        <button id="fetch-topic-btn-modal" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Tema"><i class="fas fa-search"></i></button>
+                    </div>
+                    <div id="topical-results-display-modal" class="bg-gray-900 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3">
+                         <p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos relacionados.</p>
+                    </div>
+                </div>
+             </div>
+             <div class="mt-6 flex justify-end gap-3 flex-shrink-0">
+                <button id="close-study-tools-btn" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Reading Modal -->
     <div id="reading-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
@@ -553,9 +556,9 @@
             const modalOutlineSelectEl = document.getElementById('modal-outline-select');
             const engagementsListEl = document.getElementById('engagements-list');
             const editorTitleEl = document.getElementById('editor-title');
-            const bibleStudyBookSelectEl = document.getElementById('bible-study-book-select');
-            const verseDisplayEl = document.getElementById('verse-display');
-            const bibleRefInputEl = document.getElementById('bible-ref-input');
+            const bibleStudyBookSelectEl = document.getElementById('bible-study-book-select-modal');
+            const verseDisplayEl = document.getElementById('verse-display-modal');
+            const bibleRefInputEl = document.getElementById('bible-ref-input-modal');
             const fastingListEl = document.getElementById('fasting-list');
             const fastingTitleEl = document.getElementById('fasting-title');
             const fastingStartDateEl = document.getElementById('fasting-start-date');
@@ -579,11 +582,14 @@
             const confirmationMessageEl = document.getElementById('confirmation-message');
             const confirmActionBtn = document.getElementById('confirm-action-btn');
             const cancelConfirmationBtn = document.getElementById('cancel-confirmation-btn');
-            const studySubTabs = document.getElementById('study-sub-tabs');
-            const studySubtabPanes = document.querySelectorAll('.study-subtab-pane');
-            const topicalThemeInput = document.getElementById('topical-theme-input');
-            const fetchTopicBtn = document.getElementById('fetch-topic-btn');
-            const topicalResultsDisplay = document.getElementById('topical-results-display');
+            const studyToolsModal = document.getElementById('study-tools-modal');
+            const openStudyToolsBtn = document.getElementById('open-study-tools-btn');
+            const closeStudyToolsBtn = document.getElementById('close-study-tools-btn');
+            const studySubTabs = document.getElementById('study-sub-tabs-modal');
+            const studySubtabPanes = document.querySelectorAll('.study-subtab-pane-modal');
+            const topicalThemeInput = document.getElementById('topical-theme-input-modal');
+            const fetchTopicBtn = document.getElementById('fetch-topic-btn-modal');
+            const topicalResultsDisplay = document.getElementById('topical-results-display-modal');
             const explanationModal = document.getElementById('explanation-modal');
             const explanationTitle = document.getElementById('explanation-title');
             const explanationResult = document.getElementById('explanation-result');
@@ -592,8 +598,6 @@
             const leftPanel = document.getElementById('left-panel');
             const rightPanel = document.getElementById('right-panel');
             const centerPanel = document.getElementById('center-panel');
-            const writingColumn = document.getElementById('writing-column');
-            const integratedStudyPanel = document.getElementById('integrated-study-panel');
             const readingPlanSelect = document.getElementById('reading-plan-select');
             const readingPlanSummary = document.getElementById('reading-plan-summary');
             const readingPlanList = document.getElementById('reading-plan-list');
@@ -603,6 +607,7 @@
             const readingModalText = document.getElementById('reading-modal-text');
             const readingModalExplanation = document.getElementById('reading-modal-explanation');
             const closeReadingModalBtn = document.getElementById('close-reading-modal-btn');
+            const clearStudyResultsBtn = document.getElementById('clear-study-results-btn-modal');
             
             let confirmationCallback = null;
 
@@ -1188,9 +1193,9 @@
 
             const switchStudySubTab = (subtabName) => {
                 studySubtabPanes.forEach(pane => {
-                    pane.classList.toggle('hidden', pane.id !== `${subtabName}-pane`);
+                    pane.classList.toggle('hidden', pane.id !== `${subtabName}-pane-modal`);
                 });
-                document.querySelectorAll('.study-subtab-btn').forEach(btn => {
+                document.querySelectorAll('.study-subtab-btn-modal').forEach(btn => {
                     const isActive = btn.dataset.subtab === subtabName;
                     btn.classList.toggle('border-emerald-400', isActive);
                     btn.classList.toggle('text-white', isActive);
@@ -1494,6 +1499,15 @@
                 readingModal.classList.remove('flex');
             };
 
+            const openStudyToolsModal = () => {
+                studyToolsModal.classList.remove('hidden');
+                studyToolsModal.classList.add('flex');
+            };
+
+            const closeStudyToolsModal = () => {
+                studyToolsModal.classList.add('hidden');
+                studyToolsModal.classList.remove('flex');
+            };
 
             // Initial calls
             bibleBookSelectEl.innerHTML = '';
@@ -1509,15 +1523,17 @@
             document.getElementById('cancel-engagement').onclick = closeEngagementModal;
             document.getElementById('save-engagement').onclick = handleSaveEngagement;
             document.getElementById('delete-engagement').onclick = handleDeleteEngagement;
-            document.getElementById('fetch-verse-btn').onclick = () => fetchVerse(null, verseDisplayEl, false, false);
-            document.getElementById('clear-study-results-btn').onclick = () => {
-                verseDisplayEl.innerHTML = '';
-                topicalResultsDisplay.innerHTML = '';
+            
+            document.getElementById('fetch-verse-btn-modal').onclick = () => fetchVerse(null, document.getElementById('verse-display-modal'), false, false);
+            document.getElementById('bible-ref-input-modal').onkeypress = (e) => { if (e.key === 'Enter') fetchVerse(null, document.getElementById('verse-display-modal'), false, false); };
+            
+            clearStudyResultsBtn.onclick = () => {
+                document.getElementById('verse-display-modal').innerHTML = '';
+                document.getElementById('topical-results-display-modal').innerHTML = '';
                 renderVerseDisplayPlaceholder();
                 showToast('Resultados limpos.');
             };
 
-            bibleRefInputEl.onkeypress = (e) => { if (e.key === 'Enter') fetchVerse(null, verseDisplayEl, false, false); };
             document.getElementById('right-tabs').onclick = (e) => {
                 const tabBtn = e.target.closest('.tab-btn');
                 if(tabBtn) switchTab(tabBtn.dataset.tab);
@@ -1543,8 +1559,11 @@
                 btn.addEventListener('click', () => switchMobileView(btn.dataset.view));
             });
             
+            openStudyToolsBtn.onclick = openStudyToolsModal;
+            closeStudyToolsBtn.onclick = closeStudyToolsModal;
+
             studySubTabs.addEventListener('click', (e) => {
-                const tabBtn = e.target.closest('.study-subtab-btn');
+                const tabBtn = e.target.closest('.study-subtab-btn-modal');
                 if (tabBtn) switchStudySubTab(tabBtn.dataset.subtab);
             });
             fetchTopicBtn.onclick = handleTopicalSearch;
