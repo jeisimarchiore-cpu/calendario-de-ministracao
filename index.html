@@ -77,6 +77,43 @@
             text-decoration: line-through;
             color: #6b7280;
         }
+        /* Seal styles */
+        .seal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .seal-locked {
+            background-color: #374151; /* bg-gray-700 */
+            color: #9ca3af; /* text-gray-400 */
+            border: 2px dashed #4b5563; /* border-gray-600 */
+        }
+        .seal-unlocked {
+            background-image: radial-gradient(circle, #fde047, #f59e0b); /* yellow-300 to amber-500 */
+            color: #422006; /* dark brown */
+            border: 3px solid #fcd34d; /* yellow-400 */
+            box-shadow: 0 0 15px rgba(253, 224, 71, 0.5);
+            transform: scale(1.05);
+        }
+        .seal .book-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+        .seal .read-count {
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 2px;
+            background: rgba(0,0,0,0.1);
+            padding: 0 5px;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -236,20 +273,22 @@
                         <div id="archive-list" class="space-y-2"></div>
                     </div>
                     <div id="reading-plan-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
-                        <h3 class="text-xl font-semibold text-white mb-2">Plano de Leitura Bíblica</h3>
-                        <div class="mb-4">
-                            <label for="reading-plan-select" class="block mb-2 text-sm font-medium text-gray-300">Escolha um plano:</label>
-                            <select id="reading-plan-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
+                        <div class="flex-grow flex flex-col overflow-hidden">
+                            <h3 class="text-xl font-semibold text-white mb-2 flex-shrink-0">Plano de Leitura Bíblica</h3>
+                            <div class="mb-4 flex-shrink-0">
+                                <label for="reading-plan-select" class="block mb-2 text-sm font-medium text-gray-300">Escolha um plano:</label>
+                                <select id="reading-plan-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
+                            </div>
+                            <div id="reading-plan-summary" class="bg-gray-900 rounded-lg p-3 mb-3 text-center flex-shrink-0">
+                                <p class="text-gray-400">Selecione um plano para começar.</p>
+                            </div>
+                            <div id="reading-plan-list" class="flex-grow overflow-y-auto space-y-2 pr-2">
+                            </div>
                         </div>
-                        <div id="reading-plan-summary" class="bg-gray-900 rounded-lg p-3 mb-3 text-center">
-                            <p class="text-gray-400">Selecione um plano para começar.</p>
-                        </div>
-                        <div id="reading-plan-list" class="flex-grow overflow-y-auto space-y-2 pr-2">
-                        </div>
-                         <div id="achievements-section" class="mt-4 pt-4 border-t border-gray-700">
-                             <h4 class="text-lg font-semibold text-white mb-2">Conquistas</h4>
+                         <div id="achievements-section" class="mt-4 pt-4 border-t border-gray-700 flex-shrink-0">
+                             <h4 class="text-lg font-semibold text-white mb-2">Galeria de Selos</h4>
                              <div id="achievements-list" class="space-y-3">
-                                <p class="text-gray-500 text-sm">Ainda não há conquistas.</p>
+                                <!-- Seals will be rendered here -->
                              </div>
                          </div>
                     </div>
@@ -484,6 +523,9 @@
                 "Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio", "Josué", "Juízes", "Rute", "1 Samuel", "2 Samuel", "1 Reis", "2 Reis", "1 Crônicas", "2 Crônicas", "Esdras", "Neemias", "Ester", "Jó", "Salmos", "Provérbios", "Eclesiastes", "Cânticos", "Isaías", "Jeremias", "Lamentações", "Ezequiel", "Daniel", "Oséias", "Joel", "Amós", "Obadias", "Jonas", "Miquéias", "Naum", "Habacuque", "Sofonias", "Ageu", "Zacarias", "Malaquias",
                 "Mateus", "Marcos", "Lucas", "João", "Atos", "Romanos", "1 Coríntios", "2 Coríntios", "Gálatas", "Efésios", "Filipenses", "Colossenses", "1 Tessalonicenses", "2 Tessalonicenses", "1 Timóteo", "2 Timóteo", "Tito", "Filemom", "Hebreus", "Tiago", "1 Pedro", "2 Pedro", "1 João", "2 João", "3 João", "Judas", "Apocalipse"
             ];
+            
+            const OLD_TESTAMENT_BOOKS = BIBLE_BOOKS.slice(0, 39);
+            const NEW_TESTAMENT_BOOKS = BIBLE_BOOKS.slice(39);
             
             const READING_PLANS = {
                 completeBible365: {
@@ -831,7 +873,16 @@
                     if (snapshot.exists()) {
                         userReadingProgress = snapshot.data();
                     } else {
-                        userReadingProgress = { activePlan: null, completedDays: [], achievements: [] };
+                        // Initialize with book progress structure
+                        const initialBookProgress = {};
+                        BIBLE_BOOKS.forEach(book => initialBookProgress[book] = { readCount: 0 });
+                        userReadingProgress = { activePlan: null, completedDays: [], achievements: [], bookProgress: initialBookProgress };
+                    }
+                    // Ensure bookProgress exists for older users
+                    if (!userReadingProgress.bookProgress) {
+                        const initialBookProgress = {};
+                        BIBLE_BOOKS.forEach(book => initialBookProgress[book] = { readCount: 0 });
+                        userReadingProgress.bookProgress = initialBookProgress;
                     }
                     renderReadingPlan();
                 });
@@ -1256,15 +1307,51 @@
                 readingPlanList.innerHTML = '';
                 const activePlanId = userReadingProgress.activePlan;
 
-                // Render achievements
+                // Render achievements (plan completions)
                 achievementsList.innerHTML = '';
-                const achievements = userReadingProgress.achievements || [];
+                 const achievements = userReadingProgress.achievements || [];
+
+                // Render Book Seals
+                const oldTestamentContainer = document.createElement('div');
+                const newTestamentContainer = document.createElement('div');
+                
+                oldTestamentContainer.innerHTML = '<h5 class="font-bold text-gray-400 text-sm mb-2">ANTIGO TESTAMENTO</h5>';
+                newTestamentContainer.innerHTML = '<h5 class="font-bold text-gray-400 text-sm mt-4 mb-2">NOVO TESTAMENTO</h5>';
+                
+                const sealGridClasses = 'grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 lg:grid-cols-5 gap-2';
+                const otGrid = document.createElement('div');
+                otGrid.className = sealGridClasses;
+                const ntGrid = document.createElement('div');
+                ntGrid.className = sealGridClasses;
+                
+                BIBLE_BOOKS.forEach(book => {
+                    const readCount = userReadingProgress.bookProgress[book]?.readCount || 0;
+                    const seal = document.createElement('div');
+                    const isUnlocked = readCount > 0;
+                    seal.className = `seal ${isUnlocked ? 'seal-unlocked' : 'seal-locked'}`;
+                    seal.innerHTML = `
+                        <span class="book-name">${book}</span>
+                        ${isUnlocked ? `<span class="read-count">x${readCount}</span>` : '<i class="fas fa-lock mt-1"></i>'}
+                    `;
+
+                    if (OLD_TESTAMENT_BOOKS.includes(book)) {
+                        otGrid.appendChild(seal);
+                    } else {
+                        ntGrid.appendChild(seal);
+                    }
+                });
+
+                oldTestamentContainer.appendChild(otGrid);
+                newTestamentContainer.appendChild(ntGrid);
+                achievementsList.appendChild(oldTestamentContainer);
+                achievementsList.appendChild(newTestamentContainer);
+                
                 if(achievements.length > 0) {
                      achievements.forEach(ach => {
                         const achEl = document.createElement('div');
-                        achEl.className = "flex items-center gap-4 bg-gray-900 p-3 rounded-lg";
+                        achEl.className = "flex items-center gap-4 bg-gray-900 p-3 rounded-lg mt-4";
                         achEl.innerHTML = `
-                            <div class="text-yellow-400 text-3xl"><i class="fas fa-award"></i></div>
+                            <div class="text-yellow-400 text-3xl"><i class="fas fa-trophy"></i></div>
                             <div>
                                 <p class="font-bold text-white">${READING_PLANS[ach.planId]?.name || 'Plano Completado'}</p>
                                 <p class="text-xs text-gray-400">Completado em ${ach.completionDate.toDate().toLocaleDateString('pt-BR')} em ${ach.durationDays} dias.</p>
@@ -1272,8 +1359,6 @@
                         `;
                         achievementsList.appendChild(achEl);
                     });
-                } else {
-                     achievementsList.innerHTML = `<p class="text-gray-500 text-sm">Ainda não há conquistas.</p>`;
                 }
 
 
@@ -1319,6 +1404,7 @@
                 const isChecked = e.target.checked;
                 let completedDays = userReadingProgress.completedDays || [];
                 let achievements = userReadingProgress.achievements || [];
+                let bookProgress = userReadingProgress.bookProgress || {};
 
                 if (isChecked) {
                     if (!completedDays.includes(day)) {
@@ -1331,7 +1417,7 @@
                 const activePlanId = userReadingProgress.activePlan;
                 const plan = READING_PLANS[activePlanId];
                 
-                // Check for completion
+                // Check for plan completion
                 if (isChecked && completedDays.length === plan.readings.length) {
                     const startDate = userReadingProgress.planStartDate.toDate();
                     const completionDate = new Date();
@@ -1343,12 +1429,24 @@
                         completionDate: Timestamp.fromDate(completionDate),
                         durationDays: durationDays
                     };
-                    achievements.push(newAchievement);
-                    showToast(`Parabéns! Completou o plano '${plan.name}'!`);
+                    
+                    if (!achievements.some(a => a.planId === activePlanId && a.completionDate.isEqual(newAchievement.completionDate))) {
+                        achievements.push(newAchievement);
+                        showToast(`Parabéns! Completou o plano '${plan.name}'!`);
+                        
+                        // Increment read count for all books in the plan
+                        const booksInPlan = new Set(plan.readings.map(r => r.match(/^[0-9]?\s?[a-zA-Z\u00C0-\u017F]+/)[0].trim()));
+                        booksInPlan.forEach(bookName => {
+                            if(bookProgress[bookName]) {
+                                bookProgress[bookName].readCount++;
+                            } else {
+                                bookProgress[bookName] = { readCount: 1 };
+                            }
+                        });
+                    }
                 }
 
-
-                const newProgress = { ...userReadingProgress, completedDays: completedDays.sort((a,b) => a-b), achievements };
+                const newProgress = { ...userReadingProgress, completedDays: completedDays.sort((a,b) => a-b), achievements, bookProgress };
                 const readingPlanDoc = doc(db, `artifacts/${appId}/users/${userId}/readingPlan/progress`);
                 await setDoc(readingPlanDoc, newProgress);
             };
@@ -1468,5 +1566,4 @@
     </script>
 </body>
 </html>
-
 
