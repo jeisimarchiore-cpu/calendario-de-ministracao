@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agenda de Ministrações</title>
+    <title>Agenda do Pregador</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -128,9 +128,9 @@
         <!-- Top Header for User Info and Logout -->
         <header class="absolute top-0 right-0 p-4 flex items-center gap-4 text-sm z-10">
              <div class="text-right">
-                <span id="user-email" class="text-gray-400 block font-medium"></span>
-                <span id="user-id" class="text-gray-500 text-xs block"></span>
-            </div>
+                 <span id="user-email" class="text-gray-400 block font-medium"></span>
+                 <span id="user-id" class="text-gray-500 text-xs block"></span>
+             </div>
             <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-lg transition-colors" title="Sair">
                 <i class="fas fa-sign-out-alt"></i>
             </button>
@@ -163,115 +163,174 @@
                 </div>
             </aside>
 
-            <!-- Center Panel: Outline Editor -->
-            <main id="center-panel" class="main-panel w-full lg:w-1/2 bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col overflow-hidden transition-all duration-300">
-                <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <h2 id="editor-title" class="text-2xl font-bold text-white">Novo Esboço</h2>
-                    <div class="flex gap-2 items-center">
-                        <button id="toggle-focus-mode-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-3 rounded-lg transition-colors" title="Modo Foco">
-                            <i class="fas fa-expand-arrows-alt"></i>
-                        </button>
-                        <div class="w-px h-6 bg-gray-700"></div>
-                        <button id="open-study-tools-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Ferramentas de Estudo"><i class="fas fa-book-open"></i> <span class="hidden md:inline">Estudo</span></button>
-                        <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> <span class="hidden md:inline">Gerar Ideia</span></button>
-                        <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> <span class="hidden md:inline">Salvar</span></button>
-                        <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> <span class="hidden md:inline">Limpar</span></button>
-                    </div>
-                </div>
+            <!-- Center Panel: Editor & Integrated Study Tools -->
+            <main id="center-panel" class="main-panel w-full lg:w-1/2 bg-gray-800 rounded-lg shadow-lg p-0 flex flex-col lg:flex-row overflow-hidden transition-all duration-300">
                 
-                <div class="flex-grow flex flex-col gap-4 overflow-y-auto pr-2">
-                    <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-shrink-0">
-                
-                    <!-- Rich Text Editor -->
-                    <div class="flex flex-col flex-grow min-h-[250px]">
-                        <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap flex-shrink-0">
-                            <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
-                            <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
-                            <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
-                            <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
-                            <div class="w-px h-5 bg-gray-700 mx-1"></div>
-                            <div class="relative flex items-center" title="Cor da Fonte">
-                                <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
-                                <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
-                            </div>
-                            <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
-                                <option value="3">Normal</option>
-                                <option value="1">Mínimo</option>
-                                <option value="2">Pequeno</option>
-                                <option value="4">Médio</option>
-                                <option value="5">Grande</option>
-                                <option value="7">Enorme</option>
-                            </select>
+                <!-- Editor Area -->
+                <div id="editor-area" class="w-full lg:w-full p-6 flex flex-col transition-all duration-300 flex-grow">
+                    <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                        <h2 id="editor-title" class="text-2xl font-bold text-white">Novo Esboço</h2>
+                        <div class="flex gap-2 items-center">
+                            <button id="toggle-focus-mode-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-3 rounded-lg transition-colors" title="Modo Foco">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                            </button>
+                            <div class="w-px h-6 bg-gray-700"></div>
+                            <button id="open-study-tools-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Ferramentas de Estudo"><i class="fas fa-book-open"></i> <span class="hidden md:inline">Estudo</span></button>
+                            <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> <span class="hidden md:inline">Gerar Ideia</span></button>
+                            <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> <span class="hidden md:inline">Salvar</span></button>
+                            <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> <span class="hidden md:inline">Limpar</span></button>
                         </div>
-                        <div id="outline-content" contenteditable="true" class="w-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
+                    </div>
+                    
+                    <div class="flex-grow flex flex-col gap-4 overflow-y-auto pr-2">
+                        <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-shrink-0">
+                    
+                        <!-- Rich Text Editor -->
+                        <div class="flex flex-col flex-grow min-h-[250px]">
+                            <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap flex-shrink-0">
+                                <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
+                                <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
+                                <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
+                                <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
+                                <div class="w-px h-5 bg-gray-700 mx-1"></div>
+                                <div class="relative flex items-center" title="Cor da Fonte">
+                                    <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
+                                    <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
+                                </div>
+                                <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
+                                    <option value="3">Normal</option>
+                                    <option value="1">Mínimo</option>
+                                    <option value="2">Pequeno</option>
+                                    <option value="4">Médio</option>
+                                    <option value="5">Grande</option>
+                                    <option value="7">Enorme</option>
+                                </select>
+                            </div>
+                            <div id="outline-content" contenteditable="true" class="w-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
+                        </div>
+
+                        <!-- Notes Area -->
+                        <div class="flex flex-col flex-grow min-h-[150px]">
+                            <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300 flex-shrink-0">Notas e Ilustrações</label>
+                            <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." class="w-full flex-grow bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                        </div>
                     </div>
 
-                    <!-- Notes Area -->
-                    <div class="flex flex-col flex-grow min-h-[150px]">
-                        <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300 flex-shrink-0">Notas e Ilustrações</label>
-                        <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." class="w-full flex-grow bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                    <div class="mt-4 flex-shrink-0">
+                        <label for="bible-book-select" class="block mb-2 text-sm font-medium text-gray-300">Vincular esboço ao livro de:</label>
+                        <select id="bible-book-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
                     </div>
                 </div>
 
-                <div class="mt-4 flex-shrink-0">
-                    <label for="bible-book-select" class="block mb-2 text-sm font-medium text-gray-300">Vincular esboço ao livro de:</label>
-                    <select id="bible-book-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
-                </div>
+                <!-- Study Tools Panel (Integrated) -->
+                <aside id="study-tools-area" class="w-full lg:w-2/5 bg-gray-900 p-4 flex-col border-l border-gray-700 hidden lg:flex transition-all duration-300 flex-shrink-0">
+                    <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                        <h3 class="text-xl font-bold text-white">Ferramentas de Estudo</h3>
+                        <div class="flex gap-2">
+                             <button id="clear-study-results-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-2 rounded-lg text-xs" title="Limpar Resultados"><i class="fas fa-times-circle"></i></button>
+                             <button id="close-study-tools-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-lg text-xs" title="Fechar Ferramentas"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <div class="flex-grow flex flex-col overflow-hidden">
+                         <!-- Sub-tabs for Study -->
+                         <div class="border-b border-gray-700 mb-2 flex-shrink-0">
+                             <nav id="study-sub-tabs" class="flex gap-4 -mb-px">
+                                 <button data-subtab="verse-lookup" class="study-subtab-btn py-2 px-1 border-b-2 border-emerald-400 text-white text-sm font-medium">Busca</button>
+                                 <button data-subtab="topical-study" class="study-subtab-btn py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Tema</button>
+                                 <button data-subtab="commentary" class="study-subtab-btn py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Comentário</button>
+                             </nav>
+                         </div>
+        
+                         <!-- Verse Lookup Pane -->
+                         <div id="verse-lookup-pane" class="study-subtab-pane flex-grow flex flex-col overflow-hidden">
+                             <div class="flex gap-2 mb-2 items-center flex-shrink-0">
+                                 <select id="bible-study-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
+                                 <input type="text" id="bible-ref-input" placeholder="3:16" class="w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                 <button id="fetch-verse-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Versículo"><i class="fas fa-search"></i></button>
+                             </div>
+                             <div id="verse-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm flex gap-4 overflow-x-auto pb-4"></div>
+                         </div>
+        
+                         <!-- Topical Study Pane -->
+                         <div id="topical-study-pane" class="study-subtab-pane hidden flex-grow flex flex-col overflow-hidden">
+                             <div class="flex gap-2 mb-2 items-center flex-shrink-0">
+                                 <input type="text" id="topical-theme-input" placeholder="Digite um tema (ex: Fé, Amor)" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                 <button id="fetch-topic-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Tema"><i class="fas fa-search"></i></button>
+                             </div>
+                             <div id="topical-results-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3">
+                                  <p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos.</p>
+                             </div>
+                         </div>
+                         
+                         <!-- Commentary Pane -->
+                        <div id="commentary-pane" class="study-subtab-pane hidden flex-grow flex flex-col overflow-hidden">
+                            <div class="flex gap-2 mb-2 items-center flex-shrink-0">
+                                <select id="bible-commentary-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
+                                <input type="number" id="bible-chapter-input" placeholder="Cap." class="w-1/4 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                <button id="fetch-commentary-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Gerar Comentário"><i class="fas fa-feather-alt"></i></button>
+                            </div>
+                            <div id="commentary-results-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3">
+                                 <p class="text-gray-500 italic flex items-center justify-center h-full">Selecione um livro e capítulo.</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
             </main>
 
             <!-- Right Panel: Tools -->
             <aside id="right-panel" class="main-panel w-full lg:w-1/4 bg-gray-800 rounded-lg shadow-lg p-6 flex-col hidden lg:flex">
                  <div class="border-b border-gray-700 mb-4">
-                    <nav id="right-tabs" class="flex gap-4 -mb-px">
-                        <button data-tab="archive" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-book-bible mr-2"></i>Biblioteca</button>
-                        <button data-tab="reading-plan" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-tasks mr-2"></i>Plano</button>
-                        <button data-tab="achievements" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-award mr-2"></i>Conquistas</button>
-                        <button data-tab="fasting" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-pray mr-2"></i>Jejum</button>
-                    </nav>
-                </div>
-                <div id="right-tab-content" class="flex-grow flex flex-col overflow-y-hidden">
-                    <div id="archive-tab-content" class="right-tab-pane flex-grow overflow-y-auto">
-                        <div id="archive-list" class="space-y-2"></div>
-                    </div>
-                    <div id="reading-plan-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
-                        <h3 class="text-xl font-semibold text-white mb-2 flex-shrink-0">Plano de Leitura Bíblica</h3>
-                        <div class="mb-4 flex-shrink-0">
-                            <label for="reading-plan-select" class="block mb-2 text-sm font-medium text-gray-300">Escolha um plano:</label>
-                            <select id="reading-plan-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
-                        </div>
-                        <div id="reading-plan-summary" class="bg-gray-900 rounded-lg p-3 mb-3 text-center flex-shrink-0">
-                            <p class="text-gray-400">Selecione um plano para começar.</p>
-                        </div>
-                        <div id="reading-plan-list" class="flex-grow overflow-y-auto space-y-2 pr-2">
-                        </div>
-                    </div>
-                    <div id="achievements-tab-content" class="right-tab-pane hidden flex-grow flex flex-col overflow-y-auto">
-                        <h3 class="text-xl font-semibold text-white mb-4">Galeria de Selos</h3>
-                        <div id="achievements-list" class="space-y-4">
-                           <!-- Seals will be rendered here -->
-                        </div>
-                    </div>
-                    <div id="fasting-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
-                        <h3 class="text-xl font-semibold text-white mb-2">Jejum e Oração</h3>
-                        <div class="bg-gray-900 rounded-lg p-3 mb-3">
-                            <h4 class="font-semibold text-white mb-2 text-sm">Novo Propósito</h4>
-                             <input type="text" id="fasting-title" placeholder="Propósito" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm mb-2">
-                            <div class="grid grid-cols-2 gap-2 mb-2">
-                                <div>
-                                    <label for="fasting-start-date" class="text-xs text-gray-400">Início</label>
-                                    <input type="date" id="fasting-start-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
-                                </div>
-                                <div>
-                                    <label for="fasting-end-date" class="text-xs text-gray-400">Fim</label>
-                                    <input type="date" id="fasting-end-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
-                                </div>
-                            </div>
-                            <textarea id="fasting-notes" placeholder="Anotações..." rows="2" class="w-full bg-gray-700 border rounded-lg p-2 text-white text-sm"></textarea>
-                            <button id="save-fasting-btn" class="mt-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg text-sm">Adicionar</button>
-                        </div>
-                        <div id="fasting-list" class="flex-grow overflow-y-auto space-y-2 pr-2"></div>
-                    </div>
-                </div>
+                     <nav id="right-tabs" class="flex gap-4 -mb-px">
+                         <button data-tab="archive" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-book-bible mr-2"></i>Biblioteca</button>
+                         <button data-tab="reading-plan" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-tasks mr-2"></i>Plano</button>
+                         <button data-tab="achievements" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-award mr-2"></i>Conquistas</button>
+                         <button data-tab="fasting" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-pray mr-2"></i>Jejum</button>
+                     </nav>
+                 </div>
+                 <div id="right-tab-content" class="flex-grow flex flex-col overflow-y-hidden">
+                     <div id="archive-tab-content" class="right-tab-pane flex-grow overflow-y-auto">
+                         <div id="archive-list" class="space-y-2"></div>
+                     </div>
+                     <div id="reading-plan-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
+                         <h3 class="text-xl font-semibold text-white mb-2 flex-shrink-0">Plano de Leitura Bíblica</h3>
+                         <div class="mb-4 flex-shrink-0">
+                             <label for="reading-plan-select" class="block mb-2 text-sm font-medium text-gray-300">Escolha um plano:</label>
+                             <select id="reading-plan-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full p-2.5"></select>
+                         </div>
+                         <div id="reading-plan-summary" class="bg-gray-900 rounded-lg p-3 mb-3 text-center flex-shrink-0">
+                             <p class="text-gray-400">Selecione um plano para começar.</p>
+                         </div>
+                         <div id="reading-plan-list" class="flex-grow overflow-y-auto space-y-2 pr-2">
+                         </div>
+                     </div>
+                     <div id="achievements-tab-content" class="right-tab-pane hidden flex-grow flex flex-col overflow-y-auto">
+                         <h3 class="text-xl font-semibold text-white mb-4">Galeria de Selos</h3>
+                         <div id="achievements-list" class="space-y-4">
+                            <!-- Seals will be rendered here -->
+                         </div>
+                     </div>
+                     <div id="fasting-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
+                         <h3 class="text-xl font-semibold text-white mb-2">Jejum e Oração</h3>
+                         <div class="bg-gray-900 rounded-lg p-3 mb-3">
+                             <h4 class="font-semibold text-white mb-2 text-sm">Novo Propósito</h4>
+                              <input type="text" id="fasting-title" placeholder="Propósito" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm mb-2">
+                             <div class="grid grid-cols-2 gap-2 mb-2">
+                                 <div>
+                                     <label for="fasting-start-date" class="text-xs text-gray-400">Início</label>
+                                     <input type="date" id="fasting-start-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
+                                 </div>
+                                 <div>
+                                     <label for="fasting-end-date" class="text-xs text-gray-400">Fim</label>
+                                     <input type="date" id="fasting-end-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
+                                 </div>
+                             </div>
+                             <textarea id="fasting-notes" placeholder="Anotações..." rows="2" class="w-full bg-gray-700 border rounded-lg p-2 text-white text-sm"></textarea>
+                             <button id="save-fasting-btn" class="mt-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg text-sm">Adicionar</button>
+                         </div>
+                         <div id="fasting-list" class="flex-grow overflow-y-auto space-y-2 pr-2"></div>
+                     </div>
+                 </div>
             </aside>
         </div>
         
@@ -329,50 +388,6 @@
         </div>
     </div>
 
-     <!-- Study Tools Modal -->
-    <div id="study-tools-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
-        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-3xl flex flex-col max-h-[90vh]">
-             <div class="flex justify-between items-center mb-4 flex-shrink-0">
-                <h3 class="text-xl font-bold text-white">Ferramentas de Estudo</h3>
-                <button id="clear-study-results-btn-modal" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded-lg text-xs" title="Limpar Resultados"><i class="fas fa-times-circle"></i> Limpar</button>
-            </div>
-             <div class="flex-grow flex flex-col overflow-hidden">
-                <!-- Sub-tabs for Study -->
-                <div class="border-b border-gray-700 mb-2 flex-shrink-0">
-                    <nav id="study-sub-tabs-modal" class="flex gap-4 -mb-px">
-                        <button data-subtab="verse-lookup-modal" class="study-subtab-btn-modal py-2 px-1 border-b-2 border-emerald-400 text-white text-sm font-medium">Busca</button>
-                        <button data-subtab="topical-study-modal" class="study-subtab-btn-modal py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Tema</button>
-                    </nav>
-                </div>
-
-                <!-- Verse Lookup Pane -->
-                <div id="verse-lookup-pane-modal" class="study-subtab-pane-modal flex-grow flex flex-col overflow-hidden">
-                    <div class="flex gap-2 mb-2 items-center flex-shrink-0">
-                        <select id="bible-study-book-select-modal" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
-                        <input type="text" id="bible-ref-input-modal" placeholder="3:16" class="w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                        <button id="fetch-verse-btn-modal" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Versículo"><i class="fas fa-search"></i></button>
-                    </div>
-                    <div id="verse-display-modal" class="bg-gray-900 rounded-lg p-3 flex-grow text-gray-300 text-sm flex gap-4 overflow-x-auto pb-4"></div>
-                </div>
-
-                <!-- Topical Study Pane -->
-                <div id="topical-study-pane-modal" class="study-subtab-pane-modal hidden flex-grow flex flex-col overflow-hidden">
-                    <div class="flex gap-2 mb-2 items-center flex-shrink-0">
-                        <input type="text" id="topical-theme-input-modal" placeholder="Digite um tema (ex: Fé, Amor, Esperança)" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                        <button id="fetch-topic-btn-modal" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Tema"><i class="fas fa-search"></i></button>
-                    </div>
-                    <div id="topical-results-display-modal" class="bg-gray-900 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3">
-                         <p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos relacionados.</p>
-                    </div>
-                </div>
-             </div>
-             <div class="mt-6 flex justify-end gap-3 flex-shrink-0">
-                <button id="close-study-tools-btn" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-
     <!-- Reading Modal -->
     <div id="reading-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
         <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
@@ -390,16 +405,19 @@
 
     <!-- Explanation Modal -->
      <div id="explanation-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
-        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
-            <h3 id="explanation-title" class="text-xl font-bold mb-4 text-white">Explicação do Versículo</h3>
-            <div id="explanation-result" class="bg-gray-900 rounded-lg p-4 flex-grow overflow-y-auto text-gray-300 text-sm whitespace-pre-wrap">
-                <!-- Explanation will be loaded here -->
+         <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="explanation-title" class="text-xl font-bold text-white">Explicação do Versículo</h3>
+                <button id="copy-explanation-btn" class="py-1 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm hidden"><i class="fas fa-copy mr-2"></i>Copiar para Notas</button>
             </div>
-            <div class="mt-6 flex justify-end gap-3">
-                <button id="close-explanation-btn" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
-            </div>
-        </div>
-    </div>
+             <div id="explanation-result" class="bg-gray-900 rounded-lg p-4 flex-grow overflow-y-auto text-gray-300 text-sm whitespace-pre-wrap">
+                 <!-- Explanation will be loaded here -->
+             </div>
+             <div class="mt-6 flex justify-end gap-3">
+                 <button id="close-explanation-btn" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
+             </div>
+         </div>
+     </div>
 
     <!-- Presentation Mode Modal -->
     <div id="presentation-modal" class="fixed inset-0 bg-gray-900 p-4 md:p-8 flex-col hidden z-50">
@@ -433,24 +451,17 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- CHAVE DA API DE IA ---
-        // IMPORTANTE: Crie e cole aqui a sua chave da API do Google AI Studio
-        const GEMINI_API_KEY = "AIzaSyAFImZxjnCZJGiZDMdAtnQA2FBsD_ljdvA";
+        // --- IA API Key ---
+        // The API key is provided by the execution environment.
+        const GEMINI_API_KEY = "";
 
         // --- Firebase Configuration ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCp2CxegdrcOk4Bj6I45_8LOl0nTOt3rEg",
-            authDomain: "calendario-de-ministracao.firebaseapp.com",
-            projectId: "calendario-de-ministracao",
-            storageBucket: "calendario-de-ministracao.firebasestorage.app",
-            messagingSenderId: "1091866768883",
-            appId: "1:1091866768883:web:9290fd424ff5cbf0980e86",
-            measurementId: "G-TBPTMVYF4M"
-        };
-        const appId = 'default-preaching-app';
+        // These variables are injected by the environment.
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-preaching-app';
 
         // --- App Initialization ---
         const app = initializeApp(firebaseConfig);
@@ -484,28 +495,36 @@
                         appInitialized = true;
                     }
                 } else {
-                     signInAnonymously(auth).catch(error => {
-                        console.error("Anonymous sign-in failed:", error);
-                        let errorMessage = '<p class="text-red-500 text-lg">Falha na autenticação. Verifique a consola para mais detalhes.</p>';
-                        if (error.code === 'auth/admin-restricted-operation') {
-                            errorMessage = `
-                                <div class="text-center max-w-2xl mx-auto">
-                                    <p class="text-xl font-bold text-red-400">Ação Necessária: Ativar Login Anónimo</p>
-                                    <p class="text-gray-300 mt-2">A aplicação não consegue iniciar porque o método de login "Anónimo" está desativado no seu projeto Firebase.</p>
-                                    <p class="text-gray-300 mt-4 font-semibold">Para corrigir, siga estes passos:</p>
-                                    <ol class="text-left text-gray-400 mt-2 list-decimal list-inside bg-gray-800 p-4 rounded-lg">
-                                        <li>Abra a consola do seu projeto Firebase.</li>
-                                        <li>No menu lateral, vá para <strong>Authentication</strong> (Autenticação).</li>
-                                        <li>Clique no separador <strong>Sign-in method</strong> (Método de login).</li>
-                                        <li>Encontre <strong>Anónimo</strong> na lista de provedores e clique para editar.</li>
-                                        <li>Ative o método e clique em <strong>Guardar</strong>.</li>
-                                        <li>Depois de guardar, <strong>recarregue esta página</strong>.</li>
-                                    </ol>
-                                </div>
-                            `;
-                        }
-                        loadingOverlay.innerHTML = `<div class="p-4">${errorMessage}</div>`;
-                    });
+                    // If a custom token is provided, use it to sign in. Otherwise, sign in anonymously.
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        signInWithCustomToken(auth, __initial_auth_token).catch(error => {
+                             console.error("Custom token sign-in failed:", error);
+                             loadingOverlay.innerHTML = `<div class="p-4 text-red-500">Falha na autenticação com o token. Verifique a consola para detalhes.</div>`;
+                        });
+                    } else {
+                         signInAnonymously(auth).catch(error => {
+                             console.error("Anonymous sign-in failed:", error);
+                             let errorMessage = '<p class="text-red-500 text-lg">Falha na autenticação. Verifique a consola para mais detalhes.</p>';
+                             if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
+                                 errorMessage = `
+                                     <div class="text-center max-w-2xl mx-auto">
+                                         <p class="text-xl font-bold text-red-400">Ação Necessária: Ativar Login Anónimo</p>
+                                         <p class="text-gray-300 mt-2">A aplicação não consegue iniciar porque o método de login "Anónimo" está desativado no seu projeto Firebase.</p>
+                                         <p class="text-gray-300 mt-4 font-semibold">Para corrigir, siga estes passos:</p>
+                                         <ol class="text-left text-gray-400 mt-2 list-decimal list-inside bg-gray-800 p-4 rounded-lg">
+                                             <li>Abra a consola do seu projeto Firebase.</li>
+                                             <li>No menu lateral, vá para <strong>Authentication</strong> (Autenticação).</li>
+                                             <li>Clique no separador <strong>Sign-in method</strong> (Método de login).</li>
+                                             <li>Encontre <strong>Anónimo</strong> na lista de provedores e clique para editar.</li>
+                                             <li>Ative o método e clique em <strong>Guardar</strong>.</li>
+                                             <li>Depois de guardar, <strong>recarregue esta página</strong>.</li>
+                                         </ol>
+                                     </div>
+                                 `;
+                             }
+                             loadingOverlay.innerHTML = `<div class="p-4">${errorMessage}</div>`;
+                         });
+                    }
                 }
             });
         };
@@ -528,7 +547,6 @@
             ];
             
             const OLD_TESTAMENT_BOOKS = BIBLE_BOOKS.slice(0, 39);
-            const NEW_TESTAMENT_BOOKS = BIBLE_BOOKS.slice(39);
             
             const READING_PLANS = {
                 completeBible365: {
@@ -556,9 +574,9 @@
             const modalOutlineSelectEl = document.getElementById('modal-outline-select');
             const engagementsListEl = document.getElementById('engagements-list');
             const editorTitleEl = document.getElementById('editor-title');
-            const bibleStudyBookSelectEl = document.getElementById('bible-study-book-select-modal');
-            const verseDisplayEl = document.getElementById('verse-display-modal');
-            const bibleRefInputEl = document.getElementById('bible-ref-input-modal');
+            const bibleStudyBookSelectEl = document.getElementById('bible-study-book-select');
+            const verseDisplayEl = document.getElementById('verse-display');
+            const bibleRefInputEl = document.getElementById('bible-ref-input');
             const fastingListEl = document.getElementById('fasting-list');
             const fastingTitleEl = document.getElementById('fasting-title');
             const fastingStartDateEl = document.getElementById('fasting-start-date');
@@ -582,14 +600,16 @@
             const confirmationMessageEl = document.getElementById('confirmation-message');
             const confirmActionBtn = document.getElementById('confirm-action-btn');
             const cancelConfirmationBtn = document.getElementById('cancel-confirmation-btn');
-            const studyToolsModal = document.getElementById('study-tools-modal');
+            
             const openStudyToolsBtn = document.getElementById('open-study-tools-btn');
             const closeStudyToolsBtn = document.getElementById('close-study-tools-btn');
-            const studySubTabs = document.getElementById('study-sub-tabs-modal');
-            const studySubtabPanes = document.querySelectorAll('.study-subtab-pane-modal');
-            const topicalThemeInput = document.getElementById('topical-theme-input-modal');
-            const fetchTopicBtn = document.getElementById('fetch-topic-btn-modal');
-            const topicalResultsDisplay = document.getElementById('topical-results-display-modal');
+            const studyToolsArea = document.getElementById('study-tools-area');
+            const editorArea = document.getElementById('editor-area');
+            const studySubTabs = document.getElementById('study-sub-tabs');
+            const studySubtabPanes = document.querySelectorAll('.study-subtab-pane');
+            const topicalThemeInput = document.getElementById('topical-theme-input');
+            const fetchTopicBtn = document.getElementById('fetch-topic-btn');
+            const topicalResultsDisplay = document.getElementById('topical-results-display');
             const explanationModal = document.getElementById('explanation-modal');
             const explanationTitle = document.getElementById('explanation-title');
             const explanationResult = document.getElementById('explanation-result');
@@ -607,8 +627,13 @@
             const readingModalText = document.getElementById('reading-modal-text');
             const readingModalExplanation = document.getElementById('reading-modal-explanation');
             const closeReadingModalBtn = document.getElementById('close-reading-modal-btn');
-            const clearStudyResultsBtn = document.getElementById('clear-study-results-btn-modal');
-            
+            const clearStudyResultsBtn = document.getElementById('clear-study-results-btn');
+            const commentaryBookSelect = document.getElementById('bible-commentary-book-select');
+            const commentaryChapterInput = document.getElementById('bible-chapter-input');
+            const fetchCommentaryBtn = document.getElementById('fetch-commentary-btn');
+            const commentaryResultsDisplay = document.getElementById('commentary-results-display');
+            const copyExplanationBtn = document.getElementById('copy-explanation-btn');
+
             let confirmationCallback = null;
 
             const showConfirmationModal = (message, callback) => {
@@ -719,11 +744,11 @@
                             margin: 40px;
                         } 
                         h1, h2 {
-                             font-family: 'Helvetica', sans-serif;
-                             color: #222; 
-                             border-bottom: 2px solid #333;
-                             padding-bottom: 8px;
-                             margin-top: 24px;
+                            font-family: 'Helvetica', sans-serif;
+                            color: #222; 
+                            border-bottom: 2px solid #333;
+                            padding-bottom: 8px;
+                            margin-top: 24px;
                         }
                         h1 { font-size: 24pt; }
                         h2 { font-size: 18pt; }
@@ -853,44 +878,47 @@
                 if (topicalResultsDisplay.children.length === 0) {
                    topicalResultsDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos.</p>';
                 }
+                 if (commentaryResultsDisplay.children.length === 0) {
+                   commentaryResultsDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Selecione um livro e capítulo.</p>';
+                }
             };
             
             const setupFirebaseListeners = () => {
                  outlinesCol = collection(db, `artifacts/${appId}/users/${userId}/outlines`);
                  engagementsCol = collection(db, `artifacts/${appId}/users/${userId}/engagements`);
                  fastingCol = collection(db, `artifacts/${appId}/users/${userId}/fastingSchedules`);
-                outlinesUnsubscribe = onSnapshot(query(outlinesCol), (snapshot) => {
-                    outlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.title.localeCompare(b.title));
-                    renderOutlines();
-                    renderEngagementsList();
-                });
-                engagementsUnsubscribe = onSnapshot(query(engagementsCol), (snapshot) => {
-                    engagements = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderCalendar();
-                    renderEngagementsList();
-                });
-                fastingUnsubscribe = onSnapshot(query(fastingCol), (snapshot) => {
-                    fastingSchedules = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    renderFastingSchedules();
-                });
-                const readingPlanDoc = doc(db, `artifacts/${appId}/users/${userId}/readingPlan/progress`);
-                readingPlanUnsubscribe = onSnapshot(readingPlanDoc, (snapshot) => {
-                    if (snapshot.exists()) {
-                        userReadingProgress = snapshot.data();
-                    } else {
-                        // Initialize with book progress structure
-                        const initialBookProgress = {};
-                        BIBLE_BOOKS.forEach(book => initialBookProgress[book] = { readCount: 0 });
-                        userReadingProgress = { activePlan: null, completedDays: [], achievements: [], bookProgress: initialBookProgress };
-                    }
-                    // Ensure bookProgress exists for older users
-                    if (!userReadingProgress.bookProgress) {
-                        const initialBookProgress = {};
-                        BIBLE_BOOKS.forEach(book => initialBookProgress[book] = { readCount: 0 });
-                        userReadingProgress.bookProgress = initialBookProgress;
-                    }
-                    renderReadingPlan();
-                });
+                 outlinesUnsubscribe = onSnapshot(query(outlinesCol), (snapshot) => {
+                     outlines = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => a.title.localeCompare(b.title));
+                     renderOutlines();
+                     renderEngagementsList();
+                 });
+                 engagementsUnsubscribe = onSnapshot(query(engagementsCol), (snapshot) => {
+                     engagements = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                     renderCalendar();
+                     renderEngagementsList();
+                 });
+                 fastingUnsubscribe = onSnapshot(query(fastingCol), (snapshot) => {
+                     fastingSchedules = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                     renderFastingSchedules();
+                 });
+                 const readingPlanDoc = doc(db, `artifacts/${appId}/users/${userId}/readingPlan/progress`);
+                 readingPlanUnsubscribe = onSnapshot(readingPlanDoc, (snapshot) => {
+                     if (snapshot.exists()) {
+                         userReadingProgress = snapshot.data();
+                     } else {
+                         // Initialize with book progress structure
+                         const initialBookProgress = {};
+                         BIBLE_BOOKS.forEach(book => initialBookProgress[book] = { readCount: 0 });
+                         userReadingProgress = { activePlan: null, completedDays: [], achievements: [], bookProgress: initialBookProgress };
+                     }
+                     // Ensure bookProgress exists for older users
+                     if (!userReadingProgress.bookProgress) {
+                         const initialBookProgress = {};
+                         BIBLE_BOOKS.forEach(book => initialBookProgress[book] = { readCount: 0 });
+                         userReadingProgress.bookProgress = initialBookProgress;
+                     }
+                     renderReadingPlan();
+                 });
             };
             
             const changeMonth = (offset) => {
@@ -930,8 +958,8 @@
                     editorTitleEl.textContent = 'Editando Esboço';
                 }
                  if(window.innerWidth < 1024) { // If on mobile, switch to editor view
-                    switchMobileView('center-panel');
-                }
+                     switchMobileView('center-panel');
+                 }
             };
 
             const clearEditor = () => {
@@ -1032,17 +1060,11 @@
                     if (!response.ok) throw new Error('Referência não encontrada.');
                     const data = await response.json();
                     
-                    let verseContent = ``;
-                    if(isModal) verseContent += `<h4 class="text-lg font-bold text-emerald-400 mb-2">${data.reference}</h4>`;
-
-                    if (data.verses) {
-                        verseContent += data.verses.map(v => `<p class="mb-2"><strong>${v.verse}</strong>&nbsp;${v.text}</p>`).join('');
-                    } else {
-                        verseContent += `<p>${data.text}</p>`;
-                    }
+                    const verseText = data.verses ? data.verses.map(v => `${v.verse} ${v.text}`).join('\n') : data.text;
+                    let verseContentHTML = data.verses ? data.verses.map(v => `<p class="mb-2"><strong>${v.verse}</strong>&nbsp;${v.text}</p>`).join('') : `<p>${data.text}</p>`;
                     
                     if(isModal) {
-                        targetElement.innerHTML = verseContent;
+                        targetElement.innerHTML = `<h4 class="text-lg font-bold text-emerald-400 mb-2">${data.reference}</h4>${verseContentHTML}`;
                         return;
                     }
                     
@@ -1050,21 +1072,45 @@
                     
                     const verseEl = document.createElement('div');
                     let verseElClasses = isTopicalSearch 
-                        ? "w-full p-3 border border-gray-700 rounded-lg bg-gray-800 flex flex-col"
-                        : "w-72 flex-shrink-0 p-3 border border-gray-700 rounded-lg bg-gray-800 h-full flex flex-col";
+                        ? "w-full p-3 border border-gray-700 rounded-lg bg-gray-900 flex flex-col"
+                        : "w-72 flex-shrink-0 p-3 border border-gray-700 rounded-lg bg-gray-900 h-full flex flex-col";
                     
                     verseEl.className = verseElClasses;
+                    verseEl.dataset.reference = data.reference;
+                    verseEl.dataset.text = verseText;
 
                     verseEl.innerHTML = `
                         <div class="flex justify-between items-center mb-1">
                             <p class="font-bold text-emerald-400">${data.reference}</p>
-                            <div class="flex items-center gap-3">
-                                 <button class="explain-verse-btn text-sky-400 hover:text-sky-300" title="Explicar versículo"><i class="fas fa-comment-dots"></i></button>
-                                 <button class="remove-verse-btn text-gray-500 hover:text-red-400 text-xs"><i class="fas fa-times"></i></button>
+                            <div class="flex items-center gap-3 text-gray-400">
+                                <button class="copy-to-outline-btn hover:text-emerald-400 transition-colors" title="Copiar para Esboço"><i class="fas fa-file-import"></i></button>
+                                <button class="copy-to-notes-btn hover:text-yellow-400 transition-colors" title="Copiar para Notas"><i class="fas fa-clipboard"></i></button>
+                                <button class="explain-verse-btn hover:text-sky-400 transition-colors" title="Explicar versículo"><i class="fas fa-comment-dots"></i></button>
+                                <button class="remove-verse-btn text-gray-500 hover:text-red-400 transition-colors"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
-                        <div class="overflow-y-auto flex-grow min-h-0">${verseContent}</div>
+                        <div class="overflow-y-auto flex-grow min-h-0">${verseContentHTML}</div>
                     `;
+
+                    verseEl.querySelector('.copy-to-outline-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const ref = verseEl.dataset.reference;
+                        const textToCopy = verseEl.dataset.text;
+                        const formattedContent = `<p><br></p><h4><strong>${ref}</strong></h4><blockquote>${textToCopy.replace(/\n/g, '<br>')}</blockquote>`;
+                        outlineContentEl.innerHTML += formattedContent;
+                        showToast(`"${ref}" copiado para o esboço.`);
+                    });
+
+                    verseEl.querySelector('.copy-to-notes-btn').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const ref = verseEl.dataset.reference;
+                        const textToCopy = verseEl.dataset.text;
+                        const currentNotes = outlineNotesEl.value;
+                        const formattedContent = `${currentNotes ? '\n\n' : ''}${ref}\n${textToCopy}`;
+                        outlineNotesEl.value += formattedContent;
+                        showToast(`"${ref}" copiado para as notas.`);
+                    });
+
                     verseEl.querySelector('.remove-verse-btn').addEventListener('click', () => {
                         verseEl.remove();
                         renderVerseDisplayPlaceholder();
@@ -1193,9 +1239,9 @@
 
             const switchStudySubTab = (subtabName) => {
                 studySubtabPanes.forEach(pane => {
-                    pane.classList.toggle('hidden', pane.id !== `${subtabName}-pane-modal`);
+                    pane.classList.toggle('hidden', pane.id !== `${subtabName}-pane`);
                 });
-                document.querySelectorAll('.study-subtab-btn-modal').forEach(btn => {
+                document.querySelectorAll('.study-subtab-btn').forEach(btn => {
                     const isActive = btn.dataset.subtab === subtabName;
                     btn.classList.toggle('border-emerald-400', isActive);
                     btn.classList.toggle('text-white', isActive);
@@ -1207,6 +1253,7 @@
             const openExplanationModal = (reference) => {
                 explanationTitle.textContent = `Explicação de ${reference}`;
                 explanationResult.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A carregar explicação...</div>';
+                copyExplanationBtn.classList.add('hidden');
                 explanationModal.classList.remove('hidden');
                 explanationModal.classList.add('flex');
                 getVerseExplanation(reference, explanationResult);
@@ -1231,10 +1278,13 @@
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (text) {
                         targetElement.innerHTML = text.replace(/\n/g, '<br>');
+                        copyExplanationBtn.classList.remove('hidden');
                     } else {
+                        copyExplanationBtn.classList.add('hidden');
                         throw new Error("Resposta da IA inválida ou vazia.");
                     }
                 } catch (error) {
+                    copyExplanationBtn.classList.add('hidden');
                     console.error("Error getting explanation:", error);
                     targetElement.textContent = `Ocorreu um erro ao buscar a explicação. Detalhes: ${error.message}`;
                 }
@@ -1247,7 +1297,6 @@
                     return;
                 }
                 topicalResultsDisplay.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A procurar versículos sobre o tema...</div>';
-                
                 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
                 const systemPrompt = `Você é um assistente de estudo bíblico. Sua tarefa é encontrar referências bíblicas sobre um determinado tema.`;
@@ -1278,26 +1327,61 @@
                 }
             };
 
-             const toggleFocusMode = () => {
-                isFocusMode = !isFocusMode;
-                const icon = toggleFocusModeBtn.querySelector('i');
-                
-                leftPanel.classList.toggle('lg:hidden', isFocusMode);
-                rightPanel.classList.toggle('lg:hidden', isFocusMode);
-                
-                centerPanel.classList.toggle('lg:w-1/2', !isFocusMode);
-                centerPanel.classList.toggle('lg:w-full', isFocusMode);
+            const handleGenerateCommentary = async () => {
+                const book = commentaryBookSelect.value;
+                const chapter = commentaryChapterInput.value.trim();
+                if (!book || !chapter) {
+                    showToast("Por favor, selecione o livro e o capítulo.");
+                    return;
+                }
 
-                if (isFocusMode) {
-                    icon.classList.remove('fa-expand-arrows-alt');
-                    icon.classList.add('fa-compress-arrows-alt');
-                    toggleFocusModeBtn.title = "Sair do Modo Foco";
-                } else {
-                    icon.classList.remove('fa-compress-arrows-alt');
-                    icon.classList.add('fa-expand-arrows-alt');
-                    toggleFocusModeBtn.title = "Modo Foco";
+                commentaryResultsDisplay.innerHTML = `<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A gerar comentário para ${book} ${chapter}...</div>`;
+                
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+                const systemPrompt = `Você é um teólogo e exegeta bíblico. Sua tarefa é escrever um comentário aprofundado para um capítulo da Bíblia. Estruture sua resposta com clareza, usando títulos em negrito (ex: **Contexto**).`;
+                const userQuery = `Gere um comentário bíblico detalhado para ${book} capítulo ${chapter}. Aborde o seguinte: 1. **Contexto Histórico e Literário**. 2. **Análise dos Temas Principais**. 3. **Comentário de Versículos Chave**. 4. **Aplicações Práticas e Teológicas**.`;
+                const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+
+                try {
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (text) {
+                        let formattedText = text.replace(/\n/g, '<br>');
+                        formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<br><strong class="text-emerald-400 text-base mt-2 block">$1</strong>');
+                        commentaryResultsDisplay.innerHTML = formattedText;
+                    } else {
+                        throw new Error("Resposta da IA inválida ou vazia.");
+                    }
+                } catch (error) {
+                    console.error("Error generating commentary:", error);
+                    commentaryResultsDisplay.innerHTML = `<p class="text-red-400">${error.message}</p>`;
                 }
             };
+
+             const toggleFocusMode = () => {
+                 isFocusMode = !isFocusMode;
+                 const icon = toggleFocusModeBtn.querySelector('i');
+                 
+                 leftPanel.classList.toggle('lg:hidden', isFocusMode);
+                 rightPanel.classList.toggle('lg:hidden', isFocusMode);
+                 studyToolsArea.classList.toggle('lg:hidden', isFocusMode)
+                 
+                 centerPanel.classList.toggle('lg:w-1/2', !isFocusMode);
+                 centerPanel.classList.toggle('lg:w-full', isFocusMode);
+
+                 if (isFocusMode) {
+                     icon.classList.remove('fa-expand-arrows-alt');
+                     icon.classList.add('fa-compress-arrows-alt');
+                     toggleFocusModeBtn.title = "Sair do Modo Foco";
+                 } else {
+                     icon.classList.remove('fa-compress-arrows-alt');
+                     icon.classList.add('fa-expand-arrows-alt');
+                     toggleFocusModeBtn.title = "Modo Foco";
+                 }
+             };
 
             const renderReadingPlan = () => {
                 if (!userReadingProgress) return;
@@ -1352,18 +1436,18 @@
                 achievementsList.appendChild(newTestamentContainer);
                 
                 if(achievements.length > 0) {
-                     achievements.forEach(ach => {
-                        const achEl = document.createElement('div');
-                        achEl.className = "flex items-center gap-4 bg-gray-900 p-3 rounded-lg mt-4";
-                        achEl.innerHTML = `
-                            <div class="text-yellow-400 text-3xl"><i class="fas fa-trophy"></i></div>
-                            <div>
-                                <p class="font-bold text-white">${READING_PLANS[ach.planId]?.name || 'Plano Completado'}</p>
-                                <p class="text-xs text-gray-400">Completado em ${ach.completionDate.toDate().toLocaleDateString('pt-BR')} em ${ach.durationDays} dias.</p>
-                            </div>
-                        `;
-                        achievementsList.appendChild(achEl);
-                    });
+                      achievements.forEach(ach => {
+                         const achEl = document.createElement('div');
+                         achEl.className = "flex items-center gap-4 bg-gray-900 p-3 rounded-lg mt-4";
+                         achEl.innerHTML = `
+                             <div class="text-yellow-400 text-3xl"><i class="fas fa-trophy"></i></div>
+                             <div>
+                                 <p class="font-bold text-white">${READING_PLANS[ach.planId]?.name || 'Plano Completado'}</p>
+                                 <p class="text-xs text-gray-400">Completado em ${ach.completionDate.toDate().toLocaleDateString('pt-BR')} em ${ach.durationDays} dias.</p>
+                             </div>
+                         `;
+                         achievementsList.appendChild(achEl);
+                     });
                 }
 
 
@@ -1478,9 +1562,9 @@
 
                 if (userReadingProgress.activePlan && userReadingProgress.completedDays.length > 0) {
                      showConfirmationModal('Mudar de plano irá apagar o seu progresso atual. Deseja continuar?', () => {
-                        startNewPlan();
-                    });
-                    readingPlanSelect.value = userReadingProgress.activePlan;
+                         startNewPlan();
+                     });
+                     readingPlanSelect.value = userReadingProgress.activePlan;
                 } else {
                     startNewPlan();
                 }
@@ -1499,22 +1583,39 @@
                 readingModal.classList.remove('flex');
             };
 
-            const openStudyToolsModal = () => {
-                studyToolsModal.classList.remove('hidden');
-                studyToolsModal.classList.add('flex');
-            };
-
-            const closeStudyToolsModal = () => {
-                studyToolsModal.classList.add('hidden');
-                studyToolsModal.classList.remove('flex');
+            const toggleStudyTools = () => {
+                const isHidden = studyToolsArea.classList.contains('hidden');
+                
+                if (window.innerWidth < 1024) { // Mobile behavior
+                    if (isHidden) {
+                        editorArea.classList.add('hidden');
+                        studyToolsArea.classList.remove('hidden');
+                        studyToolsArea.classList.add('flex');
+                    } else {
+                         editorArea.classList.remove('hidden');
+                         studyToolsArea.classList.add('hidden');
+                         studyToolsArea.classList.remove('flex');
+                    }
+                } else { // Desktop behavior
+                    studyToolsArea.classList.toggle('hidden');
+                    studyToolsArea.classList.toggle('lg:flex');
+                    rightPanel.classList.toggle('lg:flex');
+                    rightPanel.classList.toggle('lg:hidden');
+                    editorArea.classList.toggle('lg:w-full');
+                    editorArea.classList.toggle('lg:w-[60%]'); // Adjust width
+                    centerPanel.classList.toggle('lg:w-1/2');
+                    centerPanel.classList.toggle('lg:w-3/4');
+                }
             };
 
             // Initial calls
             bibleBookSelectEl.innerHTML = '';
             bibleStudyBookSelectEl.innerHTML = '';
+            commentaryBookSelect.innerHTML = '';
             BIBLE_BOOKS.forEach(book => {
                 bibleBookSelectEl.add(new Option(book, book));
                 bibleStudyBookSelectEl.add(new Option(book, book));
+                commentaryBookSelect.add(new Option(book, book));
             });
             document.getElementById('prev-month').onclick = () => changeMonth(-1);
             document.getElementById('next-month').onclick = () => changeMonth(1);
@@ -1524,12 +1625,13 @@
             document.getElementById('save-engagement').onclick = handleSaveEngagement;
             document.getElementById('delete-engagement').onclick = handleDeleteEngagement;
             
-            document.getElementById('fetch-verse-btn-modal').onclick = () => fetchVerse(null, document.getElementById('verse-display-modal'), false, false);
-            document.getElementById('bible-ref-input-modal').onkeypress = (e) => { if (e.key === 'Enter') fetchVerse(null, document.getElementById('verse-display-modal'), false, false); };
+            document.getElementById('fetch-verse-btn').onclick = () => fetchVerse(null, document.getElementById('verse-display'), false, false);
+            document.getElementById('bible-ref-input').onkeypress = (e) => { if (e.key === 'Enter') fetchVerse(null, document.getElementById('verse-display'), false, false); };
             
             clearStudyResultsBtn.onclick = () => {
-                document.getElementById('verse-display-modal').innerHTML = '';
-                document.getElementById('topical-results-display-modal').innerHTML = '';
+                document.getElementById('verse-display').innerHTML = '';
+                document.getElementById('topical-results-display').innerHTML = '';
+                document.getElementById('commentary-results-display').innerHTML = '';
                 renderVerseDisplayPlaceholder();
                 showToast('Resultados limpos.');
             };
@@ -1559,11 +1661,11 @@
                 btn.addEventListener('click', () => switchMobileView(btn.dataset.view));
             });
             
-            openStudyToolsBtn.onclick = openStudyToolsModal;
-            closeStudyToolsBtn.onclick = closeStudyToolsModal;
+            openStudyToolsBtn.onclick = toggleStudyTools;
+            closeStudyToolsBtn.onclick = toggleStudyTools;
 
             studySubTabs.addEventListener('click', (e) => {
-                const tabBtn = e.target.closest('.study-subtab-btn-modal');
+                const tabBtn = e.target.closest('.study-subtab-btn');
                 if (tabBtn) switchStudySubTab(tabBtn.dataset.subtab);
             });
             fetchTopicBtn.onclick = handleTopicalSearch;
@@ -1572,6 +1674,17 @@
             toggleFocusModeBtn.onclick = toggleFocusMode;
             readingPlanSelect.onchange = handlePlanChange;
             closeReadingModalBtn.onclick = closeReadingModal;
+            fetchCommentaryBtn.onclick = handleGenerateCommentary;
+            commentaryChapterInput.onkeypress = (e) => { if (e.key === 'Enter') handleGenerateCommentary(); };
+            
+            copyExplanationBtn.addEventListener('click', () => {
+                const explanationText = explanationResult.innerText;
+                const currentNotes = outlineNotesEl.value;
+                const formattedContent = `${currentNotes ? '\n\n' : ''}Explicação de ${explanationTitle.textContent.replace('Explicação de ', '')}:\n${explanationText}`;
+                outlineNotesEl.value += formattedContent;
+                showToast(`Explicação copiada para as notas.`);
+                closeExplanationModal();
+            });
 
             setupFirebaseListeners();
             switchTab('archive');
