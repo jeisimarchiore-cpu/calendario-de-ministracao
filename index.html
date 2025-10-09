@@ -188,10 +188,10 @@
                                     <i class="fas fa-expand-arrows-alt"></i>
                                 </button>
                                 <div class="w-px h-6 bg-gray-700"></div>
-                                <button id="open-study-tools-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Ferramentas de Estudo"><i class="fas fa-book-open"></i> <span class="hidden md:inline">Estudo</span></button>
-                                <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> <span class="hidden md:inline">Gerar Ideia</span></button>
-                                <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> <span class="hidden md:inline">Salvar</span></button>
-                                <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> <span class="hidden md:inline">Limpar</span></button>
+                                <button id="open-study-tools-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Ferramentas de Estudo"><i class="fas fa-book-open"></i> <span class="hidden sm:inline">Estudo</span></button>
+                                <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> <span class="hidden sm:inline">Gerar Ideia</span></button>
+                                <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> <span class="hidden sm:inline">Salvar</span></button>
+                                <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> <span class="hidden sm:inline">Limpar</span></button>
                             </div>
                         </div>
                         
@@ -1232,11 +1232,10 @@
             const switchMainView = (viewId) => {
                 mainPanels.forEach(panel => {
                     panel.classList.toggle('hidden', panel.id !== viewId);
-                    // Use 'flex' for the right panel to enable its internal flex layout
-                    if (panel.id === viewId && (panel.id === 'right-panel' || panel.id === 'center-panel')) {
-                         panel.classList.add('flex');
-                    } else if (panel.id === viewId) {
-                         panel.classList.add('block'); // 'block' for the left panel grid
+                    panel.classList.toggle('flex', panel.id === viewId);
+                     // Special handling for left-panel to make it a flex container
+                    if (panel.id === 'left-panel' && panel.id === viewId) {
+                        panel.classList.add('flex', 'flex-col', 'gap-4');
                     }
                 });
 
@@ -1421,7 +1420,7 @@
                 oldTestamentContainer.innerHTML = '<h5 class="font-bold text-gray-400 text-sm mb-2">ANTIGO TESTAMENTO</h5>';
                 newTestamentContainer.innerHTML = '<h5 class="font-bold text-gray-400 text-sm mt-4 mb-2">NOVO TESTAMENTO</h5>';
                 
-                const sealGridClasses = 'grid grid-cols-4 sm:grid-cols-5 md:grid-cols-4 lg:grid-cols-5 gap-2';
+                const sealGridClasses = 'grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5 gap-4';
                 const otGrid = document.createElement('div');
                 otGrid.className = sealGridClasses;
                 const ntGrid = document.createElement('div');
@@ -1598,25 +1597,25 @@
             };
 
             const toggleStudyTools = () => {
-                const isHidden = studyToolsArea.classList.contains('hidden');
-
-                if (window.innerWidth < 1024) {
-                    if (isHidden) {
-                        editorArea.classList.add('hidden');
-                        studyToolsArea.classList.remove('hidden');
-                        studyToolsArea.classList.add('flex');
-                    } else {
-                        editorArea.classList.remove('hidden');
-                        studyToolsArea.classList.add('hidden');
-                        studyToolsArea.classList.remove('flex');
-                    }
-                } else {
-                    studyToolsArea.classList.toggle('hidden');
-                    studyToolsArea.classList.toggle('lg:flex');
-                    editorArea.classList.toggle('lg:w-full');
-                    editorArea.classList.toggle('lg:w-3/5');
-                }
-            };
+                 const isHidden = studyToolsArea.classList.contains('hidden');
+                
+                 if (window.innerWidth < 1024) { 
+                     if (isHidden) {
+                         editorArea.classList.add('hidden');
+                         studyToolsArea.classList.remove('hidden');
+                         studyToolsArea.classList.add('flex');
+                     } else {
+                         editorArea.classList.remove('hidden');
+                         studyToolsArea.classList.add('hidden');
+                         studyToolsArea.classList.remove('flex');
+                     }
+                 } else { 
+                     studyToolsArea.classList.toggle('hidden');
+                     studyToolsArea.classList.toggle('lg:flex');
+                     editorArea.classList.toggle('lg:w-full');
+                     editorArea.classList.toggle('lg:w-3/5'); 
+                 }
+             };
 
             // Initial calls
             bibleBookSelectEl.innerHTML = '';
