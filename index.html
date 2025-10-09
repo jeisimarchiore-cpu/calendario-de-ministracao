@@ -6,10 +6,10 @@
     <title>Agenda do Pregador</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter -->
+    <!-- Google Fonts: Inter, Lora, Montserrat -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@700&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Library to export to DOCX -->
@@ -120,6 +120,50 @@
             padding: 0 5px;
             border-radius: 10px;
         }
+         /* Presentation Mode Styles */
+        #presentation-modal {
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #presentation-modal.visible {
+            opacity: 1;
+        }
+        #presentation-title {
+            font-family: 'Montserrat', sans-serif;
+            text-shadow: 0 0 15px rgba(52, 211, 153, 0.5);
+        }
+        #presentation-content {
+            font-family: 'Lora', serif;
+        }
+        #presentation-content h1,
+        #presentation-content h2,
+        #presentation-content h3,
+        #presentation-content h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #6ee7b7; /* emerald-300 */
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+         #presentation-content h1 { font-size: 1.8em; }
+         #presentation-content h2 { font-size: 1.5em; }
+         #presentation-content h3 { font-size: 1.25em; }
+         #presentation-content h4 { font-size: 1.1em; }
+
+        #presentation-content blockquote {
+            border-left: 3px solid #34d399; /* emerald-400 */
+            padding-left: 1rem;
+            margin-left: 0.5rem;
+            font-style: italic;
+            color: #9ca3af; /* gray-400 */
+        }
+         #presentation-content ul, #presentation-content ol {
+            padding-left: 2rem;
+         }
+         #presentation-content li {
+            margin-bottom: 0.5rem;
+         }
     </style>
 </head>
 <body class="antialiased">
@@ -424,11 +468,46 @@
     <div id="suggestion-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-40">
         <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
             <h3 class="text-xl font-bold mb-4 text-white">Assistente de Esboços (IA)</h3>
-            <p class="text-sm text-gray-300 mb-4">Digite um tema, versículo ou palavra-chave para gerar uma sugestão de esboço.</p>
-            <div class="flex gap-2 mb-4">
-                <input type="text" id="suggestion-theme-input" placeholder="Ex: A Parábola do Filho Pródigo" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block w-full p-2.5">
-                <button id="generate-suggestion-btn" class="py-2 px-4 bg-sky-500 hover:bg-sky-600 text-white rounded-lg">Gerar Esboço</button>
+            <p class="text-sm text-gray-300 mb-4">Descreva o esboço que você precisa. Quanto mais detalhes, melhor o resultado.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="suggestion-theme-input" class="block mb-1 text-sm font-medium text-gray-300">Tema Principal</label>
+                    <input type="text" id="suggestion-theme-input" placeholder="Ex: A Parábola do Filho Pródigo" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block p-2.5">
+                </div>
+                <div>
+                    <label for="suggestion-base-text-input" class="block mb-1 text-sm font-medium text-gray-300">Texto-Base (Opcional)</label>
+                    <input type="text" id="suggestion-base-text-input" placeholder="Ex: Lucas 15:11-32" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block p-2.5">
+                </div>
+                <div>
+                    <label for="suggestion-audience-select" class="block mb-1 text-sm font-medium text-gray-300">Público-Alvo</label>
+                    <select id="suggestion-audience-select" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block p-2.5">
+                        <option>Geral</option>
+                        <option>Jovens</option>
+                        <option>Casais</option>
+                        <option>Homens</option>
+                        <option>Mulheres</option>
+                        <option>Novos Convertidos</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="suggestion-tone-select" class="block mb-1 text-sm font-medium text-gray-300">Tom da Mensagem</label>
+                    <select id="suggestion-tone-select" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block p-2.5">
+                        <option>Evangelístico</option>
+                        <option>Doutrinário</option>
+                        <option>Consolador</option>
+                        <option>Exortativo / Confronto</option>
+                        <option>Devocional / Inspirador</option>
+                    </select>
+                </div>
             </div>
+    
+            <div class="flex justify-end gap-2 mb-4">
+                <button id="generate-suggestion-btn" class="py-2 px-6 bg-sky-500 hover:bg-sky-600 text-white rounded-lg flex items-center gap-2">
+                    <i class="fas fa-magic-sparkles"></i> Gerar Esboço
+                </button>
+            </div>
+    
             <div id="suggestion-result" class="bg-gray-900 rounded-lg p-4 flex-grow overflow-y-auto text-gray-300 text-sm whitespace-pre-wrap"></div>
             <div class="mt-6 flex justify-end gap-3">
                 <button id="cancel-suggestion" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
@@ -482,14 +561,14 @@
     </div>
 
     <!-- Presentation Mode Modal -->
-    <div id="presentation-modal" class="fixed inset-0 bg-gray-900 p-4 md:p-8 flex-col hidden z-50">
-        <div class="w-full max-w-4xl mx-auto flex-grow flex flex-col h-full">
-            <h2 id="presentation-title" class="text-2xl md:text-4xl font-bold text-emerald-400 mb-6 text-center flex-shrink-0"></h2>
-            <div id="presentation-content" class="text-base md:text-lg text-gray-200 leading-relaxed flex-grow overflow-y-auto p-4 md:p-6 bg-gray-800 rounded-lg">
+    <div id="presentation-modal" class="fixed inset-0 p-4 md:p-8 flex-col hidden z-50">
+        <div class="w-full max-w-5xl mx-auto flex-grow flex flex-col h-full">
+            <h2 id="presentation-title" class="text-3xl md:text-5xl font-bold text-emerald-400 mb-6 text-center flex-shrink-0"></h2>
+            <div id="presentation-content" class="text-lg md:text-xl text-gray-200 leading-loose flex-grow overflow-y-auto p-6 md:p-10 bg-gray-800/50 rounded-lg border border-gray-700 shadow-2xl">
                 <!-- Outline content goes here -->
             </div>
-             <div class="text-center mt-6 flex-shrink-0">
-                <button id="close-presentation-btn" class="py-2 px-6 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors">Fechar</button>
+             <div class="text-center mt-8 flex-shrink-0">
+                <button id="close-presentation-btn" class="py-2 px-6 bg-red-600/80 hover:bg-red-600 text-white rounded-lg transition-colors text-lg font-semibold">Fechar</button>
             </div>
         </div>
     </div>
@@ -650,6 +729,9 @@
             const fastingTypeEl = document.getElementById('fasting-type'); 
             const suggestionModalEl = document.getElementById('suggestion-modal');
             const suggestionThemeInputEl = document.getElementById('suggestion-theme-input');
+            const suggestionBaseTextInputEl = document.getElementById('suggestion-base-text-input');
+            const suggestionAudienceSelectEl = document.getElementById('suggestion-audience-select');
+            const suggestionToneSelectEl = document.getElementById('suggestion-tone-select');
             const suggestionResultEl = document.getElementById('suggestion-result');
             const useSuggestionBtn = document.getElementById('use-suggestion-btn');
             const generateSuggestionBtn = document.getElementById('generate-suggestion-btn');
@@ -1341,17 +1423,28 @@
             
             const handleGenerateSuggestion = async () => {
                 const theme = suggestionThemeInputEl.value.trim();
+                const baseText = suggestionBaseTextInputEl.value.trim();
+                const audience = suggestionAudienceSelectEl.value;
+                const tone = suggestionToneSelectEl.value;
+
                 if (!theme) {
-                    showToast("Por favor, insira um tema.");
+                    showToast("Por favor, insira pelo menos um tema.");
                     return;
                 }
+
                 suggestionResultEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>Gerando esboço...</div>';
                 useSuggestionBtn.classList.add('hidden');
                 generateSuggestionBtn.disabled = true;
                 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-                const systemPrompt = `Você é um assistente pastoral e teólogo. Sua tarefa é criar esboços para sermões bíblicos. Seja claro, objetivo e estruture a resposta sempre da mesma forma.`;
-                const userQuery = `Crie um esboço de sermão sobre o tema "${theme}". A resposta DEVE ter o seguinte formato:\nTítulo: [Título do Sermão]\n\n[Restante do conteúdo do esboço, incluindo uma introdução, 3 pontos principais com versículos de apoio, e uma conclusão].`;
+                const systemPrompt = `Você é um assistente pastoral e teólogo experiente. Sua tarefa é criar esboços para sermões bíblicos detalhados e bem estruturados. A resposta deve ser clara, objetiva e seguir sempre o formato solicitado.`;
+                
+                let userQuery = `Crie um esboço de sermão com as seguintes características:\n- Tema Principal: "${theme}"\n- Público-Alvo: ${audience}\n- Tom da Mensagem: ${tone}\n`;
+                if (baseText) {
+                    userQuery += `- Texto-Base Principal: ${baseText}\n`;
+                }
+                userQuery += `\nA resposta DEVE ter o seguinte formato:\nTítulo: [Título do Sermão]\n\n[Restante do conteúdo do esboço, incluindo uma introdução cativante, 3 a 4 pontos principais bem desenvolvidos com versículos de apoio relevantes, e uma conclusão prática e inspiradora].`;
+                
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
                 try {
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -1374,6 +1467,7 @@
             
             const useSuggestion = () => {
                 const fullText = suggestionResultEl.textContent;
+                const baseText = suggestionBaseTextInputEl.value.trim();
                 const lines = fullText.split('\n');
                 let title = "Esboço Gerado", content = fullText;
                 if(lines[0].toLowerCase().startsWith('título:')) {
@@ -1382,6 +1476,12 @@
                 }
                 outlineTitleEl.value = title;
                 outlineContentEl.innerHTML = content.replace(/\n/g, '<br>');
+
+                if(baseText) {
+                    const currentNotes = outlineNotesEl.value;
+                    outlineNotesEl.value = `Texto-Base: ${baseText}${currentNotes ? `\n\n${currentNotes}` : ''}`;
+                }
+
                 closeSuggestionModal();
                 showToast("Esboço inserido no editor!");
             };
@@ -1397,6 +1497,9 @@
                 suggestionModalEl.classList.remove('flex');
                 suggestionResultEl.textContent = 'Aguardando um tema para gerar a sugestão...';
                 suggestionThemeInputEl.value = '';
+                suggestionBaseTextInputEl.value = '';
+                suggestionAudienceSelectEl.selectedIndex = 0;
+                suggestionToneSelectEl.selectedIndex = 0;
                 useSuggestionBtn.classList.add('hidden');
             };
 
@@ -1414,12 +1517,18 @@
                     presentationContentEl.innerHTML = outline.content;
                     presentationModalEl.classList.remove('hidden');
                     presentationModalEl.classList.add('flex');
+                    setTimeout(() => {
+                        presentationModalEl.classList.add('visible');
+                    }, 10);
                 }
             };
             
             const closePresentationMode = () => {
-                presentationModalEl.classList.add('hidden');
-                presentationModalEl.classList.remove('flex');
+                presentationModalEl.classList.remove('visible');
+                setTimeout(() => {
+                    presentationModalEl.classList.add('hidden');
+                    presentationModalEl.classList.remove('flex');
+                }, 300);
             };
             
             const switchMainView = (viewId) => {
@@ -1944,8 +2053,6 @@
             document.getElementById('suggestion-btn').onclick = openSuggestionModal;
             document.getElementById('cancel-suggestion').onclick = closeSuggestionModal;
             generateSuggestionBtn.onclick = handleGenerateSuggestion;
-            useSuggestionBtn.onclick = useSuggestion;
-            suggestionThemeInputEl.onkeypress = (e) => { if (e.key === 'Enter') handleGenerateSuggestion(); };
             
             document.getElementById('close-presentation-btn').onclick = closePresentationMode;
             
@@ -1988,6 +2095,8 @@
                 fastingSuggestionModalEl.classList.add('hidden');
                 fastingSuggestionModalEl.classList.remove('flex');
             };
+            useSuggestionBtn.onclick = useSuggestion;
+
 
             setInterval(updateActiveFastTimer, 1000);
             setupFirebaseListeners();
