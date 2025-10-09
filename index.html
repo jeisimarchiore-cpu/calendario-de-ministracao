@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Library to export to DOCX -->
     <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Custom styles */
         body {
@@ -362,11 +364,18 @@
                             </div>
                         </div>
                         
-                        <div class="flex-grow overflow-y-auto pr-2">
+                        <div class="flex-grow overflow-y-auto pr-2 min-h-0">
                             <h4 class="font-semibold text-white mb-2 text-sm">Propósitos Ativos/Futuros</h4>
                             <div id="fasting-list" class="space-y-2 mb-4"></div>
    
-                            <h4 class="font-semibold text-white mt-4 mb-2 text-sm">Histórico de Jejuns</h4>
+                            <h4 class="font-semibold text-white mt-4 mb-2 text-sm">Histórico</h4>
+                             <div id="fasting-summary" class="grid grid-cols-3 gap-2 text-center mb-4">
+                                <!-- Summary stats will be injected here -->
+                            </div>
+
+                            <div class="bg-gray-900 p-2 rounded-lg mb-4" style="height: 250px;">
+                                <canvas id="fasting-chart"></canvas>
+                            </div>
                             <div id="fasting-history" class="space-y-2"></div>
                         </div>
                     </div>
@@ -594,6 +603,8 @@
             let outlines = [], engagements = [], fastingSchedules = [], userReadingProgress = null;
             let currentEditingOutlineId = null, currentSelectedDate = null, currentEditingEngagementId = null;
             let isFocusMode = false;
+            let fastingChartInstance = null;
+
 
             const BIBLE_BOOKS = [
                 "Gênesis", "Êxodo", "Levítico", "Números", "Deuteronômio", "Josué", "Juízes", "Rute", "1 Samuel", "2 Samuel", "1 Reis", "2 Reis", "1 Crônicas", "2 Crônicas", "Esdras", "Neemias", "Ester", "Jó", "Salmos", "Provérbios", "Eclesiastes", "Cânticos", "Isaías", "Jeremias", "Lamentações", "Ezequiel", "Daniel", "Oséias", "Joel", "Amós", "Obadias", "Jonas", "Miquéias", "Naum", "Habacuque", "Sofonias", "Ageu", "Zacarias", "Malaquias",
@@ -697,6 +708,7 @@
             const fastingSuggestionModalEl = document.getElementById('fasting-suggestion-modal');
             const fastingSuggestionResultEl = document.getElementById('fasting-suggestion-result');
             const closeFastingSuggestionBtn = document.getElementById('close-fasting-suggestion-btn');
+            const fastingSummaryEl = document.getElementById('fasting-summary');
 
 
             let confirmationCallback = null;
@@ -956,6 +968,28 @@
                     }).join('');
                 }
 
+                // Update summary and chart
+                const totalJejum = past.filter(i => i.type === 'Jejum').length;
+                const totalOracao = past.filter(i => i.type === 'Oração').length;
+                const totalAmbos = past.filter(i => i.type === 'Jejum e Oração').length;
+                
+                fastingSummaryEl.innerHTML = `
+                    <div class="bg-red-500/20 p-2 rounded">
+                        <p class="text-xs text-red-300">Jejuns</p>
+                        <p class="text-xl font-bold">${totalJejum}</p>
+                    </div>
+                    <div class="bg-sky-500/20 p-2 rounded">
+                        <p class="text-xs text-sky-300">Orações</p>
+                        <p class="text-xl font-bold">${totalOracao}</p>
+                    </div>
+                     <div class="bg-purple-500/20 p-2 rounded">
+                        <p class="text-xs text-purple-300">Ambos</p>
+                        <p class="text-xl font-bold">${totalAmbos}</p>
+                    </div>
+                `;
+
+                renderFastingChart(past);
+
                 document.querySelectorAll('.delete-fasting-btn').forEach(btn => {
                     btn.addEventListener('click', e => {
                         const id = e.currentTarget.dataset.id;
@@ -966,6 +1000,83 @@
                     });
                 });
             };
+
+            const renderFastingChart = (pastData) => {
+                const ctx = document.getElementById('fasting-chart').getContext('2d');
+                if (fastingChartInstance) {
+                    fastingChartInstance.destroy();
+                }
+
+                if (pastData.length === 0) return; 
+
+                const sortedData = [...pastData].reverse();
+
+                const labels = sortedData.map(item => new Date(item.endDate).toLocaleDateString('pt-br', { month: 'short', day: 'numeric'}));
+                const jejumData = sortedData.map(item => (item.type === 'Jejum' ? (new Date(item.endDate) - new Date(item.startDate)) / (1000 * 60 * 60) : 0));
+                const oracaoData = sortedData.map(item => (item.type === 'Oração' ? (new Date(item.endDate) - new Date(item.startDate)) / (1000 * 60 * 60) : 0));
+                const ambosData = sortedData.map(item => (item.type === 'Jejum e Oração' ? (new Date(item.endDate) - new Date(item.startDate)) / (1000 * 60 * 60) : 0));
+
+                fastingChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Jejum',
+                                data: jejumData,
+                                backgroundColor: 'rgba(239, 68, 68, 0.6)', // Red
+                            },
+                            {
+                                label: 'Oração',
+                                data: oracaoData,
+                                backgroundColor: 'rgba(59, 130, 246, 0.6)', // Blue
+                            },
+                            {
+                                label: 'Jejum e Oração',
+                                data: ambosData,
+                                backgroundColor: 'rgba(168, 85, 247, 0.6)', // Purple
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Duração (horas)', color: '#9ca3af' },
+                                ticks: { color: '#9ca3af' },
+                                grid: { color: 'rgba(156, 163, 175, 0.1)' }
+                            },
+                            x: {
+                                stacked: true, 
+                                ticks: { color: '#9ca3af' },
+                                grid: { color: 'rgba(156, 163, 175, 0.1)' },
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: { color: '#d1d5db' }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        if (context.parsed.y === 0) return null;
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y.toFixed(1) + 'h';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
 
             const renderVerseDisplayPlaceholder = () => {
                 if(verseDisplayEl.children.length === 0) {
@@ -1682,15 +1793,10 @@
                  const isHidden = studyToolsArea.classList.contains('hidden');
                 
                  if (window.innerWidth < 1024) { 
-                     if (isHidden) {
-                         editorArea.classList.add('hidden');
-                         studyToolsArea.classList.remove('hidden');
-                         studyToolsArea.classList.add('flex');
-                     } else {
-                         editorArea.classList.remove('hidden');
-                         studyToolsArea.classList.add('hidden');
-                         studyToolsArea.classList.remove('flex');
-                     }
+                    studyToolsArea.classList.toggle('hidden');
+                    studyToolsArea.classList.toggle('flex');
+                    editorArea.classList.toggle('hidden');
+                    editorArea.classList.toggle('flex');
                  } else { 
                      studyToolsArea.classList.toggle('hidden');
                      studyToolsArea.classList.toggle('lg:flex');
