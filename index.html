@@ -451,17 +451,26 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- IA API Key ---
-        // The API key is provided by the execution environment.
+        // --- CHAVE DA API DE IA ---
+        // IMPORTANTE: Para usar no GitHub, substitua pela sua chave da API do Google AI Studio
+        // Recomenda-se criar uma chave com restrições de segurança.
         const GEMINI_API_KEY = "";
 
         // --- Firebase Configuration ---
-        // These variables are injected by the environment.
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-preaching-app';
+        // Configuração para funcionar em qualquer ambiente, incluindo GitHub Pages
+        const firebaseConfig = {
+            apiKey: "AIzaSyCp2CxegdrcOk4Bj6I45_8LOl0nTOt3rEg",
+            authDomain: "calendario-de-ministracao.firebaseapp.com",
+            projectId: "calendario-de-ministracao",
+            storageBucket: "calendario-de-ministracao.appspot.com",
+            messagingSenderId: "1091866768883",
+            appId: "1:1091866768883:web:9290fd424ff5cbf0980e86",
+            measurementId: "G-TBPTMVYF4M"
+        };
+        const appId = 'default-preaching-app';
 
         // --- App Initialization ---
         const app = initializeApp(firebaseConfig);
@@ -495,39 +504,28 @@
                         appInitialized = true;
                     }
                 } else {
-                    // If a custom token is provided, use it to sign in. Otherwise, sign in anonymously.
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        signInWithCustomToken(auth, __initial_auth_token).catch(error => {
-                             console.error("Custom token sign-in failed, falling back to anonymous:", error);
-                             signInAnonymously(auth).catch(anonError => {
-                                console.error("Anonymous sign-in failed after custom token failure:", anonError);
-                                loadingOverlay.innerHTML = `<div class="p-4 text-red-500">Falha na autenticação. Verifique a consola para detalhes.</div>`;
-                             });
-                        });
-                    } else {
-                         signInAnonymously(auth).catch(error => {
-                             console.error("Anonymous sign-in failed:", error);
-                             let errorMessage = '<p class="text-red-500 text-lg">Falha na autenticação. Verifique a consola para mais detalhes.</p>';
-                             if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
-                                 errorMessage = `
-                                     <div class="text-center max-w-2xl mx-auto">
-                                         <p class="text-xl font-bold text-red-400">Ação Necessária: Ativar Login Anónimo</p>
-                                         <p class="text-gray-300 mt-2">A aplicação não consegue iniciar porque o método de login "Anónimo" está desativado no seu projeto Firebase.</p>
-                                         <p class="text-gray-300 mt-4 font-semibold">Para corrigir, siga estes passos:</p>
-                                         <ol class="text-left text-gray-400 mt-2 list-decimal list-inside bg-gray-800 p-4 rounded-lg">
-                                             <li>Abra a consola do seu projeto Firebase.</li>
-                                             <li>No menu lateral, vá para <strong>Authentication</strong> (Autenticação).</li>
-                                             <li>Clique no separador <strong>Sign-in method</strong> (Método de login).</li>
-                                             <li>Encontre <strong>Anónimo</strong> na lista de provedores e clique para editar.</li>
-                                             <li>Ative o método e clique em <strong>Guardar</strong>.</li>
-                                             <li>Depois de guardar, <strong>recarregue esta página</strong>.</li>
-                                         </ol>
-                                     </div>
-                                 `;
-                             }
-                             loadingOverlay.innerHTML = `<div class="p-4">${errorMessage}</div>`;
-                         });
-                    }
+                    signInAnonymously(auth).catch(error => {
+                        console.error("Anonymous sign-in failed:", error);
+                        let errorMessage = '<p class="text-red-500 text-lg">Falha na autenticação. Verifique a consola para mais detalhes.</p>';
+                        if (error.code === 'auth/admin-restricted-operation' || error.code === 'auth/operation-not-allowed') {
+                            errorMessage = `
+                                <div class="text-center max-w-2xl mx-auto">
+                                    <p class="text-xl font-bold text-red-400">Ação Necessária: Ativar Login Anónimo</p>
+                                    <p class="text-gray-300 mt-2">A aplicação não consegue iniciar porque o método de login "Anónimo" está desativado no seu projeto Firebase.</p>
+                                    <p class="text-gray-300 mt-4 font-semibold">Para corrigir, siga estes passos:</p>
+                                    <ol class="text-left text-gray-400 mt-2 list-decimal list-inside bg-gray-800 p-4 rounded-lg">
+                                        <li>Abra a consola do seu projeto Firebase.</li>
+                                        <li>No menu lateral, vá para <strong>Authentication</strong> (Autenticação).</li>
+                                        <li>Clique no separador <strong>Sign-in method</strong> (Método de login).</li>
+                                        <li>Encontre <strong>Anónimo</strong> na lista de provedores e clique para editar.</li>
+                                        <li>Ative o método e clique em <strong>Guardar</strong>.</li>
+                                        <li>Depois de guardar, <strong>recarregue esta página</strong>.</li>
+                                    </ol>
+                                </div>
+                            `;
+                        }
+                        loadingOverlay.innerHTML = `<div class="p-4">${errorMessage}</div>`;
+                    });
                 }
             });
         };
