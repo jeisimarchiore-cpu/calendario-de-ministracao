@@ -301,7 +301,7 @@
                          <button data-tab="fasting" class="tab-btn py-4 px-1 border-b-2 border-transparent text-gray-400 hover:text-white transition-colors text-sm font-medium"><i class="fas fa-pray mr-2"></i>Jejum</button>
                      </nav>
                  </div>
-                 <div id="right-tab-content" class="flex-grow flex flex-col overflow-y-hidden">
+                 <div id="right-tab-content" class="flex-grow flex flex-col min-h-0">
                      <div id="archive-tab-content" class="right-tab-pane flex-grow overflow-y-auto">
                          <div id="archive-list" class="space-y-2"></div>
                      </div>
@@ -930,8 +930,8 @@
                     fastingListEl.innerHTML = activeAndFuture.map(item => {
                         const startDate = new Date(item.startDate);
                         const endDate = new Date(item.endDate);
-                        const formattedStartDate = startDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-                        const formattedEndDate = endDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        const formattedStartDate = startDate.toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        const formattedEndDate = endDate.toLocaleString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
                         
                         let typeBadge = '';
                         if (item.type === 'Jejum') {
