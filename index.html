@@ -324,25 +324,52 @@
                          </div>
                      </div>
                      <div id="fasting-tab-content" class="right-tab-pane hidden flex-grow flex flex-col">
-                         <h3 class="text-xl font-semibold text-white mb-2">Jejum e Oração</h3>
-                         <div class="bg-gray-900 rounded-lg p-3 mb-3">
-                             <h4 class="font-semibold text-white mb-2 text-sm">Novo Propósito</h4>
-                              <input type="text" id="fasting-title" placeholder="Propósito" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm mb-2">
-                             <div class="grid grid-cols-2 gap-2 mb-2">
-                                 <div>
-                                     <label for="fasting-start-date" class="text-xs text-gray-400">Início</label>
-                                     <input type="date" id="fasting-start-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
-                                 </div>
-                                 <div>
-                                     <label for="fasting-end-date" class="text-xs text-gray-400">Fim</label>
-                                     <input type="date" id="fasting-end-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
-                                 </div>
-                             </div>
-                             <textarea id="fasting-notes" placeholder="Anotações..." rows="2" class="w-full bg-gray-700 border rounded-lg p-2 text-white text-sm"></textarea>
-                             <button id="save-fasting-btn" class="mt-2 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg text-sm">Adicionar</button>
-                         </div>
-                         <div id="fasting-list" class="flex-grow overflow-y-auto space-y-2 pr-2"></div>
-                     </div>
+                        <div class="flex-shrink-0">
+                            <h3 class="text-xl font-semibold text-white mb-2">Jejum e Oração</h3>
+                            
+                            <div id="active-fast-timer" class="hidden mb-4 bg-emerald-900/50 border border-emerald-700 rounded-lg p-4 text-center">
+                               <p class="text-sm text-emerald-300 mb-1">Propósito Ativo</p>
+                               <p id="active-fast-title" class="font-bold text-lg text-white"></p>
+                               <div id="timer-display" class="text-2xl lg:text-3xl font-mono tracking-wider text-emerald-400 mt-2"></div>
+                            </div>
+                            
+                            <div class="bg-gray-900 rounded-lg p-3 mb-3">
+                                <h4 class="font-semibold text-white mb-2 text-sm">Novo Propósito</h4>
+                                 <input type="text" id="fasting-title" placeholder="Propósito" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm mb-2">
+                                <div class="mb-2">
+                                    <label for="fasting-type" class="text-xs text-gray-400">Tipo</label>
+                                    <select id="fasting-type" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
+                                        <option value="Jejum">Jejum</option>
+                                        <option value="Oração">Oração</option>
+                                        <option value="Jejum e Oração">Jejum e Oração</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mb-2">
+                                    <div>
+                                        <label for="fasting-start-date" class="text-xs text-gray-400">Início</label>
+                                        <input type="datetime-local" id="fasting-start-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
+                                    </div>
+                                    <div>
+                                        <label for="fasting-end-date" class="text-xs text-gray-400">Fim</label>
+                                        <input type="datetime-local" id="fasting-end-date" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 text-white text-sm">
+                                    </div>
+                                </div>
+                                <textarea id="fasting-notes" placeholder="Anotações..." rows="2" class="w-full bg-gray-700 border rounded-lg p-2 text-white text-sm"></textarea>
+                                <div class="grid grid-cols-2 gap-2 mt-2">
+                                   <button id="save-fasting-btn" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg text-sm">Adicionar</button>
+                                   <button id="suggest-delivery-btn" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg text-sm">Como Entregar o Jejum?</button>
+                               </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-grow overflow-y-auto pr-2">
+                            <h4 class="font-semibold text-white mb-2 text-sm">Propósitos Ativos/Futuros</h4>
+                            <div id="fasting-list" class="space-y-2 mb-4"></div>
+   
+                            <h4 class="font-semibold text-white mt-4 mb-2 text-sm">Histórico de Jejuns</h4>
+                            <div id="fasting-history" class="space-y-2"></div>
+                        </div>
+                    </div>
                  </div>
             </aside>
         </div>
@@ -431,6 +458,19 @@
              </div>
          </div>
      </div>
+
+    <!-- Fasting Delivery Suggestion Modal -->
+    <div id="fasting-suggestion-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
+        <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+           <h3 class="text-xl font-bold mb-4 text-white">Sugestão para Entrega do Jejum</h3>
+            <div id="fasting-suggestion-result" class="bg-gray-900 rounded-lg p-4 flex-grow overflow-y-auto text-gray-300 text-sm whitespace-pre-wrap">
+                <!-- Suggestion will be loaded here -->
+            </div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button id="close-fasting-suggestion-btn" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Presentation Mode Modal -->
     <div id="presentation-modal" class="fixed inset-0 bg-gray-900 p-4 md:p-8 flex-col hidden z-50">
@@ -596,6 +636,7 @@
             const fastingStartDateEl = document.getElementById('fasting-start-date');
             const fastingEndDateEl = document.getElementById('fasting-end-date');
             const fastingNotesEl = document.getElementById('fasting-notes');
+            const fastingTypeEl = document.getElementById('fasting-type'); 
             const suggestionModalEl = document.getElementById('suggestion-modal');
             const suggestionThemeInputEl = document.getElementById('suggestion-theme-input');
             const suggestionResultEl = document.getElementById('suggestion-result');
@@ -648,6 +689,15 @@
             const fetchCommentaryBtn = document.getElementById('fetch-commentary-btn');
             const commentaryResultsDisplay = document.getElementById('commentary-results-display');
             const copyExplanationBtn = document.getElementById('copy-explanation-btn');
+            const fastingHistoryEl = document.getElementById('fasting-history');
+            const activeFastTimerEl = document.getElementById('active-fast-timer');
+            const activeFastTitleEl = document.getElementById('active-fast-title');
+            const timerDisplayEl = document.getElementById('timer-display');
+            const suggestDeliveryBtn = document.getElementById('suggest-delivery-btn');
+            const fastingSuggestionModalEl = document.getElementById('fasting-suggestion-modal');
+            const fastingSuggestionResultEl = document.getElementById('fasting-suggestion-result');
+            const closeFastingSuggestionBtn = document.getElementById('close-fasting-suggestion-btn');
+
 
             let confirmationCallback = null;
 
@@ -865,16 +915,47 @@
             };
 
             const renderFastingSchedules = () => {
+                const now = new Date();
+                
                 const sortedSchedules = [...fastingSchedules].sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
-                if (sortedSchedules.length === 0) {
-                    fastingListEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Nenhum propósito cadastrado.</p>';
-                    return;
+
+                const activeAndFuture = sortedSchedules.filter(item => new Date(item.endDate) >= now);
+                const past = sortedSchedules
+                    .filter(item => new Date(item.endDate) < now)
+                    .sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+                
+                if (activeAndFuture.length === 0) {
+                    fastingListEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Nenhum propósito ativo ou futuro.</p>';
+                } else {
+                    fastingListEl.innerHTML = activeAndFuture.map(item => {
+                        const startDate = new Date(item.startDate);
+                        const endDate = new Date(item.endDate);
+                        const formattedStartDate = startDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        const formattedEndDate = endDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+                        
+                        let typeBadge = '';
+                        if (item.type === 'Jejum') {
+                            typeBadge = '<span class="text-xs bg-red-500/50 text-red-300 px-2 py-0.5 rounded-full">Jejum</span>';
+                        } else if (item.type === 'Oração') {
+                            typeBadge = '<span class="text-xs bg-sky-500/50 text-sky-300 px-2 py-0.5 rounded-full">Oração</span>';
+                        } else {
+                            typeBadge = '<span class="text-xs bg-purple-500/50 text-purple-300 px-2 py-0.5 rounded-full">Jejum e Oração</span>';
+                        }
+
+                        return `<div class="bg-gray-800 p-3 rounded-lg group"><div class="flex justify-between items-start"><div><div class="flex items-center gap-2 mb-1">${typeBadge}<p class="font-semibold text-white">${item.title}</p></div><p class="text-xs text-emerald-400">${formattedStartDate} até ${formattedEndDate}</p></div><button data-id="${item.id}" class="delete-fasting-btn text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-sm"><i class="fas fa-trash"></i></button></div><p class="text-sm text-gray-300 mt-2">${item.notes || ''}</p></div>`;
+                    }).join('');
                 }
-                fastingListEl.innerHTML = sortedSchedules.map(item => {
-                    const startDate = new Date(`${item.startDate}T12:00:00Z`).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
-                    const endDate = new Date(`${item.endDate}T12:00:00Z`).toLocaleDateString('pt-BR', { timeZone: 'UTC' });
-                    return `<div class="bg-gray-800 p-3 rounded-lg group"><div class="flex justify-between items-start"><div><p class="font-semibold text-white">${item.title}</p><p class="text-xs text-emerald-400">${startDate} até ${endDate}</p></div><button data-id="${item.id}" class="delete-fasting-btn text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-sm"><i class="fas fa-trash"></i></button></div><p class="text-sm text-gray-300 mt-2">${item.notes || ''}</p></div>`;
-                }).join('');
+
+                if (past.length === 0) {
+                    fastingHistoryEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Nenhum jejum concluído.</p>';
+                } else {
+                    fastingHistoryEl.innerHTML = past.map(item => {
+                         const startDate = new Date(item.startDate).toLocaleDateString('pt-BR');
+                        const endDate = new Date(item.endDate).toLocaleDateString('pt-BR');
+                        return `<div class="bg-gray-900/50 p-3 rounded-lg opacity-70"><p class="font-semibold text-gray-300">${item.title}</p><p class="text-xs text-gray-400">${startDate} até ${endDate}</p></div>`;
+                    }).join('');
+                }
+
                 document.querySelectorAll('.delete-fasting-btn').forEach(btn => {
                     btn.addEventListener('click', e => {
                         const id = e.currentTarget.dataset.id;
@@ -1039,14 +1120,15 @@
             
             const saveFastingSchedule = async () => {
                 const title = fastingTitleEl.value.trim();
+                const type = fastingTypeEl.value;
                 const startDate = fastingStartDateEl.value;
                 const endDate = fastingEndDateEl.value;
                 const notes = fastingNotesEl.value.trim();
-                if (!title || !startDate || !endDate) {
-                    showToast('Preencha o propósito e as datas.');
+                if (!title || !startDate || !endDate || !type) {
+                    showToast('Preencha o propósito, tipo e as datas/horas.');
                     return;
                 }
-                const scheduleData = { title, startDate, endDate, notes, createdAt: new Date() };
+                const scheduleData = { title, type, startDate, endDate, notes, createdAt: new Date() };
                 await addDoc(fastingCol, scheduleData);
                 showToast('Propósito salvo!');
                 fastingTitleEl.value = '';
@@ -1549,7 +1631,7 @@
                 }
 
                 const newProgress = { ...userReadingProgress, completedDays: completedDays.sort((a,b) => a-b), achievements, bookProgress };
-                const readingPlanDoc = doc(db, `users/${userId}/readingPlan/progress`);
+                const readingPlanDoc = doc(db, `artifacts/${appId}/users/${userId}/readingPlan/progress`);
                 await setDoc(readingPlanDoc, newProgress);
             };
 
@@ -1564,7 +1646,7 @@
                         completedDays: [],
                         planStartDate: Timestamp.fromDate(new Date()) 
                     };
-                    const readingPlanDoc = doc(db, `users/${userId}/readingPlan/progress`);
+                    const readingPlanDoc = doc(db, `artifacts/${appId}/users/${userId}/readingPlan/progress`);
                     await setDoc(readingPlanDoc, newProgress);
                     if(newPlanId) {
                         showToast(`Plano '${READING_PLANS[newPlanId].name}' iniciado!`);
@@ -1617,6 +1699,84 @@
                  }
              };
 
+            const requestNotificationPermission = () => {
+                if (!("Notification" in window)) {
+                    console.log("This browser does not support desktop notification");
+                } else if (Notification.permission === "default") {
+                    Notification.requestPermission();
+                }
+            }
+
+            const sendNotification = (title, body) => {
+                if (Notification.permission === "granted") {
+                    new Notification(title, { body });
+                }
+            }
+            
+            const updateActiveFastTimer = () => {
+                const now = new Date();
+                const activeFast = fastingSchedules.find(f => {
+                    const start = new Date(f.startDate);
+                    const end = new Date(f.endDate);
+                    return now >= start && now <= end;
+                });
+
+                if(activeFast){
+                    const endTime = new Date(activeFast.endDate);
+                    const totalSeconds = (endTime - now) / 1000;
+
+                    if (totalSeconds > 0) {
+                        const days = Math.floor(totalSeconds / 3600 / 24);
+                        const hours = Math.floor(totalSeconds / 3600) % 24;
+                        const minutes = Math.floor(totalSeconds / 60) % 60;
+                        const seconds = Math.floor(totalSeconds) % 60;
+
+                        activeFastTimerEl.classList.remove('hidden');
+                        activeFastTitleEl.textContent = activeFast.title;
+                        timerDisplayEl.textContent = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+
+                        // Notification logic
+                        const notificationKey = `notified_${activeFast.id}`;
+                        if (totalSeconds < 15 * 60 && !sessionStorage.getItem(notificationKey)) {
+                            sendNotification('Jejum a Terminar!', `O seu propósito "${activeFast.title}" termina em menos de 15 minutos.`);
+                            sessionStorage.setItem(notificationKey, 'true');
+                        }
+
+                    } else {
+                        activeFastTimerEl.classList.add('hidden');
+                    }
+                } else {
+                    activeFastTimerEl.classList.add('hidden');
+                }
+            };
+            
+            const handleSuggestDelivery = async () => {
+                fastingSuggestionModalEl.classList.remove('hidden');
+                fastingSuggestionModalEl.classList.add('flex');
+                fastingSuggestionResultEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A gerar sugestão...</div>';
+
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+                const systemPrompt = `Você é um conselheiro espiritual. Sugira uma forma significativa de concluir um período de jejum e oração, focando em gratidão, reflexão e uma refeição leve e saudável. Apresente a sugestão em 2-3 parágrafos.`;
+                const userQuery = `Sugira como entregar (terminar) um jejum.`;
+                const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+
+                 try {
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        fastingSuggestionResultEl.innerHTML = text.replace(/\n/g, '<br>');
+                    } else {
+                        throw new Error("Resposta da IA inválida ou vazia.");
+                    }
+                } catch (error) {
+                    console.error("Error generating fasting suggestion:", error);
+                    fastingSuggestionResultEl.textContent = `Ocorreu um erro ao gerar a sugestão. Detalhes: ${error.message}`;
+                }
+            };
+
+
             // Initial calls
             bibleBookSelectEl.innerHTML = '';
             bibleStudyBookSelectEl.innerHTML = '';
@@ -1647,7 +1807,12 @@
 
             document.getElementById('right-tabs').onclick = (e) => {
                 const tabBtn = e.target.closest('.tab-btn');
-                if(tabBtn) switchTab(tabBtn.dataset.tab);
+                if(tabBtn) {
+                    switchTab(tabBtn.dataset.tab);
+                    if(tabBtn.dataset.tab === 'fasting') {
+                        requestNotificationPermission();
+                    }
+                }
             };
             document.getElementById('save-fasting-btn').onclick = saveFastingSchedule;
 
@@ -1700,6 +1865,13 @@
                 closeExplanationModal();
             });
 
+            suggestDeliveryBtn.onclick = handleSuggestDelivery;
+            closeFastingSuggestionBtn.onclick = () => {
+                fastingSuggestionModalEl.classList.add('hidden');
+                fastingSuggestionModalEl.classList.remove('flex');
+            };
+
+            setInterval(updateActiveFastTimer, 1000);
             setupFirebaseListeners();
             switchTab('archive');
             renderCalendar();
