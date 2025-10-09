@@ -178,7 +178,7 @@
 
             <!-- Center Panel: Editor & Integrated Study Tools -->
             <main id="center-panel" class="main-panel w-full h-full hidden">
-                <div class="bg-gray-800 rounded-lg shadow-lg p-0 flex flex-col lg:flex-row overflow-hidden transition-all duration-300 h-full">
+                <div class="bg-gray-800 rounded-lg shadow-lg p-0 flex flex-col lg:flex-row overflow-hidden transition-all duration-300 h-full relative">
                      <!-- Editor Area -->
                     <div id="editor-area" class="w-full lg:w-full p-6 flex flex-col transition-all duration-300 flex-grow">
                         <div class="flex items-center justify-between mb-4 flex-shrink-0">
@@ -235,8 +235,8 @@
                         </div>
                     </div>
 
-                    <!-- Study Tools Panel (Integrated) -->
-                    <aside id="study-tools-area" class="w-full lg:w-2/5 bg-gray-900 p-4 flex-col border-l border-gray-700 hidden lg:flex transition-all duration-300 flex-shrink-0">
+                    <!-- Study Tools Panel (Overlay on mobile/tablet, sidebar on desktop) -->
+                    <aside id="study-tools-area" class="absolute lg:relative inset-0 lg:w-2/5 bg-gray-900 p-4 flex-col border-l border-gray-700 hidden transition-all duration-300 flex-shrink-0 z-10">
                         <div class="flex justify-between items-center mb-4 flex-shrink-0">
                             <h3 class="text-xl font-bold text-white">Ferramentas de Estudo</h3>
                             <div class="flex gap-2">
