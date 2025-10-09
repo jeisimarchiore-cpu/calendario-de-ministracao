@@ -498,8 +498,11 @@
                     // If a custom token is provided, use it to sign in. Otherwise, sign in anonymously.
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         signInWithCustomToken(auth, __initial_auth_token).catch(error => {
-                             console.error("Custom token sign-in failed:", error);
-                             loadingOverlay.innerHTML = `<div class="p-4 text-red-500">Falha na autenticação com o token. Verifique a consola para detalhes.</div>`;
+                             console.error("Custom token sign-in failed, falling back to anonymous:", error);
+                             signInAnonymously(auth).catch(anonError => {
+                                console.error("Anonymous sign-in failed after custom token failure:", anonError);
+                                loadingOverlay.innerHTML = `<div class="p-4 text-red-500">Falha na autenticação. Verifique a consola para detalhes.</div>`;
+                             });
                         });
                     } else {
                          signInAnonymously(auth).catch(error => {
