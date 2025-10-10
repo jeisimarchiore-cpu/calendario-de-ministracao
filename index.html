@@ -170,6 +170,17 @@
         .quiz-option-btn {
             transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
         }
+        /* AI Suggestion Box Improvement */
+        #suggestion-result strong {
+            color: #6ee7b7; /* emerald-300 */
+            font-weight: 600;
+            display: block;
+            margin-top: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+        #suggestion-result strong:first-child {
+            margin-top: 0;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -1514,7 +1525,9 @@
                     const result = await response.json();
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (text) {
-                        suggestionResultEl.textContent = text;
+                        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                        formattedText = formattedText.replace(/\n/g, '<br>');
+                        suggestionResultEl.innerHTML = formattedText;
                         useSuggestionBtn.classList.remove('hidden');
                     } else {
                         throw new Error("Resposta da IA inválida ou vazia.");
@@ -1528,7 +1541,7 @@
             };
             
             const useSuggestion = () => {
-                const fullText = suggestionResultEl.textContent;
+                const fullText = suggestionResultEl.innerText; // Use innerText to get clean text
                 const baseText = suggestionBaseTextInputEl.value.trim();
                 const lines = fullText.split('\n');
                 let title = "Esboço Gerado", content = fullText;
@@ -1714,7 +1727,7 @@
 
                     if (text) {
                         let formattedText = text.replace(/\n/g, '<br>');
-                        formattedText = formattedText.replace(/\*\*([^*]+)\*\*/g, '<br><strong class="text-emerald-400 text-base mt-2 block">$1</strong>');
+                        formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<br><strong class="text-emerald-400 text-base mt-2 block">$1</strong>');
                         commentaryResultsDisplay.innerHTML = formattedText;
                     } else {
                         throw new Error("Resposta da IA inválida ou vazia.");
@@ -2443,5 +2456,4 @@
     </script>
 </body>
 </html>
-
 
