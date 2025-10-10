@@ -640,13 +640,19 @@
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- CHAVE DA API DE IA ---
-        // A chave da API é gerida pelo ambiente de execução.
-        const GEMINI_API_KEY = "";
+        const GEMINI_API_KEY = ""; // Esta chave é gerida pelo ambiente de execução, não precisa de a alterar.
 
         // --- Firebase Configuration ---
-        // As configurações do Firebase são injetadas pelo ambiente de execução
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = {
+          apiKey: "AIzaSyCp2CxegdrcOk4Bj6I45_8LOl0nTOt3rEg",
+          authDomain: "calendario-de-ministracao.firebaseapp.com",
+          projectId: "calendario-de-ministracao",
+          storageBucket: "calendario-de-ministracao.appspot.com",
+          messagingSenderId: "1091866768883",
+          appId: "1:1091866768883:web:9290fd424ff5cbf0980e86"
+        };
+        const appId = firebaseConfig.appId;
+
 
         // --- App Initialization ---
         const app = initializeApp(firebaseConfig);
@@ -683,11 +689,8 @@
                     } else {
                         // No user is signed in. Attempt to sign in.
                         try {
-                            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                                await signInWithCustomToken(auth, __initial_auth_token);
-                            } else {
-                                await signInAnonymously(auth);
-                            }
+                            // Para o deploy em ambientes como GitHub Pages, usamos apenas o login anónimo.
+                            await signInAnonymously(auth);
                         } catch (error) {
                             console.error("Authentication failed:", error);
                             let errorMessage = '<p class="text-red-500 text-lg">Falha na autenticação. Verifique a consola para mais detalhes.</p>';
@@ -2440,3 +2443,4 @@
     </script>
 </body>
 </html>
+
