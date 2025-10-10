@@ -216,7 +216,7 @@
         <!-- Main Content Area -->
         <main class="flex-1 flex flex-col overflow-hidden">
             <div class="lg:hidden p-4 flex justify-between items-center border-b border-gray-700">
-                 <h1 id="logo-btn-mobile" class="text-xl font-bold text-white flex items-center gap-2 cursor-pointer"><i class="fas fa-cross text-emerald-400"></i> Pregador</h1>
+                <h1 id="logo-btn-mobile" class="text-xl font-bold text-white flex items-center gap-2 cursor-pointer"><i class="fas fa-cross text-emerald-400"></i> Pregador</h1>
             </div>
             <div id="main-content-area" class="flex-1 overflow-y-auto p-4 lg:p-8 pb-24 lg:pb-8">
                 
@@ -226,8 +226,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                         <!-- Quick Actions -->
                          <div class="md:col-span-2 xl:col-span-3 grid grid-cols-2 gap-4">
-                              <button id="quick-add-esboco" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-3 text-lg"><i class="fas fa-plus"></i> Novo Esboço</button>
-                              <button id="quick-add-agenda" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-3 text-lg"><i class="fas fa-calendar-plus"></i> Agendar</button>
+                             <button id="quick-add-esboco" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-3 text-lg"><i class="fas fa-plus"></i> Novo Esboço</button>
+                             <button id="quick-add-agenda" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 px-6 rounded-lg transition-colors flex items-center justify-center gap-3 text-lg"><i class="fas fa-calendar-plus"></i> Agendar</button>
                          </div>
 
                         <!-- Active Fast -->
@@ -257,7 +257,7 @@
                                     </button>
                                 </div>
                             </div>
-                    
+                        
                             <!-- Quiz Area (Initially hidden) -->
                             <div id="quiz-active-area" class="hidden">
                                 <div class="flex justify-between items-center mb-4">
@@ -399,9 +399,9 @@
                                      </div>
                                     <div id="commentary-pane" class="study-subtab-pane hidden flex-grow flex flex-col overflow-hidden">
                                         <div class="flex gap-2 mb-2 items-center flex-shrink-0">
-                                            <select id="bible-commentary-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
-                                            <input type="number" id="bible-chapter-input" placeholder="Cap." class="w-1/4 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                            <button id="fetch-commentary-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Gerar Comentário"><i class="fas fa-feather-alt"></i></button>
+                                             <select id="bible-commentary-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
+                                             <input type="number" id="bible-chapter-input" placeholder="Cap." class="w-1/4 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                             <button id="fetch-commentary-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Gerar Comentário"><i class="fas fa-feather-alt"></i></button>
                                         </div>
                                         <div id="commentary-results-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3"></div>
                                     </div>
@@ -773,7 +773,7 @@
             const fastingStartDateEl = document.getElementById('fasting-start-date');
             const fastingEndDateEl = document.getElementById('fasting-end-date');
             const fastingNotesEl = document.getElementById('fasting-notes');
-            const fastingTypeEl = document.getElementById('fasting-type'); 
+            const fastingTypeEl = document.getElementById('fasting-type');    
             const suggestionModalEl = document.getElementById('suggestion-modal');
             const suggestionThemeInputEl = document.getElementById('suggestion-theme-input');
             const suggestionBaseTextInputEl = document.getElementById('suggestion-base-text-input');
@@ -1003,6 +1003,7 @@
                         li.innerHTML = `
                             <span class="cursor-pointer flex-grow pr-4 truncate"><i class="fas fa-file-alt mr-2 text-gray-500"></i>${outline.title}</span>
                             <div class="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                                <button data-id="${outline.id}" class="present-outline-btn text-sky-400 hover:text-sky-300" title="Apresentar"><i class="fas fa-play-circle"></i></button>
                                 <button data-id="${outline.id}" class="print-outline-btn text-sky-400 hover:text-sky-300" title="Imprimir"><i class="fas fa-print"></i></button>
                                 <button data-id="${outline.id}" class="download-outline-btn text-emerald-400 hover:text-emerald-300" title="Baixar como DOCX"><i class="fas fa-file-word"></i></button>
                                 <button data-id="${outline.id}" class="delete-outline-btn text-red-500 hover:text-red-400" title="Excluir"><i class="fas fa-trash-alt"></i></button>
@@ -1010,6 +1011,7 @@
                         `;
                         
                         li.querySelector('span').addEventListener('click', () => loadOutlineIntoEditor(outline.id));
+                        li.querySelector('.present-outline-btn').addEventListener('click', (e) => { e.stopPropagation(); openPresentationMode(outline.id); });
                         li.querySelector('.print-outline-btn').addEventListener('click', (e) => { e.stopPropagation(); printOutline(outline.id); });
                         li.querySelector('.download-outline-btn').addEventListener('click', (e) => { e.stopPropagation(); downloadOutline(outline.id); });
                         li.querySelector('.delete-outline-btn').addEventListener('click', (e) => {
@@ -1039,7 +1041,7 @@
                      if(list.length === 0) {
                          container.innerHTML = `<h3 class="text-xl font-bold text-white mb-4">Próximas Ministrações</h3><p class="text-gray-400 text-sm">Nenhuma ministração agendada.</p>`;
                          return;
-                    }
+                     }
                     container.innerHTML = `<h3 class="text-xl font-bold text-white mb-4">Próximas Ministrações</h3>` + list.map(e => {
                         const outline = outlines.find(o => o.id === e.outlineId);
                         const date = new Date(`${e.date}T12:00:00Z`);
@@ -1099,9 +1101,9 @@
                     fastingHistoryEl.innerHTML = '<p class="text-gray-400 text-sm text-center">Nenhum jejum concluído.</p>';
                 } else {
                     fastingHistoryEl.innerHTML = past.map(item => {
-                         const startDate = new Date(item.startDate).toLocaleDateString('pt-BR');
-                         const endDate = new Date(item.endDate).toLocaleDateString('pt-BR');
-                         return `<div class="bg-gray-900/50 p-3 rounded-lg opacity-70"><p class="font-semibold text-gray-300">${item.title}</p><p class="text-xs text-gray-400">${startDate} até ${endDate}</p></div>`;
+                        const startDate = new Date(item.startDate).toLocaleDateString('pt-BR');
+                        const endDate = new Date(item.endDate).toLocaleDateString('pt-BR');
+                        return `<div class="bg-gray-900/50 p-3 rounded-lg opacity-70"><p class="font-semibold text-gray-300">${item.title}</p><p class="text-xs text-gray-400">${startDate} até ${endDate}</p></div>`;
                     }).join('');
                 }
 
@@ -1533,6 +1535,7 @@
                 }
                 outlineTitleEl.value = title;
                 outlineContentEl.innerHTML = content.replace(/\n/g, '<br>');
+                outlineContentEl.scrollTop = 0; // Scroll to top after adding content
 
                 if(baseText) {
                     const currentNotes = outlineNotesEl.value;
@@ -1798,11 +1801,11 @@
                          const achEl = document.createElement('div');
                          achEl.className = "flex items-center gap-4 bg-gray-900 p-3 rounded-lg mt-4";
                          achEl.innerHTML = `
-                              <div class="text-yellow-400 text-3xl"><i class="fas fa-trophy"></i></div>
-                              <div>
-                                   <p class="font-bold text-white">${READING_PLANS[ach.planId]?.name || 'Plano Completado'}</p>
-                                   <p class="text-xs text-gray-400">Completado em ${ach.completionDate.toDate().toLocaleDateString('pt-BR')} em ${ach.durationDays} dias.</p>
-                              </div>
+                             <div class="text-yellow-400 text-3xl"><i class="fas fa-trophy"></i></div>
+                             <div>
+                                 <p class="font-bold text-white">${READING_PLANS[ach.planId]?.name || 'Plano Completado'}</p>
+                                 <p class="text-xs text-gray-400">Completado em ${ach.completionDate.toDate().toLocaleDateString('pt-BR')} em ${ach.durationDays} dias.</p>
+                             </div>
                          `;
                          achievementsList.appendChild(achEl);
                      });
@@ -2238,7 +2241,10 @@
                     if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
                     const result = await response.json();
                     const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                    const quizData = JSON.parse(jsonText);
+                    
+                    // Robust JSON parsing
+                    let cleanedJsonText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
+                    const quizData = JSON.parse(cleanedJsonText);
                     
                     if (quizData && quizData.questions) {
                         currentQuiz = quizData;
@@ -2428,11 +2434,9 @@
             renderCalendar();
             renderVerseDisplayPlaceholder();
             switchMainView('dashboard-view'); 
+            requestNotificationPermission();
         }
 
     </script>
 </body>
 </html>
-
-
-
