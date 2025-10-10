@@ -226,7 +226,7 @@
             <main id="center-panel" class="main-panel w-full h-full hidden">
                 <div class="bg-gray-800 rounded-lg shadow-lg p-0 flex flex-col lg:flex-row overflow-hidden transition-all duration-300 h-full relative">
                      <!-- Editor Area -->
-                    <div id="editor-area" class="w-full lg:w-full p-6 flex flex-col transition-all duration-300 flex-grow">
+                    <div id="editor-area" class="p-6 flex flex-col transition-all duration-300 flex-grow">
                         <div class="flex items-center justify-between mb-4 flex-shrink-0">
                             <h2 id="editor-title" class="text-2xl font-bold text-white">Novo Esboço</h2>
                             <div class="flex gap-2 items-center">
@@ -282,7 +282,7 @@
                     </div>
 
                     <!-- Study Tools Panel (Overlay on mobile/tablet, sidebar on desktop) -->
-                    <aside id="study-tools-area" class="absolute lg:relative inset-0 lg:w-1/3 bg-gray-900 p-4 flex-col border-l border-gray-700 hidden transition-all duration-300 flex-shrink-0 z-10">
+                    <aside id="study-tools-area" class="absolute lg:relative inset-0 lg:w-[40%] xl:w-1/3 bg-gray-900 p-4 flex-col border-l border-gray-700 hidden transition-all duration-300 flex-shrink-0 z-10">
                         <div class="flex justify-between items-center mb-4 flex-shrink-0">
                             <h3 class="text-xl font-bold text-white">Ferramentas de Estudo</h3>
                             <div class="flex gap-2">
@@ -1899,32 +1899,25 @@
             };
 
             const toggleStudyTools = () => {
-                 const isHidden = studyToolsArea.classList.contains('hidden');
+                const isHidden = studyToolsArea.classList.contains('hidden');
                 
-                 if (window.innerWidth < 1024) { // Mobile/Tablet: Overlay behavior
-                     if (isHidden) {
-                         studyToolsArea.classList.remove('hidden');
-                         studyToolsArea.classList.add('flex');
-                         editorArea.classList.add('hidden');
-                     } else {
-                         studyToolsArea.classList.add('hidden');
-                         studyToolsArea.classList.remove('flex');
-                         editorArea.classList.remove('hidden');
-                     }
-                 } else { // Desktop: Sidebar behavior
+                if (window.innerWidth < 1024) { // Mobile/Tablet: Overlay behavior
                     if (isHidden) {
                         studyToolsArea.classList.remove('hidden');
-                        studyToolsArea.classList.add('lg:flex');
-                        editorArea.classList.remove('lg:w-full');
-                        editorArea.classList.add('lg:w-2/3');
+                        studyToolsArea.classList.add('flex');
+                        editorArea.classList.add('hidden');
                     } else {
                         studyToolsArea.classList.add('hidden');
-                        studyToolsArea.classList.remove('lg:flex');
-                        editorArea.classList.remove('lg:w-2/3');
-                        editorArea.classList.add('lg:w-full');
+                        studyToolsArea.classList.remove('flex');
+                        editorArea.classList.remove('hidden');
                     }
-                 }
-             };
+                } else { // Desktop: Sidebar behavior
+                    studyToolsArea.classList.toggle('hidden');
+                    studyToolsArea.classList.toggle('lg:flex');
+                    editorArea.classList.toggle('lg:w-full');
+                    editorArea.classList.toggle('lg:w-2/3'); 
+                }
+            };
 
             const requestNotificationPermission = () => {
                 if (!("Notification" in window)) {
