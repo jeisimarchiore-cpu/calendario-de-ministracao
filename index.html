@@ -1638,14 +1638,14 @@
                     return;
                 }
 
-                suggestionResultEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>Gerando esboço...</div>';
+                suggestionResultEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>Gerando esboço avançado...</div>';
                 useSuggestionBtn.classList.add('hidden');
                 generateSuggestionBtn.disabled = true;
                 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-                const systemPrompt = `Você é um assistente pastoral e teólogo. Sua tarefa é criar esboços de sermão. A resposta DEVE ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. A estrutura do JSON é: { "title": "...", "baseScripture": "...", "mainTheme": "...", "introduction": "...", "mainPoints": [{ "title": "Ponto 1...", "content": "..." }, { "title": "Ponto 2...", "content": "..." }], "conclusion": "..." }`;
+                const systemPrompt = `Você é um teólogo e homileta experiente. Sua tarefa é criar esboços de sermão exegéticos e bem estruturados. A resposta DEVE ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. A estrutura do JSON deve ser: { "title": "...", "baseScripture": "...", "mainTheme": "...", "objective": "...", "introduction": "...", "mainPoints": [{ "title": "...", "explanation": "...", "scriptureSupport": ["...", "..."], "illustration": "..." }], "conclusion": "...", "applicationQuestions": ["...", "..."] }`;
                 
-                let userQuery = `Crie um esboço de sermão com: Tema Principal: "${theme}", Público-Alvo: ${audience}, Tom: ${tone}.`;
+                let userQuery = `Crie um esboço de sermão avançado e detalhado. Características: Tema Principal: "${theme}", Público-Alvo: ${audience}, Tom: ${tone}. Se houver um texto-base, forneça uma breve análise exegética dentro dos pontos. Inclua ilustrações práticas e perguntas de aplicação.`;
                 if (baseText) userQuery += ` Texto-Base: ${baseText}.`;
                 
                 const payload = { 
@@ -1663,14 +1663,35 @@
 
                     if (outlineData && outlineData.title) {
                         let formattedText = `<h2 class="text-xl font-bold text-emerald-400 mb-2">${outlineData.title}</h2>`;
+                        if(outlineData.objective) formattedText += `<p><strong>Objetivo:</strong> ${outlineData.objective}</p>`;
                         if(outlineData.introduction) formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Introdução</h3><p>${outlineData.introduction}</p>`;
-                        if(outlineData.mainPoints) {
+                        
+                        if(outlineData.mainPoints && outlineData.mainPoints.length > 0) {
                             formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Pontos Principais</h3>`;
-                            outlineData.mainPoints.forEach(p => {
-                                formattedText += `<p><strong>${p.title}</strong><br>${p.content}</p>`;
+                            outlineData.mainPoints.forEach((p, index) => {
+                                formattedText += `<div class="mt-3">`;
+                                formattedText += `<p><strong>${index + 1}. ${p.title}</strong></p>`;
+                                formattedText += `<p class="pl-4">${p.explanation}</p>`;
+                                if (p.scriptureSupport && p.scriptureSupport.length > 0) {
+                                     formattedText += `<p class="pl-4 text-xs text-gray-400"><em>Apoio: ${p.scriptureSupport.join(', ')}</em></p>`;
+                                }
+                                if (p.illustration) {
+                                     formattedText += `<p class="pl-4 mt-1 italic text-gray-400"><strong>Ilustração:</strong> ${p.illustration}</p>`;
+                                }
+                                formattedText += `</div>`;
                             });
                         }
+
                         if(outlineData.conclusion) formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Conclusão</h3><p>${outlineData.conclusion}</p>`;
+                        
+                        if(outlineData.applicationQuestions && outlineData.applicationQuestions.length > 0){
+                            formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Perguntas para Aplicação</h3>`;
+                            formattedText += `<ul class="list-disc list-inside pl-4">`;
+                            outlineData.applicationQuestions.forEach(q => {
+                                formattedText += `<li>${q}</li>`;
+                            });
+                            formattedText += `</ul>`;
+                        }
                         
                         suggestionResultEl.innerHTML = formattedText.replace(/(\r\n|\n)/g, '<br>');
                         suggestionResultEl.dataset.outline = jsonText; // Store raw JSON
@@ -1704,8 +1725,23 @@
 
                 if (outlineData.mainPoints && Array.isArray(outlineData.mainPoints)) {
                     outlineData.mainPoints.forEach(point => {
-                        addPoint(point.title, point.content);
+                        let contentHTML = `<p>${point.explanation}</p>`;
+                        if (point.scriptureSupport && point.scriptureSupport.length > 0) {
+                             contentHTML += `<p><br><em>Apoio: ${point.scriptureSupport.join(', ')}</em></p>`;
+                        }
+                        if (point.illustration) {
+                             contentHTML += `<p><br><em>Ilustração: ${point.illustration}</em></p>`;
+                        }
+                        addPoint(point.title, contentHTML);
                     });
+                }
+
+                if (outlineData.applicationQuestions && outlineData.applicationQuestions.length > 0) {
+                    let notesText = `\n\nPerguntas para Aplicação:\n`;
+                    outlineData.applicationQuestions.forEach(q => {
+                        notesText += `- ${q}\n`;
+                    });
+                    outlineNotesEl.value += notesText;
                 }
                 
                 estimatePreachingTime();
@@ -2749,4 +2785,5 @@
     </script>
 </body>
 </html>
+
 
