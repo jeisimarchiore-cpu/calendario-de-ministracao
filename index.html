@@ -73,11 +73,9 @@
              border-right: 3px solid #34d399;
         }
         
-        .editor-toolbar button, .editor-toolbar select {
-            transition: background-color 0.2s;
-        }
         [contenteditable]:focus {
             outline: none;
+            box-shadow: 0 0 0 2px #34d399; /* ring-emerald-400 */
         }
         
         /* Reading Plan Checkbox */
@@ -124,19 +122,47 @@
         }
          /* Presentation Mode Styles */
         #presentation-modal {
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            background: #0f0c29;  /* fallback for old browsers */
+            background: -webkit-linear-gradient(to top, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to top, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
+            overflow: hidden; /* Prevent scrollbars on the modal itself */
         }
         #presentation-modal.visible {
             opacity: 1;
         }
         #presentation-title {
             font-family: 'Montserrat', sans-serif;
-            text-shadow: 0 0 15px rgba(52, 211, 153, 0.5);
+            text-shadow: 0 0 20px rgba(110, 231, 183, 0.7); /* emerald-300 with more glow */
+            font-size: 2.5rem; /* Slightly larger */
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(110, 231, 183, 0.3);
         }
         #presentation-content {
             font-family: 'Lora', serif;
+            font-size: 1.5rem; /* Increased base font size for readability */
+            line-height: 2;   /* Increased line height */
+            color: #d1d5db; /* gray-300 */
+            background: rgba(17, 24, 39, 0.3); /* bg-gray-900 with opacity */
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            scrollbar-width: thin;
+            scrollbar-color: #34d399 #1f2937;
+        }
+        /* Custom scrollbar for presentation content */
+        #presentation-content::-webkit-scrollbar {
+            width: 10px;
+        }
+        #presentation-content::-webkit-scrollbar-track {
+            background: rgba(31, 41, 55, 0.5); /* bg-gray-800 with opacity */
+        }
+        #presentation-content::-webkit-scrollbar-thumb {
+            background: #34d399; /* bg-emerald-400 */
+            border-radius: 5px;
+        }
+        #presentation-content::-webkit-scrollbar-thumb:hover {
+            background: #6ee7b7; /* bg-emerald-300 */
         }
         #presentation-content h1,
         #presentation-content h2,
@@ -144,27 +170,49 @@
         #presentation-content h4 {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
-            color: #6ee7b7; /* emerald-300 */
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
         }
-         #presentation-content h1 { font-size: 1.8em; }
-         #presentation-content h2 { font-size: 1.5em; }
-         #presentation-content h3 { font-size: 1.25em; }
-         #presentation-content h4 { font-size: 1.1em; }
+         #presentation-content h1 { 
+            font-size: 2.2em;
+            color: #f0fdf4; /* green-50 */
+            border-bottom: 2px solid #34d399; /* emerald-400 */
+         }
+         #presentation-content h2 { 
+            font-size: 1.8em; 
+            color: #6ee7b7; /* emerald-300 */
+            border-bottom: 1px solid #374151; /* gray-700 */
+         }
+         #presentation-content h3 { 
+            font-size: 1.4em; 
+            color: #7dd3fc; /* sky-300 */
+            margin-top: 2rem;
+            margin-bottom: 0.5rem;
+            border: none;
+         }
+         #presentation-content h4 { font-size: 1.2em; color: #a5f3fc; /* cyan-200 */}
+
+        #presentation-content strong {
+            color: #fde047; /* yellow-300 */
+            font-weight: 700;
+        }
 
         #presentation-content blockquote {
-            border-left: 3px solid #34d399; /* emerald-400 */
-            padding-left: 1rem;
+            border-left: 4px solid #34d399; /* emerald-400 */
+            padding-left: 1.5rem;
             margin-left: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
             font-style: italic;
             color: #9ca3af; /* gray-400 */
+            font-size: 1.4rem;
         }
          #presentation-content ul, #presentation-content ol {
-            padding-left: 2rem;
+            padding-left: 2.5rem;
          }
          #presentation-content li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
          }
          /* Quiz Styles */
         .quiz-option-btn {
@@ -206,6 +254,9 @@
                  <button data-view="esboco-view" class="main-nav-btn w-full text-left py-3 px-6 text-gray-300 font-semibold flex items-center gap-3">
                      <i class="fas fa-pencil-alt fa-fw"></i> Esboços
                  </button>
+                 <button data-view="estudo-view" class="main-nav-btn w-full text-left py-3 px-6 text-gray-300 font-semibold flex items-center gap-3">
+                    <i class="fas fa-book-open fa-fw"></i> Estudo Bíblico
+                </button>
                   <button data-view="plano-view" class="main-nav-btn w-full text-left py-3 px-6 text-gray-300 font-semibold flex items-center gap-3">
                      <i class="fas fa-tasks fa-fw"></i> Plano de Leitura
                  </button>
@@ -242,13 +293,15 @@
                          </div>
 
                         <!-- Active Fast -->
-                        <div id="dashboard-active-fast" class="bg-gray-800 p-6 rounded-lg shadow-lg hidden"></div>
+                        <div id="dashboard-active-fast" class="hidden md:col-span-2 xl:col-span-3 bg-emerald-900/50 border border-emerald-700 rounded-lg p-6 text-center shadow-lg flex-col justify-center">
+                            <!-- O conteúdo será injetado pelo JavaScript -->
+                        </div>
                         
                         <!-- Next Engagements -->
-                        <div id="dashboard-next-engagements" class="bg-gray-800 p-6 rounded-lg shadow-lg"></div>
+                        <div id="dashboard-next-engagements" class="md:col-span-1 xl:col-span-2 bg-gray-800 p-6 rounded-lg shadow-lg"></div>
 
                         <!-- Reading Plan Progress -->
-                        <div id="dashboard-reading-plan" class="bg-gray-800 p-6 rounded-lg shadow-lg"></div>
+                        <div id="dashboard-reading-plan" class="md:col-span-1 xl:col-span-1 bg-gray-800 p-6 rounded-lg shadow-lg"></div>
 
                         <!-- Biblical Quiz -->
                         <div id="quiz-container-dashboard" class="md:col-span-2 xl:col-span-3 bg-gray-800 p-6 rounded-lg shadow-lg">
@@ -273,7 +326,7 @@
                             <div id="quiz-active-area" class="hidden">
                                 <div class="flex justify-between items-center mb-4">
                                      <h3 id="quiz-title-dashboard" class="text-xl font-bold text-white">Quiz Bíblico</h3>
-                                     <button id="close-quiz-dashboard-btn" class="py-1 px-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm">Voltar</button>
+                                     <button id="stop-quiz-btn" class="py-1 px-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm">Parar e Ver Resultado</button>
                                 </div>
                                 <div id="quiz-content-dashboard" class="flex-grow">
                                     <!-- Quiz questions will be injected here -->
@@ -333,91 +386,109 @@
                             <div id="editor-area" class="p-6 flex flex-col transition-all duration-300 flex-grow">
                                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
                                     <h2 id="editor-title" class="text-2xl font-bold text-white">Novo Esboço</h2>
-                                    <div class="flex gap-2 items-center">
+                                    <div class="flex gap-2 items-center flex-wrap">
                                         <button id="toggle-focus-mode-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-3 rounded-lg transition-colors" title="Modo Foco">
                                             <i class="fas fa-expand-arrows-alt"></i>
                                         </button>
                                         <div class="w-px h-6 bg-gray-700"></div>
-                                        <button id="open-study-tools-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Ferramentas de Estudo"><i class="fas fa-book-open"></i> <span class="hidden sm:inline">Estudo</span></button>
+                                        <button data-view="estudo-view" class="main-nav-btn-direct bg-sky-500 hover:bg-sky-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Ferramentas de Estudo"><i class="fas fa-book-open"></i> <span class="hidden sm:inline">Estudo</span></button>
                                         <button id="suggestion-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Gerar sugestão de esboço"><i class="fas fa-lightbulb"></i> <span class="hidden sm:inline">Gerar Ideia</span></button>
+                                        <div id="preaching-time-estimate" class="text-sm text-gray-400 font-semibold px-3 py-2 bg-gray-900 rounded-lg"><i class="fas fa-clock mr-1"></i> ~0 min</div>
                                         <button id="save-outline-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2"><i class="fas fa-save"></i> <span class="hidden sm:inline">Salvar</span></button>
                                         <button id="clear-editor-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"><i class="fas fa-eraser"></i> <span class="hidden sm:inline">Limpar</span></button>
                                     </div>
                                 </div>
-                                <div class="flex-grow flex flex-col gap-4 overflow-y-auto pr-2">
-                                    <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-2 mb-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-shrink-0">
-                                    <div class="flex flex-col flex-grow min-h-[250px]">
-                                        <div class="editor-toolbar flex items-center gap-2 bg-gray-900 p-2 rounded-t-lg border-b border-gray-700 flex-wrap flex-shrink-0">
-                                            <button id="format-bold" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Negrito"><i class="fas fa-bold"></i></button>
-                                            <button id="format-italic" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Itálico"><i class="fas fa-italic"></i></button>
-                                            <button id="format-underline" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Sublinhado"><i class="fas fa-underline"></i></button>
-                                            <button id="format-list" class="px-3 py-1 text-sm rounded hover:bg-gray-700" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
-                                            <div class="w-px h-5 bg-gray-700 mx-1"></div>
-                                            <div class="relative flex items-center" title="Cor da Fonte">
-                                                <input type="color" id="font-color-picker" class="absolute opacity-0 w-8 h-8 cursor-pointer">
-                                                <i class="fas fa-palette text-lg px-2 text-gray-400"></i>
-                                            </div>
-                                            <select id="font-size-select" class="bg-gray-700 text-white text-xs rounded border-none focus:ring-0 p-1" title="Tamanho da Fonte">
-                                                <option value="3">Normal</option>
-                                                <option value="1">Mínimo</option>
-                                                <option value="2">Pequeno</option>
-                                                <option value="4">Médio</option>
-                                                <option value="5">Grande</option>
-                                                <option value="7">Enorme</option>
-                                            </select>
+                                <div id="structured-editor-container" class="flex-grow flex flex-col gap-4 overflow-y-auto pr-2">
+                                    <!-- NEW STRUCTURED EDITOR -->
+                                    <input type="text" id="outline-title" placeholder="Título do Esboço" class="w-full bg-gray-700 border border-gray-600 rounded-lg p-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-lg font-semibold">
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="outline-base-scripture" class="block text-sm font-medium text-gray-300 mb-1">Texto Base</label>
+                                            <input type="text" id="outline-base-scripture" placeholder="Ex: João 3:16" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                         </div>
-                                        <div id="outline-content" contenteditable="true" class="w-full flex-grow bg-gray-900 border-x border-b border-gray-700 rounded-b-lg p-4 text-gray-200 resize-none focus:outline-none overflow-y-auto"></div>
+                                        <div>
+                                            <label for="outline-main-theme" class="block text-sm font-medium text-gray-300 mb-1">Tema Principal</label>
+                                            <input type="text" id="outline-main-theme" placeholder="Ex: O Amor de Deus" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                        </div>
                                     </div>
-                                    <div class="flex flex-col flex-grow min-h-[150px]">
-                                        <label for="outline-notes" class="block mb-2 text-sm font-medium text-gray-300 flex-shrink-0">Notas e Ilustrações</label>
-                                        <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." class="w-full flex-grow bg-gray-900 border border-gray-700 rounded-lg p-4 text-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+
+                                    <div>
+                                        <label for="outline-introduction" class="block text-sm font-medium text-gray-300 mb-1">Introdução</label>
+                                        <textarea id="outline-introduction" placeholder="Comece com uma história, pergunta ou fato interessante..." rows="6" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
                                     </div>
-                                </div>
-                                <div class="mt-4 flex-shrink-0">
+
+                                    <div class="flex justify-between items-center mt-2">
+                                        <label class="block text-lg font-semibold text-gray-200">Pontos Principais</label>
+                                        <button id="add-point-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-1 px-3 rounded-lg text-xs flex items-center gap-1"><i class="fas fa-plus"></i> Adicionar Ponto</button>
+                                    </div>
+                                    <div id="main-points-container" class="space-y-4 border-l-2 border-gray-700 pl-4">
+                                        <!-- Dynamic points will be added here -->
+                                    </div>
+
+                                    <div>
+                                        <label for="outline-conclusion" class="block text-sm font-medium text-gray-300 mb-1 mt-2">Conclusão</label>
+                                        <textarea id="outline-conclusion" placeholder="Resuma os pontos e faça um apelo..." rows="6" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                                    </div>
+
+                                    <div>
+                                        <label for="outline-notes" class="block text-sm font-medium text-gray-300 mb-1 mt-2">Notas e Ilustrações</label>
+                                        <textarea id="outline-notes" placeholder="Anote aqui ideias, ilustrações, estatísticas..." rows="4" class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"></textarea>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Study Tools Panel -->
-                            <aside id="study-tools-area" class="absolute lg:relative inset-0 lg:w-2/5 xl:w-1/3 bg-gray-900 p-4 flex-col border-l border-gray-700 hidden transition-all duration-300 flex-shrink-0 z-10">
-                                <div class="flex justify-between items-center mb-4 flex-shrink-0">
-                                    <h3 class="text-xl font-bold text-white">Ferramentas de Estudo</h3>
-                                    <div class="flex gap-2">
-                                         <button id="clear-study-results-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-1 px-2 rounded-lg text-xs" title="Limpar Resultados"><i class="fas fa-times-circle"></i></button>
-                                         <button id="close-study-tools-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-lg text-xs" title="Fechar Ferramentas"><i class="fas fa-times"></i></button>
-                                    </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estudo Biblico View -->
+                <div id="estudo-view" class="main-view hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Estudo Bíblico</h2>
+                    <div class="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 h-full flex flex-col">
+                        <div class="border-b border-gray-700 mb-4">
+                            <nav id="study-main-tabs" class="flex gap-4 -mb-px">
+                                <button data-study-tab="verse-lookup" class="study-main-tab-btn py-3 px-2 border-b-2 border-emerald-400 text-white font-medium">Busca por Versículo</button>
+                                <button data-study-tab="topical-study" class="study-main-tab-btn py-3 px-2 border-b-2 border-transparent text-gray-400 hover:text-white font-medium">Estudo por Tema</button>
+                                <button data-study-tab="commentary" class="study-main-tab-btn py-3 px-2 border-b-2 border-transparent text-gray-400 hover:text-white font-medium">Comentário Bíblico</button>
+                                <button data-study-tab="theological-dictionary" class="study-main-tab-btn py-3 px-2 border-b-2 border-transparent text-gray-400 hover:text-white font-medium">Dicionário Teológico</button>
+                            </nav>
+                        </div>
+
+                        <div id="study-main-content" class="flex-grow overflow-y-auto">
+                            <!-- Verse Lookup Pane -->
+                            <div id="verse-lookup-pane" class="study-main-pane">
+                                <div class="flex flex-col sm:flex-row gap-2 mb-4 items-center">
+                                    <select id="bible-study-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5 w-full"></select>
+                                    <input type="text" id="bible-ref-input" placeholder="Ex: 3:16 ou 3:16-18 ou 3" class="w-full sm:w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                    <button id="fetch-verse-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg w-full sm:w-auto" title="Buscar Versículo"><i class="fas fa-search mr-2"></i>Buscar</button>
                                 </div>
-                                <div class="flex-grow flex flex-col overflow-hidden">
-                                     <div class="border-b border-gray-700 mb-2 flex-shrink-0">
-                                         <nav id="study-sub-tabs" class="flex gap-4 -mb-px">
-                                              <button data-subtab="verse-lookup" class="study-subtab-btn py-2 px-1 border-b-2 border-emerald-400 text-white text-sm font-medium">Busca</button>
-                                              <button data-subtab="topical-study" class="study-subtab-btn py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Tema</button>
-                                              <button data-subtab="commentary" class="study-subtab-btn py-2 px-1 border-b-2 border-transparent text-gray-400 hover:text-white text-sm font-medium">Comentário</button>
-                                         </nav>
-                                     </div>
-                                     <div id="verse-lookup-pane" class="study-subtab-pane flex-grow flex flex-col overflow-hidden">
-                                         <div class="flex gap-2 mb-2 items-center flex-shrink-0">
-                                              <select id="bible-study-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
-                                              <input type="text" id="bible-ref-input" placeholder="3:16" class="w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                              <button id="fetch-verse-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Versículo"><i class="fas fa-search"></i></button>
-                                         </div>
-                                         <div id="verse-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm flex gap-4 overflow-x-auto pb-4"></div>
-                                     </div>
-                                     <div id="topical-study-pane" class="study-subtab-pane hidden flex-grow flex flex-col overflow-hidden">
-                                         <div class="flex gap-2 mb-2 items-center flex-shrink-0">
-                                              <input type="text" id="topical-theme-input" placeholder="Digite um tema (ex: Fé, Amor)" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                              <button id="fetch-topic-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Buscar Tema"><i class="fas fa-search"></i></button>
-                                         </div>
-                                         <div id="topical-results-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3"></div>
-                                     </div>
-                                    <div id="commentary-pane" class="study-subtab-pane hidden flex-grow flex flex-col overflow-hidden">
-                                        <div class="flex gap-2 mb-2 items-center flex-shrink-0">
-                                             <select id="bible-commentary-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5"></select>
-                                             <input type="number" id="bible-chapter-input" placeholder="Cap." class="w-1/4 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
-                                             <button id="fetch-commentary-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg" title="Gerar Comentário"><i class="fas fa-feather-alt"></i></button>
-                                        </div>
-                                        <div id="commentary-results-display" class="bg-gray-800 rounded-lg p-3 flex-grow text-gray-300 text-sm overflow-y-auto space-y-3"></div>
-                                    </div>
+                                <div id="verse-display" class="bg-gray-900 rounded-lg p-4 text-gray-300 text-base leading-relaxed overflow-y-auto h-[calc(100vh-20rem)]"></div>
+                            </div>
+                            <!-- Topical Study Pane -->
+                            <div id="topical-study-pane" class="study-main-pane hidden">
+                                <div class="flex flex-col sm:flex-row gap-2 mb-4 items-center">
+                                    <input type="text" id="topical-theme-input" placeholder="Digite um tema (ex: Fé, Amor, Salvação)" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white w-full">
+                                    <button id="fetch-topic-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg w-full sm:w-auto" title="Buscar Tema"><i class="fas fa-search mr-2"></i>Buscar Tema</button>
                                 </div>
-                            </aside>
+                                <div id="topical-results-display" class="bg-gray-900 rounded-lg p-4 text-gray-300 text-base leading-relaxed overflow-y-auto h-[calc(100vh-20rem)] space-y-4"></div>
+                            </div>
+                            <!-- Commentary Pane -->
+                            <div id="commentary-pane" class="study-main-pane hidden">
+                                 <div class="flex flex-col sm:flex-row gap-2 mb-4 items-center">
+                                    <select id="bible-commentary-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5 w-full"></select>
+                                    <input type="number" id="bible-chapter-input" placeholder="Capítulo" class="w-full sm:w-1/4 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                    <button id="fetch-commentary-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg w-full sm:w-auto" title="Gerar Comentário"><i class="fas fa-feather-alt mr-2"></i>Gerar Comentário</button>
+                                </div>
+                                <div id="commentary-results-display" class="bg-gray-900 rounded-lg p-4 text-gray-300 text-base leading-relaxed overflow-y-auto h-[calc(100vh-20rem)] space-y-3"></div>
+                            </div>
+                            <!-- Theological Dictionary Pane -->
+                            <div id="theological-dictionary-pane" class="study-main-pane hidden">
+                                <div class="flex flex-col sm:flex-row gap-2 mb-4 items-center">
+                                    <input type="text" id="theological-term-input" placeholder="Digite um termo (ex: Soteriologia, Hermenêutica)" class="flex-grow bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white w-full">
+                                    <button id="fetch-term-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg w-full sm:w-auto" title="Definir Termo"><i class="fas fa-book-reader mr-2"></i>Definir</button>
+                                </div>
+                                <div id="theological-results-display" class="bg-gray-900 rounded-lg p-4 text-gray-300 text-base leading-relaxed overflow-y-auto h-[calc(100vh-20rem)] space-y-3"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -510,6 +581,9 @@
                 </button>
                 <button data-view="esboco-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
                     <i class="fas fa-pencil-alt text-xl"></i><span class="text-xs mt-1">Esboços</span>
+                </button>
+                <button data-view="estudo-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
+                    <i class="fas fa-book-open text-xl"></i><span class="text-xs mt-1">Estudo</span>
                 </button>
                 <button data-view="plano-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
                     <i class="fas fa-tasks text-xl"></i><span class="text-xs mt-1">Plano</span>
@@ -614,7 +688,7 @@
      </div>
     <div id="fasting-suggestion-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
         <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
-           <h3 class="text-xl font-bold mb-4 text-white">Sugestão para Entrega do Jejum</h3>
+           <h3 class="text-xl font-bold text-white mb-4">Sugestão para Entrega do Jejum</h3>
             <div id="fasting-suggestion-result" class="bg-gray-900 rounded-lg p-4 flex-grow overflow-y-auto text-gray-300 text-sm whitespace-pre-wrap"></div>
             <div class="mt-6 flex justify-end gap-3">
                 <button id="close-fasting-suggestion-btn" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
@@ -742,9 +816,7 @@
             let isFocusMode = false;
             let fastingChartInstance = null;
             let weeklyProgressChartInstance = null;
-            let currentQuiz = null;
-            let currentQuestionIndex = 0;
-            let score = 0;
+            let quizSession = {};
 
 
             const BIBLE_BOOKS = [
@@ -773,14 +845,17 @@
             const calendarGridEl = document.getElementById('calendar-grid');
             const saveOutlineBtn = document.getElementById('save-outline-btn');
             const outlineTitleEl = document.getElementById('outline-title');
-            const outlineContentEl = document.getElementById('outline-content');
+            const outlineBaseScriptureEl = document.getElementById('outline-base-scripture');
+            const outlineMainThemeEl = document.getElementById('outline-main-theme');
+            const outlineIntroductionEl = document.getElementById('outline-introduction');
+            const mainPointsContainerEl = document.getElementById('main-points-container');
+            const outlineConclusionEl = document.getElementById('outline-conclusion');
             const outlineNotesEl = document.getElementById('outline-notes');
             const archiveListEl = document.getElementById('archive-list');
             const modalOutlineSelectEl = document.getElementById('modal-outline-select');
             const engagementsListEl = document.getElementById('engagements-list');
             const editorTitleEl = document.getElementById('editor-title');
             const bibleStudyBookSelectEl = document.getElementById('bible-study-book-select');
-            const verseDisplayEl = document.getElementById('verse-display');
             const bibleRefInputEl = document.getElementById('bible-ref-input');
             const fastingListEl = document.getElementById('fasting-list');
             const fastingTitleEl = document.getElementById('fasting-title');
@@ -811,12 +886,10 @@
             const confirmActionBtn = document.getElementById('confirm-action-btn');
             const cancelConfirmationBtn = document.getElementById('cancel-confirmation-btn');
             
-            const openStudyToolsBtn = document.getElementById('open-study-tools-btn');
-            const closeStudyToolsBtn = document.getElementById('close-study-tools-btn');
-            const studyToolsArea = document.getElementById('study-tools-area');
+            const studyMainTabs = document.getElementById('study-main-tabs');
+            const studyMainPanes = document.querySelectorAll('.study-main-pane');
+
             const editorArea = document.getElementById('editor-area');
-            const studySubTabs = document.getElementById('study-sub-tabs');
-            const studySubtabPanes = document.querySelectorAll('.study-subtab-pane');
             const topicalThemeInput = document.getElementById('topical-theme-input');
             const fetchTopicBtn = document.getElementById('fetch-topic-btn');
             const topicalResultsDisplay = document.getElementById('topical-results-display');
@@ -835,7 +908,6 @@
             const readingModalText = document.getElementById('reading-modal-text');
             const readingModalExplanation = document.getElementById('reading-modal-explanation');
             const closeReadingModalBtn = document.getElementById('close-reading-modal-btn');
-            const clearStudyResultsBtn = document.getElementById('clear-study-results-btn');
             const commentaryBookSelect = document.getElementById('bible-commentary-book-select');
             const commentaryChapterInput = document.getElementById('bible-chapter-input');
             const fetchCommentaryBtn = document.getElementById('fetch-commentary-btn');
@@ -858,7 +930,10 @@
             const quizTitleDashboardEl = document.getElementById('quiz-title-dashboard');
             const quizContentDashboardEl = document.getElementById('quiz-content-dashboard');
             const quizResultsDashboardEl = document.getElementById('quiz-results-dashboard');
-            const closeQuizDashboardBtn = document.getElementById('close-quiz-dashboard-btn');
+            const stopQuizBtn = document.getElementById('stop-quiz-btn');
+            const theologicalTermInput = document.getElementById('theological-term-input');
+            const fetchTermBtn = document.getElementById('fetch-term-btn');
+            const theologicalResultsDisplay = document.getElementById('theological-results-display');
 
 
             let confirmationCallback = null;
@@ -896,11 +971,6 @@
                 }, 3000);
             };
 
-            const formatText = (command, value = null) => {
-                document.execCommand(command, false, value);
-                outlineContentEl.focus();
-            };
-
             const renderCalendar = () => {
                 const year = currentDate.getFullYear();
                 const month = currentDate.getMonth();
@@ -924,6 +994,26 @@
                 }
             };
 
+            const getFullOutlineHTML = (outline) => {
+                if (!outline) return '';
+                let html = `<h1>${outline.title}</h1>`;
+                if(outline.baseScripture) html += `<p><strong>Texto Base:</strong> ${outline.baseScripture}</p>`;
+                if(outline.mainTheme) html += `<p><strong>Tema Principal:</strong> ${outline.mainTheme}</p>`;
+                if(outline.introduction) html += `<h2>Introdução</h2><div>${outline.introduction.replace(/\n/g, '<br>')}</div>`;
+                
+                if(outline.mainPoints && outline.mainPoints.length > 0){
+                    html += `<h2>Pontos Principais</h2>`;
+                    outline.mainPoints.forEach(point => {
+                        html += `<h3>${point.title}</h3><div>${point.content}</div>`;
+                    });
+                }
+                
+                if(outline.conclusion) html += `<h2>Conclusão</h2><div>${outline.conclusion.replace(/\n/g, '<br>')}</div>`;
+                if(outline.notes) html += `<br><h2>Notas e Ilustrações</h2><p>${outline.notes.replace(/\n/g, '<br>')}</p>`;
+
+                return html;
+            }
+
             const downloadOutline = (outlineId) => {
                 const outline = outlines.find(o => o.id === outlineId);
                 if (!outline) return;
@@ -931,14 +1021,7 @@
                 const header = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>${outline.title}</title></head><body>`;
                 const footer = "</body></html>";
                 
-                let contentHtml = `<h1>${outline.title}</h1>`;
-                contentHtml += `<h2>Esboço</h2>`;
-                contentHtml += `<div>${outline.content}</div>`;
-
-                if (outline.notes) {
-                    contentHtml += `<br><h2>Notas e Ilustrações</h2>`;
-                    contentHtml += `<p>${outline.notes.replace(/\n/g, '<br>')}</p>`;
-                }
+                const contentHtml = getFullOutlineHTML(outline);
                 
                 const source = header + contentHtml + footer;
 
@@ -969,29 +1052,23 @@
                             line-height: 1.6;
                             margin: 40px;
                         } 
-                        h1, h2 {
+                        h1, h2, h3 {
                             font-family: 'Helvetica', sans-serif;
                             color: #222; 
-                            border-bottom: 2px solid #333;
-                            padding-bottom: 8px;
                             margin-top: 24px;
                         }
-                        h1 { font-size: 24pt; }
-                        h2 { font-size: 18pt; }
+                        h1 { font-size: 24pt; border-bottom: 2px solid #333; padding-bottom: 8px; }
+                        h2 { font-size: 18pt; border-bottom: 1px solid #ccc; padding-bottom: 6px; }
+                        h3 { font-size: 14pt; }
                         p, div, li { font-size: 12pt; }
                         strong { font-weight: bold; }
-                        em, i { font-style: italic; }
-                        u { text-decoration: underline; }
                     </style>
                 `);
                 printWindow.document.write('</head><body>');
-                printWindow.document.write(`<h1>${outline.title}</h1>`);
-                printWindow.document.write('<h2>Esboço</h2>');
-                printWindow.document.write(`<div>${outline.content}</div>`);
-                if(outline.notes) {
-                    printWindow.document.write('<h2>Notas e Ilustrações</h2>');
-                    printWindow.document.write(`<p>${outline.notes.replace(/\n/g, '<br>')}</p>`);
-                }
+                
+                const contentHtml = getFullOutlineHTML(outline);
+                printWindow.document.write(contentHtml);
+
                 printWindow.document.write('</body></html>');
                 printWindow.document.close();
                 printWindow.focus();
@@ -1014,8 +1091,15 @@
                     outlines.forEach(outline => {
                         const li = document.createElement('li');
                         li.className = 'text-gray-300 hover:bg-gray-700/50 rounded-md flex justify-between items-center group p-2';
+                        
+                        const minutes = outline.wordCount ? Math.round(outline.wordCount / 140) : 0;
+                        const timeEstimateHTML = minutes > 0 ? `<span class="text-xs text-gray-500 ml-2 flex-shrink-0">~${minutes} min</span>` : '';
+
                         li.innerHTML = `
-                            <span class="cursor-pointer flex-grow pr-4 truncate"><i class="fas fa-file-alt mr-2 text-gray-500"></i>${outline.title}</span>
+                            <div class="flex-grow flex items-center min-w-0 cursor-pointer">
+                                <span class="truncate"><i class="fas fa-file-alt mr-2 text-gray-500"></i>${outline.title}</span>
+                                ${timeEstimateHTML}
+                            </div>
                             <div class="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                                 <button data-id="${outline.id}" class="present-outline-btn text-sky-400 hover:text-sky-300" title="Apresentar"><i class="fas fa-play-circle"></i></button>
                                 <button data-id="${outline.id}" class="print-outline-btn text-sky-400 hover:text-sky-300" title="Imprimir"><i class="fas fa-print"></i></button>
@@ -1024,7 +1108,7 @@
                             </div>
                         `;
                         
-                        li.querySelector('span').addEventListener('click', () => loadOutlineIntoEditor(outline.id));
+                        li.querySelector('.flex-grow').addEventListener('click', () => loadOutlineIntoEditor(outline.id));
                         li.querySelector('.present-outline-btn').addEventListener('click', (e) => { e.stopPropagation(); openPresentationMode(outline.id); });
                         li.querySelector('.print-outline-btn').addEventListener('click', (e) => { e.stopPropagation(); printOutline(outline.id); });
                         li.querySelector('.download-outline-btn').addEventListener('click', (e) => { e.stopPropagation(); downloadOutline(outline.id); });
@@ -1232,14 +1316,18 @@
             }
 
             const renderVerseDisplayPlaceholder = () => {
-                if(verseDisplayEl.children.length === 0) {
-                    verseDisplayEl.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full w-full text-center">Consulte um versículo...</p>';
+                const verseDisplay = document.getElementById('verse-display'); // get fresh element reference
+                if(verseDisplay && verseDisplay.children.length === 0) {
+                    verseDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full w-full text-center">Consulte um versículo...</p>';
                 }
                 if (topicalResultsDisplay.children.length === 0) {
                    topicalResultsDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um tema para ver os versículos.</p>';
                 }
                  if (commentaryResultsDisplay.children.length === 0) {
                    commentaryResultsDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Selecione um livro e capítulo.</p>';
+                }
+                 if (theologicalResultsDisplay.children.length === 0) {
+                   theologicalResultsDisplay.innerHTML = '<p class="text-gray-500 italic flex items-center justify-center h-full">Pesquise um termo teológico para ver a sua definição.</p>';
                 }
             };
             
@@ -1291,21 +1379,102 @@
                 renderCalendar();
             };
 
+            const addPoint = (title = '', content = '') => {
+                const pointId = `point-${Date.now()}`;
+                const pointEl = document.createElement('div');
+                pointEl.className = 'main-point-item bg-gray-900/50 p-3 rounded-lg relative';
+                pointEl.innerHTML = `
+                    <input type="text" class="point-title-input bg-transparent w-full text-lg font-semibold text-emerald-300 placeholder-gray-500 focus:outline-none mb-2" placeholder="Título do Ponto" value="${title}">
+                    <div class="point-content-editor bg-gray-800/50 p-2 rounded min-h-[80px] text-gray-300 focus:ring-2 focus:ring-emerald-500" contenteditable="true"></div>
+                    <button class="remove-point-btn absolute top-2 right-2 text-gray-500 hover:text-red-400 transition-colors"><i class="fas fa-times-circle"></i></button>
+                `;
+                const contentEditor = pointEl.querySelector('.point-content-editor');
+                contentEditor.innerHTML = content;
+                contentEditor.addEventListener('input', estimatePreachingTime);
+
+                pointEl.querySelector('.remove-point-btn').addEventListener('click', (e) => {
+                    e.currentTarget.closest('.main-point-item').remove();
+                    estimatePreachingTime();
+                });
+                mainPointsContainerEl.appendChild(pointEl);
+            };
+
+            const estimatePreachingTime = () => {
+                const wpm = 140; // Palavras por minuto
+                let totalWords = 0;
+
+                const fieldsToCount = [
+                    outlineIntroductionEl.value,
+                    outlineConclusionEl.value,
+                ];
+
+                document.querySelectorAll('.point-content-editor').forEach(el => {
+                    fieldsToCount.push(el.innerText);
+                });
+
+                const textContent = fieldsToCount.join(' ');
+                
+                if (textContent.trim() === '') {
+                    totalWords = 0;
+                } else {
+                    totalWords = textContent.trim().split(/\s+/).length;
+                }
+
+                const minutes = Math.round(totalWords / wpm);
+                
+                const estimateEl = document.getElementById('preaching-time-estimate');
+                estimateEl.innerHTML = `<i class="fas fa-clock mr-1"></i> ~${minutes} min`;
+            };
+
             const saveOutline = async () => {
                 const title = outlineTitleEl.value.trim();
-                const content = outlineContentEl.innerHTML;
-                const notes = outlineNotesEl.value.trim();
-                if (!title || !content) {
-                    showToast('Preencha o título e o conteúdo.');
+                if (!title) {
+                    showToast('O título do esboço é obrigatório.');
                     return;
                 }
-                const outlineData = { title, content, notes, updatedAt: new Date() };
+
+                const mainPoints = [];
+                document.querySelectorAll('.main-point-item').forEach(el => {
+                    const pointTitle = el.querySelector('.point-title-input').value.trim();
+                    const pointContent = el.querySelector('.point-content-editor').innerHTML;
+                    if(pointTitle || pointContent) {
+                        mainPoints.push({ title: pointTitle, content: pointContent });
+                    }
+                });
+
+                let totalWords = 0;
+                const textToCount = [
+                    outlineIntroductionEl.value,
+                    outlineConclusionEl.value
+                ];
+                mainPoints.forEach(p => {
+                     const tempDiv = document.createElement('div');
+                     tempDiv.innerHTML = p.content;
+                     textToCount.push(tempDiv.textContent || tempDiv.innerText || "");
+                });
+                const fullText = textToCount.join(' ');
+                if(fullText.trim() !== ''){
+                    totalWords = fullText.trim().split(/\s+/).length;
+                }
+
+                const outlineData = { 
+                    title,
+                    baseScripture: outlineBaseScriptureEl.value.trim(),
+                    mainTheme: outlineMainThemeEl.value.trim(),
+                    introduction: outlineIntroductionEl.value,
+                    mainPoints,
+                    conclusion: outlineConclusionEl.value,
+                    notes: outlineNotesEl.value.trim(),
+                    wordCount: totalWords,
+                    updatedAt: new Date() 
+                };
+
                 if (currentEditingOutlineId) {
                     await setDoc(doc(outlinesCol, currentEditingOutlineId), outlineData, { merge: true });
                     showToast('Esboço atualizado com sucesso!');
                 } else {
                     const newDoc = await addDoc(outlinesCol, outlineData);
-                    currentEditingOutlineId = newDoc.id; // Keep editing the same doc after first save
+                    currentEditingOutlineId = newDoc.id;
                     editorTitleEl.textContent = 'Editando Esboço';
                     showToast('Esboço salvo com sucesso!');
                 }
@@ -1314,11 +1483,23 @@
             const loadOutlineIntoEditor = (id) => {
                 const outline = outlines.find(o => o.id === id);
                 if (outline) {
+                    clearEditor();
                     currentEditingOutlineId = id;
-                    outlineTitleEl.value = outline.title;
-                    outlineContentEl.innerHTML = outline.content;
+                    outlineTitleEl.value = outline.title || '';
+                    outlineBaseScriptureEl.value = outline.baseScripture || '';
+                    outlineMainThemeEl.value = outline.mainTheme || '';
+                    outlineIntroductionEl.value = outline.introduction || '';
+                    outlineConclusionEl.value = outline.conclusion || '';
                     outlineNotesEl.value = outline.notes || '';
+                    
+                    if(outline.mainPoints && Array.isArray(outline.mainPoints)) {
+                        outline.mainPoints.forEach(point => {
+                            addPoint(point.title, point.content);
+                        });
+                    }
+                    
                     editorTitleEl.textContent = 'Editando Esboço';
+                    estimatePreachingTime();
                 }
                 switchMainView('esboco-view');
             };
@@ -1326,9 +1507,14 @@
             const clearEditor = () => {
                 currentEditingOutlineId = null;
                 outlineTitleEl.value = '';
-                outlineContentEl.innerHTML = '';
+                outlineBaseScriptureEl.value = '';
+                outlineMainThemeEl.value = '';
+                outlineIntroductionEl.value = '';
+                mainPointsContainerEl.innerHTML = '';
+                outlineConclusionEl.value = '';
                 outlineNotesEl.value = '';
                 editorTitleEl.textContent = 'Novo Esboço';
+                estimatePreachingTime();
                 outlineTitleEl.focus();
             };
 
@@ -1403,7 +1589,7 @@
                 fastingNotesEl.value = '';
             };
 
-            const fetchVerse = async (referenceOverride = null, targetElement = verseDisplayEl, isTopicalSearch = false, isModal = false) => {
+            const fetchVerse = async (referenceOverride = null, targetElement = document.getElementById('verse-display'), isTopicalSearch = false, isModal = false) => {
                 let reference;
                 if (referenceOverride) {
                     reference = referenceOverride;
@@ -1421,76 +1607,24 @@
                     if (!response.ok) throw new Error('Referência não encontrada.');
                     const data = await response.json();
                     
-                    const verseText = data.verses ? data.verses.map(v => `${v.verse} ${v.text}`).join('\n') : data.text;
-                    let verseContentHTML = data.verses ? data.verses.map(v => `<p class="mb-2"><strong>${v.verse}</strong>&nbsp;${v.text}</p>`).join('') : `<p>${data.text}</p>`;
+                    const verseText = data.verses ? data.verses.map(v => `<strong>${v.verse}</strong> ${v.text}`).join(' ') : data.text;
                     
                     if(isModal) {
-                        targetElement.innerHTML = `<h4 class="text-lg font-bold text-emerald-400 mb-2">${data.reference}</h4>${verseContentHTML}`;
+                        targetElement.innerHTML = `<h4 class="text-lg font-bold text-emerald-400 mb-2">${data.reference}</h4><p>${verseText}</p>`;
                         return;
                     }
                     
-                    if (targetElement.querySelector('.italic')) targetElement.innerHTML = '';
-                    
-                    const verseEl = document.createElement('div');
-                    let verseElClasses = isTopicalSearch 
-                        ? "w-full p-3 border border-gray-700 rounded-lg bg-gray-900 flex flex-col"
-                        : "w-72 flex-shrink-0 p-3 border border-gray-700 rounded-lg bg-gray-900 h-full flex flex-col";
-                    
-                    verseEl.className = verseElClasses;
-                    verseEl.dataset.reference = data.reference;
-                    verseEl.dataset.text = verseText;
-
-                    verseEl.innerHTML = `
-                        <div class="flex justify-between items-center mb-1">
+                    if(isTopicalSearch){
+                         targetElement.innerHTML += `<div class="mb-3 p-3 border-b border-gray-700">
                             <p class="font-bold text-emerald-400">${data.reference}</p>
-                            <div class="flex items-center gap-3 text-gray-400">
-                                <button class="copy-to-outline-btn hover:text-emerald-400 transition-colors" title="Copiar para Esboço"><i class="fas fa-file-import"></i></button>
-                                <button class="copy-to-notes-btn hover:text-yellow-400 transition-colors" title="Copiar para Notas"><i class="fas fa-clipboard"></i></button>
-                                <button class="explain-verse-btn hover:text-sky-400 transition-colors" title="Explicar versículo"><i class="fas fa-comment-dots"></i></button>
-                                <button class="remove-verse-btn text-gray-500 hover:text-red-400 transition-colors"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="overflow-y-auto flex-grow min-h-0">${verseContentHTML}</div>
-                    `;
-
-                    verseEl.querySelector('.copy-to-outline-btn').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const ref = verseEl.dataset.reference;
-                        const textToCopy = verseEl.dataset.text;
-                        const formattedContent = `<p><br></p><h4><strong>${ref}</strong></h4><blockquote>${textToCopy.replace(/\n/g, '<br>')}</blockquote>`;
-                        outlineContentEl.innerHTML += formattedContent;
-                        showToast(`"${ref}" copiado para o esboço.`);
-                    });
-
-                    verseEl.querySelector('.copy-to-notes-btn').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const ref = verseEl.dataset.reference;
-                        const textToCopy = verseEl.dataset.text;
-                        const currentNotes = outlineNotesEl.value;
-                        const formattedContent = `${currentNotes ? '\n\n' : ''}${ref}\n${textToCopy}`;
-                        outlineNotesEl.value += formattedContent;
-                        showToast(`"${ref}" copiado para as notas.`);
-                    });
-
-                    verseEl.querySelector('.remove-verse-btn').addEventListener('click', () => {
-                        verseEl.remove();
-                        renderVerseDisplayPlaceholder();
-                    });
-                    verseEl.querySelector('.explain-verse-btn').addEventListener('click', () => openExplanationModal(data.reference));
-                    
-                    targetElement.appendChild(verseEl);
-
-                    if(!isTopicalSearch) {
-                       bibleRefInputEl.value = ''; 
-                       bibleRefInputEl.focus();
-                       targetElement.scrollLeft = targetElement.scrollWidth;
+                            <p>${verseText}</p>
+                         </div>`;
+                    } else {
+                        targetElement.innerHTML = `<h3 class="text-2xl font-bold text-emerald-400 mb-2">${data.reference}</h3><p class="text-lg leading-relaxed">${verseText}</p>`;
                     }
 
                 } catch (error) {
                     targetElement.innerHTML = `<p class="text-red-400 p-3">Erro ao buscar ${reference}: ${error.message}</p>`;
-                    setTimeout(() => { 
-                        renderVerseDisplayPlaceholder();
-                    }, 3000);
                 }
             };
             
@@ -1510,27 +1644,40 @@
                 generateSuggestionBtn.disabled = true;
                 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-                const systemPrompt = `Você é um assistente pastoral e teólogo experiente. Sua tarefa é criar esboços para sermões bíblicos detalhados e bem estruturados. A resposta deve ser clara, objetiva e seguir sempre o formato solicitado.`;
+                const systemPrompt = `Você é um assistente pastoral e teólogo. Sua tarefa é criar esboços de sermão. A resposta DEVE ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. A estrutura do JSON é: { "title": "...", "baseScripture": "...", "mainTheme": "...", "introduction": "...", "mainPoints": [{ "title": "Ponto 1...", "content": "..." }, { "title": "Ponto 2...", "content": "..." }], "conclusion": "..." }`;
                 
-                let userQuery = `Crie um esboço de sermão com as seguintes características:\n- Tema Principal: "${theme}"\n- Público-Alvo: ${audience}\n- Tom da Mensagem: ${tone}\n`;
-                if (baseText) {
-                    userQuery += `- Texto-Base Principal: ${baseText}\n`;
-                }
-                userQuery += `\nA resposta DEVE ter o seguinte formato:\nTítulo: [Título do Sermão]\n\n[Restante do conteúdo do esboço, incluindo uma introdução cativante, 3 a 4 pontos principais bem desenvolvidos com versículos de apoio relevantes, e uma conclusão prática e inspiradora].`;
+                let userQuery = `Crie um esboço de sermão com: Tema Principal: "${theme}", Público-Alvo: ${audience}, Tom: ${tone}.`;
+                if (baseText) userQuery += ` Texto-Base: ${baseText}.`;
                 
-                const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+                const payload = { 
+                    contents: [{ parts: [{ text: userQuery }] }], 
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+
                 try {
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
                     const result = await response.json();
-                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text) {
-                        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                        formattedText = formattedText.replace(/\n/g, '<br>');
-                        suggestionResultEl.innerHTML = formattedText;
+                    const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const outlineData = JSON.parse(jsonText);
+
+                    if (outlineData && outlineData.title) {
+                        let formattedText = `<h2 class="text-xl font-bold text-emerald-400 mb-2">${outlineData.title}</h2>`;
+                        if(outlineData.introduction) formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Introdução</h3><p>${outlineData.introduction}</p>`;
+                        if(outlineData.mainPoints) {
+                            formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Pontos Principais</h3>`;
+                            outlineData.mainPoints.forEach(p => {
+                                formattedText += `<p><strong>${p.title}</strong><br>${p.content}</p>`;
+                            });
+                        }
+                        if(outlineData.conclusion) formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Conclusão</h3><p>${outlineData.conclusion}</p>`;
+                        
+                        suggestionResultEl.innerHTML = formattedText.replace(/(\r\n|\n)/g, '<br>');
+                        suggestionResultEl.dataset.outline = jsonText; // Store raw JSON
                         useSuggestionBtn.classList.remove('hidden');
                     } else {
-                        throw new Error("Resposta da IA inválida ou vazia.");
+                        throw new Error("Resposta da IA inválida.");
                     }
                 } catch (error) {
                     console.error("Error generating suggestion:", error);
@@ -1541,23 +1688,28 @@
             };
             
             const useSuggestion = () => {
-                const fullText = suggestionResultEl.innerText; // Use innerText to get clean text
-                const baseText = suggestionBaseTextInputEl.value.trim();
-                const lines = fullText.split('\n');
-                let title = "Esboço Gerado", content = fullText;
-                if(lines[0].toLowerCase().startsWith('título:')) {
-                    title = lines[0].substring(7).trim();
-                    content = lines.slice(2).join('\n');
+                const outlineJson = suggestionResultEl.dataset.outline;
+                if(!outlineJson) {
+                    showToast("Erro ao importar esboço.");
+                    return;
                 }
-                outlineTitleEl.value = title;
-                outlineContentEl.innerHTML = content.replace(/\n/g, '<br>');
-                outlineContentEl.scrollTop = 0; // Scroll to top after adding content
+                const outlineData = JSON.parse(outlineJson);
+                
+                clearEditor();
+                
+                outlineTitleEl.value = outlineData.title || '';
+                outlineBaseScriptureEl.value = outlineData.baseScripture || '';
+                outlineMainThemeEl.value = outlineData.mainTheme || '';
+                outlineIntroductionEl.value = outlineData.introduction || '';
+                outlineConclusionEl.value = outlineData.conclusion || '';
 
-                if(baseText) {
-                    const currentNotes = outlineNotesEl.value;
-                    outlineNotesEl.value = `Texto-Base: ${baseText}${currentNotes ? `\n\n${currentNotes}` : ''}`;
+                if (outlineData.mainPoints && Array.isArray(outlineData.mainPoints)) {
+                    outlineData.mainPoints.forEach(point => {
+                        addPoint(point.title, point.content);
+                    });
                 }
-
+                
+                estimatePreachingTime();
                 closeSuggestionModal();
                 showToast("Esboço inserido no editor!");
             };
@@ -1583,7 +1735,7 @@
                 const outline = outlines.find(o => o.id === outlineId);
                 if (outline) {
                     presentationTitleEl.textContent = outline.title;
-                    presentationContentEl.innerHTML = outline.content;
+                    presentationContentEl.innerHTML = getFullOutlineHTML(outline);
                     presentationModalEl.classList.remove('hidden');
                     presentationModalEl.classList.add('flex');
                     setTimeout(() => {
@@ -1614,12 +1766,12 @@
                 });
             };
 
-            const switchStudySubTab = (subtabName) => {
-                studySubtabPanes.forEach(pane => {
-                    pane.classList.toggle('hidden', pane.id !== `${subtabName}-pane`);
+            const switchStudyMainTab = (tabName) => {
+                studyMainPanes.forEach(pane => {
+                    pane.classList.toggle('hidden', pane.id !== `${tabName}-pane`);
                 });
-                document.querySelectorAll('.study-subtab-btn').forEach(btn => {
-                    const isActive = btn.dataset.subtab === subtabName;
+                document.querySelectorAll('.study-main-tab-btn').forEach(btn => {
+                    const isActive = btn.dataset.studyTab === tabName;
                     btn.classList.toggle('border-emerald-400', isActive);
                     btn.classList.toggle('text-white', isActive);
                     btn.classList.toggle('border-transparent', !isActive);
@@ -1735,6 +1887,38 @@
                 } catch (error) {
                     console.error("Error generating commentary:", error);
                     commentaryResultsDisplay.innerHTML = `<p class="text-red-400">${error.message}</p>`;
+                }
+            };
+
+            const handleTheologicalDictionary = async () => {
+                const term = theologicalTermInput.value.trim();
+                if (!term) {
+                    showToast("Por favor, insira um termo teológico.");
+                    return;
+                }
+                theologicalResultsDisplay.innerHTML = `<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A definir ${term}...</div>`;
+                
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+                const systemPrompt = `Você é um professor de teologia sistemática. Sua tarefa é fornecer definições claras, detalhadas e academicamente referenciadas para termos teológicos.`;
+                const userQuery = `Defina o termo teológico: "${term}". Explique sua etimologia (se relevante), seu significado principal, seu desenvolvimento histórico no pensamento cristão e forneça 2-3 referências bíblicas chave relacionadas ao conceito.`;
+                const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+
+                try {
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (text) {
+                        let formattedText = text.replace(/\n/g, '<br>');
+                        formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong class="text-emerald-400">$1</strong>');
+                        theologicalResultsDisplay.innerHTML = formattedText;
+                    } else {
+                        throw new Error("Não foi possível definir o termo.");
+                    }
+                } catch (error) {
+                    console.error("Error defining term:", error);
+                    theologicalResultsDisplay.innerHTML = `<p class="text-red-400">${error.message}</p>`;
                 }
             };
 
@@ -2024,21 +2208,38 @@
                     return now >= start && now <= end;
                 });
 
+                const dashboardActiveFastEl = document.getElementById('dashboard-active-fast');
+                const dashboardNextEngagementsEl = document.getElementById('dashboard-next-engagements');
+                const dashboardReadingPlanEl = document.getElementById('dashboard-reading-plan');
+
                 if(activeFast){
                     const endTime = new Date(activeFast.endDate);
                     const totalSeconds = (endTime - now) / 1000;
+
                     if(totalSeconds > 0) {
                         const days = Math.floor(totalSeconds / 3600 / 24);
                         const hours = Math.floor(totalSeconds / 3600) % 24;
                         const minutes = Math.floor(totalSeconds / 60) % 60;
                         const seconds = Math.floor(totalSeconds) % 60;
+                        
+                        const timerString = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
 
+                        // Update Jejum View Timer
                         activeFastTimerEl.classList.remove('hidden');
                         activeFastTitleEl.textContent = activeFast.title;
-                        timerDisplayEl.textContent = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+                        timerDisplayEl.textContent = timerString;
 
-                        dashboardActiveFast.innerHTML = `<h3 class="text-xl font-bold text-white mb-2">Propósito Ativo</h3>` + activeFastTimerEl.innerHTML;
-                        dashboardActiveFast.classList.remove('hidden');
+                        // Update Dashboard Timer Card
+                        dashboardActiveFastEl.innerHTML = `
+                            <h3 class="text-lg font-bold text-white mb-2">Propósito Ativo</h3>
+                            <h4 class="font-semibold text-md text-emerald-300">${activeFast.title}</h4>
+                            <p class="text-3xl font-mono tracking-wider text-white mt-2">${timerString}</p>
+                        `;
+                        dashboardActiveFastEl.classList.remove('hidden');
+                        dashboardActiveFastEl.classList.add('flex');
+                        dashboardNextEngagementsEl.classList.add('hidden');
+                        dashboardReadingPlanEl.classList.add('hidden');
+
 
                         // Notification logic
                         const notificationKey = `notified_${activeFast.id}`;
@@ -2047,12 +2248,20 @@
                             sessionStorage.setItem(notificationKey, 'true');
                         }
                     } else {
+                        // Fast ended just now
                         activeFastTimerEl.classList.add('hidden');
-                        dashboardActiveFast.classList.add('hidden');
+                        dashboardActiveFastEl.classList.add('hidden');
+                        dashboardActiveFastEl.classList.remove('flex');
+                        dashboardNextEngagementsEl.classList.remove('hidden');
+                        dashboardReadingPlanEl.classList.remove('hidden');
                     }
                 } else {
+                    // No active fast
                     activeFastTimerEl.classList.add('hidden');
-                    dashboardActiveFast.classList.add('hidden');
+                    dashboardActiveFastEl.classList.add('hidden');
+                    dashboardActiveFastEl.classList.remove('flex');
+                    dashboardNextEngagementsEl.classList.remove('hidden');
+                    dashboardReadingPlanEl.classList.remove('hidden');
                 }
             };
             
@@ -2234,17 +2443,35 @@
                 });
             };
 
-            const handleStartQuiz = async (difficulty) => {
+            const handleStartQuiz = (difficulty) => {
                 quizTitleDashboardEl.textContent = `Quiz Bíblico - ${difficulty}`;
                 quizDifficultySelection.classList.add('hidden');
                 quizActiveArea.classList.remove('hidden');
-                quizContentDashboardEl.innerHTML = `<div class="flex items-center justify-center h-48"><i class="fas fa-spinner fa-spin mr-2 text-2xl"></i>A gerar o seu quiz...</div>`;
                 quizResultsDashboardEl.classList.add('hidden');
                 quizContentDashboardEl.classList.remove('hidden');
+                
+                quizSession = {
+                    difficulty: difficulty,
+                    questionsAnswered: 0,
+                    score: 0,
+                    incorrectTopics: [],
+                    askedQuestions: []
+                };
 
+                fetchNextQuestion();
+            };
+            
+            const fetchNextQuestion = async () => {
+                quizContentDashboardEl.innerHTML = `<div class="flex items-center justify-center h-48"><i class="fas fa-spinner fa-spin mr-2 text-2xl"></i>A gerar a próxima pergunta...</div>`;
+                
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-                const systemPrompt = `Você é um criador de quizzes bíblicos. Crie um quiz com 5 perguntas de múltipla escolha. A resposta deve ser um objeto JSON válido. Não inclua a palavra 'json' ou \`\`\` no início ou no fim da resposta. O JSON deve ter a seguinte estrutura: { "questions": [{ "question": "Qual personagem...", "options": ["Opção A", "Opção B", "Opção C", "Opção D"], "answer": "Opção C" }] }`;
-                const userQuery = `Gere um quiz bíblico com 5 perguntas. Nível de dificuldade: ${difficulty}. Os tópicos devem ser variados, abrangendo Antigo e Novo Testamento.`;
+                const systemPrompt = `Você é um criador de quizzes bíblicos. Crie UMA pergunta de múltipla escolha. A resposta deve ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. O JSON deve ter a estrutura: { "question": "Qual personagem...", "options": ["Opção A", "Opção B", "Opção C", "Opção D"], "answer": "Opção C", "topic": "Gênesis" }. O campo "topic" deve indicar o livro ou tema principal da pergunta.`;
+                
+                let userQuery = `Gere uma pergunta de quiz bíblico. Nível de dificuldade: ${quizSession.difficulty}. Os tópicos devem ser variados, abrangendo Antigo e Novo Testamento.`;
+                if (quizSession.askedQuestions && quizSession.askedQuestions.length > 0) {
+                    const askedList = quizSession.askedQuestions.map(q => `- "${q}"`).join('\n');
+                    userQuery += `\n\nIMPORTANTE: A pergunta NÃO PODE ser uma das seguintes, que já foram feitas:\n${askedList}`;
+                }
                 
                 const payload = {
                     contents: [{ parts: [{ text: userQuery }] }],
@@ -2257,51 +2484,42 @@
                     if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
                     const result = await response.json();
                     const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const questionData = JSON.parse(jsonText);
                     
-                    // Robust JSON parsing
-                    let cleanedJsonText = jsonText.replace(/```json/g, '').replace(/```/g, '').trim();
-                    const quizData = JSON.parse(cleanedJsonText);
-                    
-                    if (quizData && quizData.questions) {
-                        currentQuiz = quizData;
-                        currentQuestionIndex = 0;
-                        score = 0;
-                        renderQuestion();
+                    if (questionData && questionData.question) {
+                        renderQuestion(questionData);
                     } else {
-                        throw new Error("Formato de quiz inválido recebido da IA.");
+                        throw new Error("Formato de pergunta inválido recebido da IA.");
                     }
                 } catch (error) {
-                    console.error("Error starting quiz:", error);
-                    quizContentDashboardEl.innerHTML = `<p class="text-red-400 text-center">Falha ao gerar o quiz. Tente novamente.<br><span class="text-xs text-gray-500">${error.message}</span></p>`;
+                    console.error("Error fetching next question:", error);
+                    quizContentDashboardEl.innerHTML = `<p class="text-red-400 text-center">Falha ao gerar a pergunta. Tente novamente.<br><span class="text-xs text-gray-500">${error.message}</span></p>`;
                 }
             };
 
-            const renderQuestion = () => {
-                if (currentQuestionIndex < currentQuiz.questions.length) {
-                    const q = currentQuiz.questions[currentQuestionIndex];
-                    quizContentDashboardEl.innerHTML = `
-                        <p class="text-lg text-gray-300 mb-2">Pergunta ${currentQuestionIndex + 1} de ${currentQuiz.questions.length}</p>
-                        <h4 class="text-xl font-semibold text-white mb-6">${q.question}</h4>
-                        <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            ${q.options.map(option => `
-                                <button class="quiz-option-btn w-full text-left bg-gray-700 hover:bg-gray-600 border-2 border-transparent text-white font-semibold py-3 px-4 rounded-lg">
-                                    ${option}
-                                </button>
-                            `).join('')}
-                        </div>
-                    `;
-                    document.querySelectorAll('.quiz-option-btn').forEach(btn => {
-                        btn.addEventListener('click', handleAnswerSelection);
-                    });
-                } else {
-                    showResults();
-                }
+            const renderQuestion = (q) => {
+                quizSession.currentQuestion = q;
+                quizSession.askedQuestions.push(q.question);
+                quizContentDashboardEl.innerHTML = `
+                    <p class="text-lg text-gray-300 mb-2">Pergunta ${quizSession.questionsAnswered + 1}</p>
+                    <h4 class="text-xl font-semibold text-white mb-6">${q.question}</h4>
+                    <div id="quiz-options" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${q.options.map(option => `
+                            <button class="quiz-option-btn w-full text-left bg-gray-700 hover:bg-gray-600 border-2 border-transparent text-white font-semibold py-3 px-4 rounded-lg">
+                                ${option}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                document.querySelectorAll('.quiz-option-btn').forEach(btn => {
+                    btn.addEventListener('click', handleAnswerSelection);
+                });
             };
             
             const handleAnswerSelection = (e) => {
                 const selectedBtn = e.target;
                 const selectedAnswer = selectedBtn.textContent.trim();
-                const correctAnswer = currentQuiz.questions[currentQuestionIndex].answer;
+                const correctAnswer = quizSession.currentQuestion.answer;
 
                 const optionButtons = document.querySelectorAll('.quiz-option-btn');
                 optionButtons.forEach(btn => {
@@ -2312,27 +2530,64 @@
                     }
                 });
 
+                quizSession.questionsAnswered++;
                 if (selectedAnswer === correctAnswer) {
-                    score++;
+                    quizSession.score++;
                 } else {
                     selectedBtn.classList.remove('bg-gray-700');
                     selectedBtn.classList.add('bg-red-600', 'border-red-400');
+                    if(quizSession.currentQuestion.topic) {
+                        quizSession.incorrectTopics.push(quizSession.currentQuestion.topic);
+                    }
                 }
 
-                currentQuestionIndex++;
-                setTimeout(renderQuestion, 2000);
+                setTimeout(fetchNextQuestion, 2000);
             };
 
-            const showResults = () => {
+            const showResults = async () => {
                 quizContentDashboardEl.classList.add('hidden');
                 quizResultsDashboardEl.classList.remove('hidden');
+
+                const totalQuestions = quizSession.questionsAnswered;
+                const score = quizSession.score;
+                const percentage = totalQuestions > 0 ? Math.round((score / totalQuestions) * 100) : 0;
+
+                let feedbackHTML = `<div class="flex items-center justify-center h-24"><i class="fas fa-spinner fa-spin mr-2 text-2xl"></i>A analisar o seu resultado...</div>`;
+
                 quizResultsDashboardEl.innerHTML = `
                     <h4 class="text-2xl font-bold text-white mb-4">Quiz Finalizado!</h4>
                     <p class="text-lg text-gray-300">Sua pontuação final foi:</p>
-                    <p class="text-6xl font-bold text-emerald-400 my-4">${score} / ${currentQuiz.questions.length}</p>
+                    <p class="text-6xl font-bold text-emerald-400 my-2">${score} / ${totalQuestions}</p>
+                    <p class="text-2xl font-semibold text-white mb-6">(${percentage}%)</p>
+                    <div id="quiz-feedback" class="text-left bg-gray-900 p-4 rounded-lg my-4">${feedbackHTML}</div>
                     <button id="restart-quiz-btn" class="py-2 px-6 bg-sky-500 hover:bg-sky-600 text-white rounded-lg">Jogar Novamente</button>
                 `;
                 document.getElementById('restart-quiz-btn').onclick = closeDashboardQuiz;
+
+                if (quizSession.incorrectTopics.length > 0) {
+                    const uniqueTopics = [...new Set(quizSession.incorrectTopics)];
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+                    const systemPrompt = `Você é um conselheiro de estudos bíblicos. Sua tarefa é analisar uma lista de tópicos que um utilizador errou num quiz e fornecer um feedback encorajador e útil.`;
+                    const userQuery = `O utilizador de um quiz bíblico errou perguntas sobre os seguintes tópicos: ${uniqueTopics.join(', ')}. Baseado nisso, escreva um breve parágrafo (2-3 frases) de encorajamento e sugira 1 ou 2 áreas principais para estudo, para que ele possa melhorar seu conhecimento. Seja positivo e direto ao ponto.`;
+                    const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+                    try {
+                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                        const result = await response.json();
+                        const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if(text){
+                            document.getElementById('quiz-feedback').innerHTML = `<h5 class="font-bold text-emerald-400 mb-2">Sugestão para Estudo:</h5><p>${text.replace(/\n/g, '<br>')}</p>`;
+                        } else {
+                           document.getElementById('quiz-feedback').innerHTML = `<p class="text-gray-400">Continue a estudar para aprofundar seus conhecimentos!</p>`;
+                        }
+                    } catch (error) {
+                         console.error("Error fetching feedback:", error);
+                         document.getElementById('quiz-feedback').innerHTML = `<p class="text-gray-400">Continue a estudar para aprofundar seus conhecimentos!</p>`;
+                    }
+                } else if(totalQuestions > 0) {
+                     document.getElementById('quiz-feedback').innerHTML = `<h5 class="font-bold text-emerald-400 mb-2">Excelente!</h5><p>Você acertou todas as perguntas! Continue a aprofundar-se no conhecimento da Palavra.</p>`;
+                } else {
+                     document.getElementById('quiz-feedback').innerHTML = `<p class="text-gray-400">Jogue novamente para testar os seus conhecimentos!</p>`;
+                }
             };
 
             const closeDashboardQuiz = () => {
@@ -2353,6 +2608,7 @@
             document.getElementById('next-month').onclick = () => changeMonth(1);
             saveOutlineBtn.onclick = saveOutline;
             document.getElementById('clear-editor-btn').onclick = clearEditor;
+            document.getElementById('add-point-btn').onclick = () => addPoint();
             document.getElementById('cancel-engagement').onclick = closeEngagementModal;
             document.getElementById('save-engagement').onclick = handleSaveEngagement;
             document.getElementById('delete-engagement').onclick = handleDeleteEngagement;
@@ -2360,22 +2616,7 @@
             document.getElementById('fetch-verse-btn').onclick = () => fetchVerse(null, document.getElementById('verse-display'), false, false);
             document.getElementById('bible-ref-input').onkeypress = (e) => { if (e.key === 'Enter') fetchVerse(null, document.getElementById('verse-display'), false, false); };
             
-            clearStudyResultsBtn.onclick = () => {
-                document.getElementById('verse-display').innerHTML = '';
-                document.getElementById('topical-results-display').innerHTML = '';
-                document.getElementById('commentary-results-display').innerHTML = '';
-                renderVerseDisplayPlaceholder();
-                showToast('Resultados limpos.');
-            };
-
             document.getElementById('save-fasting-btn').onclick = saveFastingSchedule;
-
-            document.getElementById('format-bold').onclick = () => formatText('bold');
-            document.getElementById('format-italic').onclick = () => formatText('italic');
-            document.getElementById('format-underline').onclick = () => formatText('underline');
-            document.getElementById('format-list').onclick = () => formatText('insertOrderedList');
-            document.getElementById('font-color-picker').oninput = (e) => formatText('foreColor', e.target.value);
-            document.getElementById('font-size-select').onchange = (e) => formatText('fontSize', e.target.value);
 
             document.getElementById('suggestion-btn').onclick = openSuggestionModal;
             document.getElementById('cancel-suggestion').onclick = closeSuggestionModal;
@@ -2383,7 +2624,7 @@
             
             document.getElementById('close-presentation-btn').onclick = closePresentationMode;
             
-            document.querySelectorAll('.main-nav-btn, .mobile-nav-btn').forEach(btn => {
+            document.querySelectorAll('.main-nav-btn, .mobile-nav-btn, .main-nav-btn-direct').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     switchMainView(e.currentTarget.dataset.view);
                 });
@@ -2405,13 +2646,11 @@
             };
 
             
-            openStudyToolsBtn.onclick = toggleStudyTools;
-            closeStudyToolsBtn.onclick = toggleStudyTools;
-
-            studySubTabs.addEventListener('click', (e) => {
-                const tabBtn = e.target.closest('.study-subtab-btn');
-                if (tabBtn) switchStudySubTab(tabBtn.dataset.subtab);
+            studyMainTabs.addEventListener('click', (e) => {
+                const tabBtn = e.target.closest('.study-main-tab-btn');
+                if (tabBtn) switchStudyMainTab(tabBtn.dataset.studyTab);
             });
+
             fetchTopicBtn.onclick = handleTopicalSearch;
             topicalThemeInput.onkeypress = (e) => { if (e.key === 'Enter') handleTopicalSearch(); };
             closeExplanationBtn.onclick = closeExplanationModal;
@@ -2420,6 +2659,9 @@
             closeReadingModalBtn.onclick = closeReadingModal;
             fetchCommentaryBtn.onclick = handleGenerateCommentary;
             commentaryChapterInput.onkeypress = (e) => { if (e.key === 'Enter') handleGenerateCommentary(); };
+            
+            fetchTermBtn.onclick = handleTheologicalDictionary;
+            theologicalTermInput.onkeypress = (e) => { if (e.key === 'Enter') handleTheologicalDictionary(); };
             
             copyExplanationBtn.addEventListener('click', () => {
                 const explanationText = explanationResult.innerText;
@@ -2442,8 +2684,11 @@
                     handleStartQuiz(e.currentTarget.dataset.difficulty);
                 });
             });
-            closeQuizDashboardBtn.onclick = closeDashboardQuiz;
+            stopQuizBtn.onclick = showResults;
 
+            // Add event listeners for time estimation
+            outlineIntroductionEl.addEventListener('input', estimatePreachingTime);
+            outlineConclusionEl.addEventListener('input', estimatePreachingTime);
 
             setInterval(updateActiveFastTimer, 1000);
             setupFirebaseListeners();
