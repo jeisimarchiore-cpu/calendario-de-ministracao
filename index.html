@@ -446,7 +446,7 @@
                     <h2 class="text-3xl font-bold text-white mb-6">Estudo Bíblico</h2>
                     <div class="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-6 h-full flex flex-col">
                         <div class="border-b border-gray-700 mb-4">
-                            <nav id="study-main-tabs" class="flex gap-4 -mb-px">
+                            <nav id="study-main-tabs" class="flex flex-wrap gap-4 -mb-px">
                                 <button data-study-tab="verse-lookup" class="study-main-tab-btn py-3 px-2 border-b-2 border-emerald-400 text-white font-medium">Busca por Versículo</button>
                                 <button data-study-tab="topical-study" class="study-main-tab-btn py-3 px-2 border-b-2 border-transparent text-gray-400 hover:text-white font-medium">Estudo por Tema</button>
                                 <button data-study-tab="commentary" class="study-main-tab-btn py-3 px-2 border-b-2 border-transparent text-gray-400 hover:text-white font-medium">Comentário Bíblico</button>
@@ -459,7 +459,8 @@
                             <div id="verse-lookup-pane" class="study-main-pane">
                                 <div class="flex flex-col sm:flex-row gap-2 mb-4 items-center">
                                     <select id="bible-study-book-select" class="flex-grow bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5 w-full"></select>
-                                    <input type="text" id="bible-ref-input" placeholder="Ex: 3:16 ou 3:16-18 ou 3" class="w-full sm:w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
+                                    <select id="bible-study-chapter-select" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg p-2.5 w-full sm:w-32"></select>
+                                    <input type="text" id="bible-ref-input" placeholder="Versículo(s) ex: 16-18" class="w-full sm:w-1/3 bg-gray-700 border border-gray-600 rounded-lg p-2.5 text-white">
                                     <button id="fetch-verse-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold p-2.5 rounded-lg w-full sm:w-auto" title="Buscar Versículo"><i class="fas fa-search mr-2"></i>Buscar</button>
                                 </div>
                                 <div id="verse-display" class="bg-gray-900 rounded-lg p-4 text-gray-300 text-base leading-relaxed overflow-y-auto h-[calc(100vh-20rem)]"></div>
@@ -824,6 +825,11 @@
                 "Mateus", "Marcos", "Lucas", "João", "Atos", "Romanos", "1 Coríntios", "2 Coríntios", "Gálatas", "Efésios", "Filipenses", "Colossenses", "1 Tessalonicenses", "2 Tessalonicenses", "1 Timóteo", "2 Timóteo", "Tito", "Filemom", "Hebreus", "Tiago", "1 Pedro", "2 Pedro", "1 João", "2 João", "3 João", "Judas", "Apocalipse"
             ];
             
+            const BIBLE_CHAPTERS = {
+                "Gênesis": 50, "Êxodo": 40, "Levítico": 27, "Números": 36, "Deuteronômio": 34, "Josué": 24, "Juízes": 21, "Rute": 4, "1 Samuel": 31, "2 Samuel": 24, "1 Reis": 22, "2 Reis": 25, "1 Crônicas": 29, "2 Crônicas": 36, "Esdras": 10, "Neemias": 13, "Ester": 10, "Jó": 42, "Salmos": 150, "Provérbios": 31, "Eclesiastes": 12, "Cânticos": 8, "Isaías": 66, "Jeremias": 52, "Lamentações": 5, "Ezequiel": 48, "Daniel": 12, "Oséias": 14, "Joel": 3, "Amós": 9, "Obadias": 1, "Jonas": 4, "Miquéias": 7, "Naum": 3, "Habacuque": 3, "Sofonias": 3, "Ageu": 2, "Zacarias": 14, "Malaquias": 4,
+                "Mateus": 28, "Marcos": 16, "Lucas": 24, "João": 21, "Atos": 28, "Romanos": 16, "1 Coríntios": 16, "2 Coríntios": 13, "Gálatas": 6, "Efésios": 6, "Filipenses": 4, "Colossenses": 4, "1 Tessalonicenses": 5, "2 Tessalonicenses": 3, "1 Timóteo": 6, "2 Timóteo": 4, "Tito": 3, "Filemom": 1, "Hebreus": 13, "Tiago": 5, "1 Pedro": 5, "2 Pedro": 3, "1 João": 5, "2 João": 1, "3 João": 1, "Judas": 1, "Apocalipse": 22
+            };
+
             const OLD_TESTAMENT_BOOKS = BIBLE_BOOKS.slice(0, 39);
             
             const READING_PLANS = {
@@ -856,6 +862,7 @@
             const engagementsListEl = document.getElementById('engagements-list');
             const editorTitleEl = document.getElementById('editor-title');
             const bibleStudyBookSelectEl = document.getElementById('bible-study-book-select');
+            const bibleStudyChapterSelectEl = document.getElementById('bible-study-chapter-select');
             const bibleRefInputEl = document.getElementById('bible-ref-input');
             const fastingListEl = document.getElementById('fasting-list');
             const fastingTitleEl = document.getElementById('fasting-title');
@@ -1589,16 +1596,8 @@
                 fastingNotesEl.value = '';
             };
 
-            const fetchVerse = async (referenceOverride = null, targetElement = document.getElementById('verse-display'), isTopicalSearch = false, isModal = false) => {
-                let reference;
-                if (referenceOverride) {
-                    reference = referenceOverride;
-                } else {
-                    const book = bibleStudyBookSelectEl.value;
-                    const userInput = bibleRefInputEl.value.trim();
-                    if (!userInput) return;
-                    reference = /[a-zA-ZáéíóúâêîôûãõçÁÉÍÓÚÂÊÎÔÛÃÕÇ]/.test(userInput) ? userInput : `${book} ${userInput}`;
-                }
+            const fetchVerse = async (reference, targetElement = document.getElementById('verse-display'), isTopicalSearch = false, isModal = false) => {
+                if (!reference) return;
                 
                 targetElement.innerHTML = `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Buscando ${reference}...</div>`;
 
@@ -2594,6 +2593,17 @@
                 quizActiveArea.classList.add('hidden');
                 quizDifficultySelection.classList.remove('hidden');
             };
+            
+            const populateChaptersForBook = (bookName) => {
+                const chapters = BIBLE_CHAPTERS[bookName];
+                bibleStudyChapterSelectEl.innerHTML = '<option value="">Capítulo</option>'; // Placeholder
+                if (chapters) {
+                    for (let i = 1; i <= chapters; i++) {
+                        const option = new Option(i, i);
+                        bibleStudyChapterSelectEl.add(option);
+                    }
+                }
+            };
 
             // Initial calls
             document.getElementById('logo-btn-desktop').onclick = () => switchMainView('dashboard-view');
@@ -2604,6 +2614,10 @@
                 bibleStudyBookSelectEl.add(new Option(book, book));
                 commentaryBookSelect.add(new Option(book, book));
             });
+            
+            // Populate chapters for the default selected book on load
+            populateChaptersForBook(bibleStudyBookSelectEl.value);
+
             document.getElementById('prev-month').onclick = () => changeMonth(-1);
             document.getElementById('next-month').onclick = () => changeMonth(1);
             saveOutlineBtn.onclick = saveOutline;
@@ -2613,8 +2627,42 @@
             document.getElementById('save-engagement').onclick = handleSaveEngagement;
             document.getElementById('delete-engagement').onclick = handleDeleteEngagement;
             
-            document.getElementById('fetch-verse-btn').onclick = () => fetchVerse(null, document.getElementById('verse-display'), false, false);
-            document.getElementById('bible-ref-input').onkeypress = (e) => { if (e.key === 'Enter') fetchVerse(null, document.getElementById('verse-display'), false, false); };
+            const fetchVerseHandler = () => {
+                const book = bibleStudyBookSelectEl.value;
+                const chapter = bibleStudyChapterSelectEl.value;
+                const verse = bibleRefInputEl.value.trim();
+
+                if (!book || !chapter) {
+                    showToast("Por favor, selecione um livro e capítulo.");
+                    return;
+                }
+                
+                let reference = `${book} ${chapter}`;
+                if (verse) {
+                    reference += `:${verse}`;
+                }
+                
+                fetchVerse(reference);
+            };
+
+            bibleStudyBookSelectEl.addEventListener('change', () => {
+                const selectedBook = bibleStudyBookSelectEl.value;
+                populateChaptersForBook(selectedBook);
+                document.getElementById('verse-display').innerHTML = '';
+                renderVerseDisplayPlaceholder();
+            });
+
+            bibleStudyChapterSelectEl.addEventListener('change', () => {
+                const book = bibleStudyBookSelectEl.value;
+                const chapter = bibleStudyChapterSelectEl.value;
+                bibleRefInputEl.value = ''; // Clear verse input when chapter changes
+                if (book && chapter) {
+                    fetchVerse(`${book} ${chapter}`);
+                }
+            });
+            
+            document.getElementById('fetch-verse-btn').onclick = fetchVerseHandler;
+            document.getElementById('bible-ref-input').onkeypress = (e) => { if (e.key === 'Enter') fetchVerseHandler(); };
             
             document.getElementById('save-fasting-btn').onclick = saveFastingSchedule;
 
