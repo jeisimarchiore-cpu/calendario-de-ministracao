@@ -1702,14 +1702,20 @@
                     return;
                 }
 
-                suggestionResultEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>Gerando esboço avançado...</div>';
+                suggestionResultEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>Gerando esboço...</div>';
                 useSuggestionBtn.classList.add('hidden');
                 generateSuggestionBtn.disabled = true;
                 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
-                const systemPrompt = `Você é um teólogo e homileta experiente. Sua tarefa é criar esboços de sermão exegéticos e bem estruturados. A resposta DEVE ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. A estrutura do JSON deve ser: { "title": "...", "baseScripture": "...", "mainTheme": "...", "objective": "...", "introduction": "...", "mainPoints": [{ "title": "...", "explanation": "...", "scriptureSupport": ["...", "..."], "illustration": "..." }], "conclusion": "...", "applicationQuestions": ["...", "..."] }`;
                 
+                let systemPrompt = `Você é um teólogo e homileta experiente. Sua tarefa é criar esboços de sermão exegéticos e bem estruturados. A resposta DEVE ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. A estrutura do JSON deve ser: { "title": "...", "baseScripture": "...", "mainTheme": "...", "objective": "...", "introduction": "...", "mainPoints": [{ "title": "...", "explanation": "...", "scriptureSupport": ["...", "..."], "illustration": "..." }], "conclusion": "...", "applicationQuestions": ["...", "..."] }`;
                 let userQuery = `Crie um esboço de sermão avançado e detalhado. Características: Tema Principal: "${theme}", Público-Alvo: ${audience}, Tom: ${tone}. Se houver um texto-base, forneça uma breve análise exegética dentro dos pontos. Inclua ilustrações práticas e perguntas de aplicação.`;
+
+                if (audience === 'Crianças') {
+                    systemPrompt = `Você é um professor de ministério infantil criativo. Sua tarefa é criar planos de aula bíblicos para crianças (6-10 anos) que sejam divertidos, visuais e fáceis de entender. A resposta DEVE ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. A estrutura do JSON é: { "title": "Título Curto e Cativante", "baseScripture": "...", "mainTheme": "A Grande Ideia em uma frase", "objective": "O que as crianças vão aprender", "introduction": "Uma forma divertida de começar (pergunta, som, objeto)", "mainPoints": [{ "title": "Título do Ponto Simples", "explanation": "Explicação muito simples e curta", "scriptureSupport": ["1 versículo chave"], "illustration": "Uma ideia de atividade visual, objeto de lição ou gesto" }], "conclusion": "Um resumo simples e uma oração curta", "applicationQuestions": ["Perguntas fáceis para conversar"] }`;
+                    userQuery = `Crie um esboço de lição para crianças. Características: Tema Principal: "${theme}", Tom: ${tone}. Use linguagem muito simples, frases curtas e conceitos concretos. Foque em atividades visuais e interativas.`;
+                }
+                
                 if (baseText) userQuery += ` Texto-Base: ${baseText}.`;
                 
                 const payload = { 
@@ -1740,7 +1746,7 @@
                                      formattedText += `<p class="pl-4 text-xs text-gray-400"><em>Apoio: ${p.scriptureSupport.join(', ')}</em></p>`;
                                 }
                                 if (p.illustration) {
-                                     formattedText += `<p class="pl-4 mt-1 italic text-gray-400"><strong>Ilustração:</strong> ${p.illustration}</p>`;
+                                     formattedText += `<p class="pl-4 mt-1 italic text-gray-400"><strong>Ideia:</strong> ${p.illustration}</p>`;
                                 }
                                 formattedText += `</div>`;
                             });
@@ -1749,7 +1755,7 @@
                         if(outlineData.conclusion) formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Conclusão</h3><p>${outlineData.conclusion}</p>`;
                         
                         if(outlineData.applicationQuestions && outlineData.applicationQuestions.length > 0){
-                            formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Perguntas para Aplicação</h3>`;
+                            formattedText += `<h3 class="text-lg font-semibold text-sky-400 mt-4 mb-1">Perguntas para Conversar</h3>`;
                             formattedText += `<ul class="list-disc list-inside pl-4">`;
                             outlineData.applicationQuestions.forEach(q => {
                                 formattedText += `<li>${q}</li>`;
@@ -1794,19 +1800,23 @@
                              contentHTML += `<p><br><em>Apoio: ${point.scriptureSupport.join(', ')}</em></p>`;
                         }
                         if (point.illustration) {
-                             contentHTML += `<p><br><em>Ilustração: ${point.illustration}</em></p>`;
+                             contentHTML += `<p><br><em>Atividade/Ideia: ${point.illustration}</em></p>`;
                         }
                         addPoint(point.title, contentHTML);
                     });
                 }
-
+                
+                let notesText = '';
+                if(outlineData.objective){
+                    notesText += `Objetivo da Lição:\n${outlineData.objective}\n\n`;
+                }
                 if (outlineData.applicationQuestions && outlineData.applicationQuestions.length > 0) {
-                    let notesText = `\n\nPerguntas para Aplicação:\n`;
+                    notesText += `Perguntas para Conversar:\n`;
                     outlineData.applicationQuestions.forEach(q => {
                         notesText += `- ${q}\n`;
                     });
-                    outlineNotesEl.value += notesText;
                 }
+                outlineNotesEl.value += notesText;
                 
                 estimatePreachingTime();
                 closeSuggestionModal();
@@ -2849,4 +2859,5 @@
     </script>
 </body>
 </html>
+
 
