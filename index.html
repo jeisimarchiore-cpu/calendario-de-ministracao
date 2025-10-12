@@ -263,6 +263,9 @@
                   <button data-view="jejum-view" class="main-nav-btn w-full text-left py-3 px-6 text-gray-300 font-semibold flex items-center gap-3">
                      <i class="fas fa-pray fa-fw"></i> Jejum e Oração
                  </button>
+                 <button data-view="tutorial-view" class="main-nav-btn w-full text-left py-3 px-6 text-gray-300 font-semibold flex items-center gap-3">
+                    <i class="fas fa-question-circle fa-fw"></i> Como Usar
+                </button>
              </nav>
              <div class="p-4 border-t border-gray-700">
                  <div id="user-info" class="text-sm">
@@ -571,26 +574,86 @@
                     </div>
                 </div>
 
+                <!-- Tutorial View -->
+                <div id="tutorial-view" class="main-view hidden">
+                    <h2 class="text-3xl font-bold text-white mb-6">Como Usar a Agenda do Pregador</h2>
+                    <div class="space-y-6 text-gray-300">
+                        
+                        <div class="bg-gray-800 rounded-lg p-6">
+                            <h3 class="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2"><i class="fas fa-tachometer-alt fa-fw"></i> Painel de Controle</h3>
+                            <p>O seu centro de comando. Aqui você tem uma visão geral e rápida de tudo o que está a acontecer:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 pl-2">
+                                <li>Veja os seus próximos compromissos de ministração.</li>
+                                <li>Acompanhe o progresso do seu plano de leitura bíblica.</li>
+                                <li>Monitore em tempo real o cronómetro de jejum ou oração, quando ativo.</li>
+                                <li>Teste os seus conhecimentos com um Quiz Bíblico dinâmico.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gray-800 rounded-lg p-6">
+                            <h3 class="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2"><i class="fas fa-pencil-alt fa-fw"></i> Esboços</h3>
+                            <p>Crie e organize as suas mensagens de forma estruturada e profissional:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 pl-2">
+                                <li>Use o editor dividido em seções (Introdução, Pontos, Conclusão) para focar em cada parte da sua mensagem.</li>
+                                <li>Adicione quantos pontos principais precisar.</li>
+                                <li>O sistema estima automaticamente o tempo de pregação com base no seu texto.</li>
+                                <li>Use o botão <strong class="text-yellow-400">Gerar Ideia (IA)</strong> para criar esboços teologicamente ricos e detalhados em segundos.</li>
+                                <li>Exporte para Word, imprima ou use o Modo Apresentação para ministrar.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gray-800 rounded-lg p-6">
+                            <h3 class="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2"><i class="fas fa-book-open fa-fw"></i> Estudo Bíblico</h3>
+                            <p>Uma área dedicada para aprofundar o seu conhecimento nas Escrituras:</p>
+                            <ul class="list-disc list-inside mt-2 space-y-1 pl-2">
+                                <li><strong>Busca por Versículo:</strong> Navegue rapidamente por qualquer livro e capítulo da Bíblia.</li>
+                                <li><strong>Estudo por Tema:</strong> Descubra versículos chave sobre qualquer assunto que queira estudar.</li>
+                                <li><strong>Comentário Bíblico:</strong> Obtenha uma análise detalhada sobre um capítulo inteiro, gerada por IA.</li>
+                                <li><strong>Dicionário Teológico:</strong> Entenda termos teológicos complexos com definições claras e referências.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-lg p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2"><i class="fas fa-calendar-alt fa-fw"></i> Agenda</h3>
+                                <p>Organize os seus compromissos e vincule as suas mensagens. Clique num dia no calendário para adicionar um novo evento.</p>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2"><i class="fas fa-tasks fa-fw"></i> Plano de Leitura</h3>
+                                <p>Escolha um plano de leitura, marque o seu progresso diário e conquiste selos por cada livro da Bíblia completado.</p>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-emerald-400 mb-2 flex items-center gap-2"><i class="fas fa-pray fa-fw"></i> Jejum e Oração</h3>
+                                <p>Registe os seus propósitos de jejum e oração. Um cronómetro aparecerá no painel quando um propósito estiver ativo.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
              <!-- Bottom Navigation (Mobile) -->
             <nav id="bottom-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 flex justify-around p-2 z-30">
-                <button data-view="dashboard-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
+                <button data-view="dashboard-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/6">
                     <i class="fas fa-tachometer-alt text-xl"></i><span class="text-xs mt-1">Painel</span>
                 </button>
-                <button data-view="agenda-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
+                <button data-view="agenda-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/6">
                     <i class="fas fa-calendar-alt text-xl"></i><span class="text-xs mt-1">Agenda</span>
                 </button>
-                <button data-view="esboco-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
+                <button data-view="esboco-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/6">
                     <i class="fas fa-pencil-alt text-xl"></i><span class="text-xs mt-1">Esboços</span>
                 </button>
-                <button data-view="estudo-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
+                <button data-view="estudo-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/6">
                     <i class="fas fa-book-open text-xl"></i><span class="text-xs mt-1">Estudo</span>
                 </button>
-                <button data-view="plano-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
+                <button data-view="plano-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/6">
                     <i class="fas fa-tasks text-xl"></i><span class="text-xs mt-1">Plano</span>
                 </button>
-                 <button data-view="jejum-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/5">
+                 <button data-view="jejum-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/6">
                     <i class="fas fa-pray text-xl"></i><span class="text-xs mt-1">Jejum</span>
+                </button>
+                 <button data-view="tutorial-view" class="mobile-nav-btn flex flex-col items-center text-gray-400 w-1/6">
+                    <i class="fas fa-question-circle text-xl"></i><span class="text-xs mt-1">Ajuda</span>
                 </button>
             </nav>
         </main>
@@ -634,6 +697,7 @@
                     <select id="suggestion-audience-select" class="w-full bg-gray-700 border border-gray-600 text-white text-sm rounded-lg block p-2.5">
                         <option>Geral</option>
                         <option>Jovens</option>
+                        <option>Crianças</option>
                         <option>Casais</option>
                         <option>Homens</option>
                         <option>Mulheres</option>
@@ -689,7 +753,7 @@
      </div>
     <div id="fasting-suggestion-modal" class="fixed inset-0 bg-black bg-opacity-70 items-center justify-center hidden z-50">
         <div class="modal-glass p-6 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
-           <h3 class="text-xl font-bold text-white mb-4">Sugestão para Entrega do Jejum</h3>
+           <h3 class="text-xl font-bold mb-4 text-white">Sugestão para Entrega do Jejum</h3>
             <div id="fasting-suggestion-result" class="bg-gray-900 rounded-lg p-4 flex-grow overflow-y-auto text-gray-300 text-sm whitespace-pre-wrap"></div>
             <div class="mt-6 flex justify-end gap-3">
                 <button id="close-fasting-suggestion-btn" class="py-2 px-4 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">Fechar</button>
@@ -2785,5 +2849,4 @@
     </script>
 </body>
 </html>
-
 
