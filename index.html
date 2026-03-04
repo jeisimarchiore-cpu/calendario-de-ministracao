@@ -272,6 +272,9 @@
                      <p id="user-email" class="font-semibold text-white"></p>
                      <p id="user-id" class="text-xs text-gray-500"></p>
                  </div>
+                 <button id="ai-diagnostics-btn" class="mt-3 w-full bg-sky-600/80 hover:bg-sky-600 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2">
+                     <i class="fas fa-stethoscope"></i> Diagnóstico IA
+                 </button>
                   <button id="logout-btn" class="mt-2 w-full bg-red-600/80 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-lg transition-colors flex items-center justify-center gap-2">
                      <i class="fas fa-sign-out-alt"></i> Sair
                  </button>
@@ -790,7 +793,228 @@
         import { getFirestore, collection, onSnapshot, doc, setDoc, addDoc, deleteDoc, query, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- CHAVE DA API DE IA ---
-        const GEMINI_API_KEY = "AIzaSyALf-1HMPtTZkliCqnkGirrSFLPpAlJSMk";
+        const GEMINI_API_KEY = (localStorage.getItem('GEMINI_API_KEY') || '').trim();
+        const GEMINI_MODEL = (localStorage.getItem('GEMINI_MODEL') || 'gemini-1.5-flash').trim();
+        const GEMINI_API_TIMEOUT_MS = 30000;
+        const GEMINI_API_RETRIES = 2;
+
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        const getGeminiApiKey = ({ interactive = false } = {}) => {
+            const existing = (localStorage.getItem('GEMINI_API_KEY') || '').trim();
+            if (existing) return existing;
+
+            if (!interactive) return '';
+
+            const entered = (prompt('Cole sua chave da API do Gemini (Google AI Studio):') || '').trim();
+            if (entered) {
+                localStorage.setItem('GEMINI_API_KEY', entered);
+                return entered;
+            }
+            return '';
+        };
+
+        const buildGeminiGenerateContentUrl = (apiKey, model = GEMINI_MODEL) => {
+            const safeKey = encodeURIComponent(apiKey);
+            return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${safeKey}`;
+        };
+
+        const buildGeminiListModelsUrl = (apiKey) => {
+            const safeKey = encodeURIComponent(apiKey);
+            return `https://generativelanguage.googleapis.com/v1beta/models?key=${safeKey}`;
+        };
+
+        const normalizeModelName = (modelName) => {
+            const name = String(modelName || '').trim();
+            if (!name) return '';
+            return name.startsWith('models/') ? name.slice('models/'.length) : name;
+        };
+
+        const listGeminiModels = async (apiKey, { timeoutMs = 15000 } = {}) => {
+            const url = buildGeminiListModelsUrl(apiKey);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(url, { method: 'GET', signal: controller.signal });
+                if (!response.ok) {
+                    const errMsg = await parseGeminiError(response);
+                    throw new Error(`API Error: ${errMsg}`);
+                }
+                const data = await response.json();
+                const models = Array.isArray(data?.models) ? data.models : [];
+                const generateContentModels = models.filter(m => {
+                    const methods = m?.supportedGenerationMethods;
+                    if (Array.isArray(methods)) return methods.includes('generateContent');
+                    const mStr = String(methods || '');
+                    return mStr.includes('generateContent');
+                });
+                return {
+                    all: models,
+                    generateContent: generateContentModels,
+                };
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        };
+
+        const getAvailableGenerateContentModelCandidates = async (apiKey) => {
+            const { generateContent } = await listGeminiModels(apiKey);
+            const names = generateContent
+                .map(m => normalizeModelName(m?.name))
+                .filter(Boolean);
+            const unique = [...new Set(names)];
+            return unique;
+        };
+
+        const parseGeminiError = async (response) => {
+            try {
+                const data = await response.json();
+                const msg = data?.error?.message || data?.message;
+                if (msg) return msg;
+            } catch {
+                // ignore
+            }
+            return `${response.status} ${response.statusText}`.trim();
+        };
+
+        const isModelNotSupportedError = (msg) => {
+            const text = String(msg || '').toLowerCase();
+            return text.includes('is not found') || text.includes('not supported') || text.includes('models/');
+        };
+
+        const callGeminiGenerateContent = async (payload, { interactiveKey = false, timeoutMs = GEMINI_API_TIMEOUT_MS, retries = GEMINI_API_RETRIES, models } = {}) => {
+            let apiKey = getGeminiApiKey({ interactive: interactiveKey });
+            if (!apiKey) {
+                apiKey = getGeminiApiKey({ interactive: true });
+            }
+            if (!apiKey) {
+                throw new Error('Chave do Gemini não configurada.');
+            }
+
+            let candidateModels = Array.isArray(models) && models.length > 0
+                ? models
+                : [GEMINI_MODEL];
+
+            candidateModels = candidateModels
+                .map(normalizeModelName)
+                .filter(Boolean);
+
+            candidateModels = [...new Set(candidateModels)];
+
+            let lastError = null;
+
+            for (const model of candidateModels) {
+                const apiUrl = buildGeminiGenerateContentUrl(apiKey, model);
+                let attempt = 0;
+
+                while (true) {
+                    attempt += 1;
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload),
+                            signal: controller.signal,
+                        });
+
+                        if (response.ok) {
+                            return await response.json();
+                        }
+
+                        const errMsg = await parseGeminiError(response);
+                        const retryable = response.status === 429 || response.status >= 500;
+
+                        if (retryable && attempt <= retries + 1) {
+                            await sleep(400 * attempt);
+                            continue;
+                        }
+
+                        const finalMsg = `API Error: ${errMsg}`;
+                        lastError = new Error(finalMsg);
+
+                        if (isModelNotSupportedError(errMsg)) {
+                            break;
+                        }
+
+                        throw lastError;
+                    } catch (err) {
+                        const isAbort = err?.name === 'AbortError';
+                        if (isAbort) {
+                            lastError = new Error('Timeout ao chamar a API do Gemini.');
+                            if (attempt <= retries + 1) {
+                                await sleep(300 * attempt);
+                                continue;
+                            }
+                            throw lastError;
+                        }
+                        throw err;
+                    } finally {
+                        clearTimeout(timeoutId);
+                    }
+                }
+            }
+
+            try {
+                const discovered = await getAvailableGenerateContentModelCandidates(apiKey);
+                for (const discoveredModel of discovered) {
+                    if (candidateModels.includes(discoveredModel)) continue;
+                    const apiUrl = buildGeminiGenerateContentUrl(apiKey, discoveredModel);
+                    let attempt = 0;
+
+                    while (true) {
+                        attempt += 1;
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+                        try {
+                            const response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload),
+                                signal: controller.signal,
+                            });
+
+                            if (response.ok) {
+                                localStorage.setItem('GEMINI_MODEL', discoveredModel);
+                                return await response.json();
+                            }
+
+                            const errMsg = await parseGeminiError(response);
+                            const retryable = response.status === 429 || response.status >= 500;
+                            if (retryable && attempt <= retries + 1) {
+                                await sleep(400 * attempt);
+                                continue;
+                            }
+
+                            const finalMsg = `API Error: ${errMsg}`;
+                            lastError = new Error(finalMsg);
+                            if (isModelNotSupportedError(errMsg)) {
+                                break;
+                            }
+                            throw lastError;
+                        } catch (err) {
+                            const isAbort = err?.name === 'AbortError';
+                            if (isAbort) {
+                                lastError = new Error('Timeout ao chamar a API do Gemini.');
+                                if (attempt <= retries + 1) {
+                                    await sleep(300 * attempt);
+                                    continue;
+                                }
+                                throw lastError;
+                            }
+                            throw err;
+                        } finally {
+                            clearTimeout(timeoutId);
+                        }
+                    }
+                }
+            } catch (err) {
+                if (err) lastError = err;
+            }
+
+            throw (lastError || new Error('Falha ao chamar a API do Gemini.'));
+        };
 
         // --- Firebase Configuration ---
         const firebaseConfig = {
@@ -873,6 +1097,43 @@
         // --- Main App Logic (to be initialized after login) ---
         function initializeAppLogic() {
             document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+            document.getElementById('ai-diagnostics-btn').addEventListener('click', async () => {
+                try {
+                    showToast('Verificando modelos disponíveis...');
+                    const apiKey = getGeminiApiKey({ interactive: true });
+                    if (!apiKey) throw new Error('Chave do Gemini não configurada.');
+
+                    const modelsInfo = await listGeminiModels(apiKey);
+                    const candidateModels = (modelsInfo?.generateContent || [])
+                        .map(m => normalizeModelName(m?.name))
+                        .filter(Boolean);
+
+                    console.log('Gemini ListModels (all):', modelsInfo?.all);
+                    console.log('Gemini ListModels (generateContent):', modelsInfo?.generateContent);
+
+                    if (!candidateModels.length) {
+                        showToast('Nenhum modelo disponível para generateContent. Veja console.');
+                        return;
+                    }
+
+                    localStorage.setItem('GEMINI_MODEL', candidateModels[0]);
+                    showToast(`Modelo selecionado: ${candidateModels[0]}`);
+
+                    showToast('Testando geração com o modelo selecionado...');
+                    const payload = { contents: [{ parts: [{ text: 'Responda apenas com a palavra: OK' }] }] };
+                    const result = await callGeminiGenerateContent(payload, { interactiveKey: false, timeoutMs: 15000, retries: 1, models: candidateModels });
+                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+                    console.log('Gemini diagnostics generateContent result:', result);
+                    if (text) {
+                        showToast(`IA OK: ${text.substring(0, 60)}`);
+                    } else {
+                        showToast('IA respondeu, mas sem texto. Veja console.');
+                    }
+                } catch (error) {
+                    console.error('Gemini diagnostics error:', error);
+                    showToast(`Falha no Gemini: ${error.message}`);
+                }
+            });
 
             let outlinesCol, engagementsCol, fastingCol;
             let currentDate = new Date();
@@ -1706,7 +1967,6 @@
                 useSuggestionBtn.classList.add('hidden');
                 generateSuggestionBtn.disabled = true;
                 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
                 
                 let systemPrompt = `Você é um teólogo e homileta experiente. Sua tarefa é criar esboços de sermão exegéticos e bem estruturados. A resposta DEVE ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. A estrutura do JSON deve ser: { "title": "...", "baseScripture": "...", "mainTheme": "...", "objective": "...", "introduction": "...", "mainPoints": [{ "title": "...", "explanation": "...", "scriptureSupport": ["...", "..."], "illustration": "..." }], "conclusion": "...", "applicationQuestions": ["...", "..."] }`;
                 let userQuery = `Crie um esboço de sermão avançado e detalhado. Características: Tema Principal: "${theme}", Público-Alvo: ${audience}, Tom: ${tone}. Se houver um texto-base, forneça uma breve análise exegética dentro dos pontos. Inclua ilustrações práticas e perguntas de aplicação.`;
@@ -1725,9 +1985,7 @@
                 };
 
                 try {
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                    const result = await response.json();
+                    const result = await callGeminiGenerateContent(payload);
                     const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     const outlineData = JSON.parse(jsonText);
 
@@ -1905,14 +2163,11 @@
             const getVerseExplanation = async (reference, targetElement) => {
                 targetElement.innerHTML = '<div class="flex items-center justify-center h-full text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>A gerar explicação...</div>';
                 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
                 const systemPrompt = `Você é um teólogo e estudioso da Bíblia. Forneça uma explicação clara e concisa para a passagem bíblica solicitada. Foque no contexto histórico, significado teológico e aplicação prática.`;
                 const userQuery = `Explique a passagem: ${reference}.`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
                 try {
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                    const result = await response.json();
+                    const result = await callGeminiGenerateContent(payload);
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     if (text) {
                         targetElement.innerHTML = text.replace(/\n/g, '<br>');
@@ -1935,16 +2190,13 @@
                     return;
                 }
                 topicalResultsDisplay.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A procurar versículos sobre o tema...</div>';
-                
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+
                 const systemPrompt = `Você é um assistente de estudo bíblico. Sua tarefa é encontrar referências bíblicas sobre um determinado tema.`;
                 const userQuery = `Liste 5 a 7 referências de versículos bíblicos chave sobre o tema "${theme}". Responda APENAS com as referências, separadas por vírgula (ex: João 3:16, Romanos 8:28, Salmos 23:1).`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
 
                 try {
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                    const result = await response.json();
+                    const result = await callGeminiGenerateContent(payload);
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     
                     if (text) {
@@ -1974,16 +2226,13 @@
                 }
 
                 commentaryResultsDisplay.innerHTML = `<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A gerar comentário para ${book} ${chapter}...</div>`;
-                
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+
                 const systemPrompt = `Você é um teólogo e exegeta bíblico. Sua tarefa é escrever um comentário aprofundado para um capítulo da Bíblia. Estruture sua resposta com clareza, usando títulos em negrito (ex: **Contexto**).`;
                 const userQuery = `Gere um comentário bíblico detalhado para ${book} capítulo ${chapter}. Aborde o seguinte: 1. **Contexto Histórico e Literário**. 2. **Análise dos Temas Principais**. 3. **Comentário de Versículos Chave**. 4. **Aplicações Práticas e Teológicas**.`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
 
                 try {
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                    const result = await response.json();
+                    const result = await callGeminiGenerateContent(payload);
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
 
                     if (text) {
@@ -2006,16 +2255,13 @@
                     return;
                 }
                 theologicalResultsDisplay.innerHTML = `<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A definir ${term}...</div>`;
-                
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+
                 const systemPrompt = `Você é um professor de teologia sistemática. Sua tarefa é fornecer definições claras, detalhadas e academicamente referenciadas para termos teológicos.`;
                 const userQuery = `Defina o termo teológico: "${term}". Explique sua etimologia (se relevante), seu significado principal, seu desenvolvimento histórico no pensamento cristão e forneça 2-3 referências bíblicas chave relacionadas ao conceito.`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
 
                 try {
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                    const result = await response.json();
+                    const result = await callGeminiGenerateContent(payload);
                     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
 
                     if (text) {
@@ -2379,15 +2625,12 @@
                 fastingSuggestionModalEl.classList.add('flex');
                 fastingSuggestionResultEl.innerHTML = '<div class="flex items-center justify-center h-full"><i class="fas fa-spinner fa-spin mr-2"></i>A gerar sugestão...</div>';
 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
                 const systemPrompt = `Você é um conselheiro espiritual. Sugira uma forma significativa de concluir um período de jejum e oração, focando em gratidão, reflexão e uma refeição leve e saudável. Apresente a sugestão em 2-3 parágrafos.`;
                 const userQuery = `Sugira como entregar (terminar) um jejum.`;
                 const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
 
                  try {
-                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                     if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                     const result = await response.json();
+                     const result = await callGeminiGenerateContent(payload);
                      const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                      if (text) {
                          fastingSuggestionResultEl.innerHTML = text.replace(/\n/g, '<br>');
@@ -2572,8 +2815,7 @@
             
             const fetchNextQuestion = async () => {
                 quizContentDashboardEl.innerHTML = `<div class="flex items-center justify-center h-48"><i class="fas fa-spinner fa-spin mr-2 text-2xl"></i>A gerar a próxima pergunta...</div>`;
-                
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
+
                 const systemPrompt = `Você é um criador de quizzes bíblicos. Crie UMA pergunta de múltipla escolha. A resposta deve ser um objeto JSON válido, sem \`\`\`json ou \`\`\` no início ou fim. O JSON deve ter a estrutura: { "question": "Qual personagem...", "options": ["Opção A", "Opção B", "Opção C", "Opção D"], "answer": "Opção C", "topic": "Gênesis" }. O campo "topic" deve indicar o livro ou tema principal da pergunta.`;
                 
                 let userQuery = `Gere uma pergunta de quiz bíblico. Nível de dificuldade: ${quizSession.difficulty}. Os tópicos devem ser variados, abrangendo Antigo e Novo Testamento.`;
@@ -2589,9 +2831,7 @@
                 };
 
                 try {
-                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                    if (!response.ok) throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                    const result = await response.json();
+                    const result = await callGeminiGenerateContent(payload);
                     const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     const questionData = JSON.parse(jsonText);
                     
@@ -2675,13 +2915,11 @@
 
                 if (quizSession.incorrectTopics.length > 0) {
                     const uniqueTopics = [...new Set(quizSession.incorrectTopics)];
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${GEMINI_API_KEY}`;
                     const systemPrompt = `Você é um conselheiro de estudos bíblicos. Sua tarefa é analisar uma lista de tópicos que um utilizador errou num quiz e fornecer um feedback encorajador e útil.`;
                     const userQuery = `O utilizador de um quiz bíblico errou perguntas sobre os seguintes tópicos: ${uniqueTopics.join(', ')}. Baseado nisso, escreva um breve parágrafo (2-3 frases) de encorajamento e sugira 1 ou 2 áreas principais para estudo, para que ele possa melhorar seu conhecimento. Seja positivo e direto ao ponto.`;
                     const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
                     try {
-                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                        const result = await response.json();
+                        const result = await callGeminiGenerateContent(payload);
                         const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                         if(text){
                             document.getElementById('quiz-feedback').innerHTML = `<h5 class="font-bold text-emerald-400 mb-2">Sugestão para Estudo:</h5><p>${text.replace(/\n/g, '<br>')}</p>`;
