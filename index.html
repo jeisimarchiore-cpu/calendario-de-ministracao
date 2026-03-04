@@ -821,15 +821,8 @@
             return `${k.slice(0, 4)}********${k.slice(-4)}`;
         };
 
-        const buildGeminiGenerateContentUrl = (apiKey, model = GEMINI_MODEL) => {
-            const safeKey = encodeURIComponent(apiKey);
-            return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${safeKey}`;
-        };
-
-        const buildGeminiListModelsUrl = (apiKey) => {
-            const safeKey = encodeURIComponent(apiKey);
-            return `https://generativelanguage.googleapis.com/v1beta/models?key=${safeKey}`;
-        };
+        const AI_BACKEND_MODELS_URL = '/api/models';
+        const AI_BACKEND_GENERATE_URL = '/api/generateContent';
 
         const normalizeModelName = (modelName) => {
             const name = String(modelName || '').trim();
@@ -837,8 +830,8 @@
             return name.startsWith('models/') ? name.slice('models/'.length) : name;
         };
 
-        const listGeminiModels = async (apiKey, { timeoutMs = 15000 } = {}) => {
-            const url = buildGeminiListModelsUrl(apiKey);
+        const listGeminiModels = async ({ timeoutMs = 15000 } = {}) => {
+            const url = AI_BACKEND_MODELS_URL;
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
             try {
@@ -848,24 +841,16 @@
                     throw new Error(`API Error: ${errMsg}`);
                 }
                 const data = await response.json();
-                const models = Array.isArray(data?.models) ? data.models : [];
-                const generateContentModels = models.filter(m => {
-                    const methods = m?.supportedGenerationMethods;
-                    if (Array.isArray(methods)) return methods.includes('generateContent');
-                    const mStr = String(methods || '');
-                    return mStr.includes('generateContent');
-                });
-                return {
-                    all: models,
-                    generateContent: generateContentModels,
-                };
+                const models = Array.isArray(data?.models) ? data.models : (Array.isArray(data?.all) ? data.all : []);
+                const generateContentModels = Array.isArray(data?.generateContent) ? data.generateContent : [];
+                return { all: models, generateContent: generateContentModels };
             } finally {
                 clearTimeout(timeoutId);
             }
         };
 
-        const getAvailableGenerateContentModelCandidates = async (apiKey) => {
-            const { generateContent } = await listGeminiModels(apiKey);
+        const getAvailableGenerateContentModelCandidates = async () => {
+            const { generateContent } = await listGeminiModels();
             const names = generateContent
                 .map(m => normalizeModelName(m?.name))
                 .filter(Boolean);
@@ -889,15 +874,7 @@
             return text.includes('is not found') || text.includes('not supported') || text.includes('models/');
         };
 
-        const callGeminiGenerateContent = async (payload, { interactiveKey = false, timeoutMs = GEMINI_API_TIMEOUT_MS, retries = GEMINI_API_RETRIES, models } = {}) => {
-            let apiKey = getGeminiApiKey({ interactive: interactiveKey });
-            if (!apiKey) {
-                apiKey = getGeminiApiKey({ interactive: true });
-            }
-            if (!apiKey) {
-                throw new Error('Chave do Gemini não configurada.');
-            }
-
+        const callGeminiGenerateContent = async (payload, { timeoutMs = GEMINI_API_TIMEOUT_MS, retries = GEMINI_API_RETRIES, models } = {}) => {
             let candidateModels = Array.isArray(models) && models.length > 0
                 ? models
                 : [GEMINI_MODEL];
@@ -911,7 +888,6 @@
             let lastError = null;
 
             for (const model of candidateModels) {
-                const apiUrl = buildGeminiGenerateContentUrl(apiKey, model);
                 let attempt = 0;
 
                 while (true) {
@@ -919,10 +895,10 @@
                     const controller = new AbortController();
                     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
                     try {
-                        const response = await fetch(apiUrl, {
+                        const response = await fetch(AI_BACKEND_GENERATE_URL, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload),
+                            body: JSON.stringify({ model, payload }),
                             signal: controller.signal,
                         });
 
@@ -940,10 +916,6 @@
 
                         const finalMsg = `API Error: ${errMsg}`;
                         lastError = new Error(finalMsg);
-
-                        if (isModelNotSupportedError(errMsg)) {
-                            break;
-                        }
 
                         throw lastError;
                     } catch (err) {
@@ -964,10 +936,9 @@
             }
 
             try {
-                const discovered = await getAvailableGenerateContentModelCandidates(apiKey);
+                const discovered = await getAvailableGenerateContentModelCandidates();
                 for (const discoveredModel of discovered) {
                     if (candidateModels.includes(discoveredModel)) continue;
-                    const apiUrl = buildGeminiGenerateContentUrl(apiKey, discoveredModel);
                     let attempt = 0;
 
                     while (true) {
@@ -975,10 +946,10 @@
                         const controller = new AbortController();
                         const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
                         try {
-                            const response = await fetch(apiUrl, {
+                            const response = await fetch(AI_BACKEND_GENERATE_URL, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify(payload),
+                                body: JSON.stringify({ model: discoveredModel, payload }),
                                 signal: controller.signal,
                             });
 
@@ -996,9 +967,6 @@
 
                             const finalMsg = `API Error: ${errMsg}`;
                             lastError = new Error(finalMsg);
-                            if (isModelNotSupportedError(errMsg)) {
-                                break;
-                            }
                             throw lastError;
                         } catch (err) {
                             const isAbort = err?.name === 'AbortError';
@@ -1107,12 +1075,7 @@
             document.getElementById('ai-diagnostics-btn').addEventListener('click', async () => {
                 try {
                     showToast('Verificando modelos disponíveis...');
-                    const apiKey = getGeminiApiKey({ interactive: false });
-                    if (!apiKey) throw new Error('Chave do Gemini não configurada.');
-
-                    console.log('Gemini API Key (masked):', maskKey(apiKey));
-
-                    const modelsInfo = await listGeminiModels(apiKey);
+                    const modelsInfo = await listGeminiModels();
                     const candidateModels = (modelsInfo?.generateContent || [])
                         .map(m => normalizeModelName(m?.name))
                         .filter(Boolean);
