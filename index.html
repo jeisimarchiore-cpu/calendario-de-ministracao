@@ -821,8 +821,27 @@
             return `${k.slice(0, 4)}********${k.slice(-4)}`;
         };
 
-        const AI_BACKEND_MODELS_URL = '/api/models';
-        const AI_BACKEND_GENERATE_URL = '/api/generateContent';
+        const resolveAiBackendBaseUrl = () => {
+            const stored = (localStorage.getItem('AI_BACKEND_BASE_URL') || '').trim();
+            if (stored) return stored.replace(/\/$/, '');
+
+            const isGithubPages = /(^|\.)github\.io$/i.test(window.location.hostname);
+            if (isGithubPages) {
+                return '';
+            }
+
+            return '';
+        };
+
+        const AI_BACKEND_BASE_URL = resolveAiBackendBaseUrl();
+
+        const AI_BACKEND_MODELS_URL = AI_BACKEND_BASE_URL
+            ? `${AI_BACKEND_BASE_URL}/api/models`
+            : '/api/models';
+
+        const AI_BACKEND_GENERATE_URL = AI_BACKEND_BASE_URL
+            ? `${AI_BACKEND_BASE_URL}/api/generateContent`
+            : '/api/generateContent';
 
         const normalizeModelName = (modelName) => {
             const name = String(modelName || '').trim();
